@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FITS Volleyball — Complete Athletic Development System (C.VADS)</title>
+<style>
+/* ═══════════════════════════════════════════════
+   FITS ATHLETIC DEVELOPMENT SYSTEM — WEBSITE
+   "BUILDING BETTER ATHLETES"
+   ═══════════════════════════════════════════════ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #050507;
+  --surface: #0d0d12;
+  --surface2: #141419;
+  --surface3: #1a1a22;
+  --text: #f5f5f7;
+  --text2: #a1a1a6;
+  --text3: #6e6e73;
+  --accent: #DA7756;
+  --accent2: #E8956E;
+  --accent-glow: rgba(218,119,86,0.15);
+  --blue: #4A90D9;
+  --green: #34C759;
+  --purple: #8B5CF6;
+  --teal: #2DD4BF;
+  --gold: #F59E0B;
+  --red: #EF4444;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', sans-serif;
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Utility ── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+/* ── Navigation ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: rgba(5,5,7,0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.3s;
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between; height: 64px;
+}
+.nav-logo {
+  font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
+  color: var(--text);
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  color: var(--text2); font-size: 13px; font-weight: 500;
+  text-decoration: none; letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-cta {
+  background: var(--accent); color: #fff; border: none;
+  padding: 8px 20px; border-radius: 20px; font-size: 13px;
+  font-weight: 600; cursor: pointer; transition: all 0.2s;
+  text-decoration: none;
+}
+.nav-cta:hover { background: var(--accent2); transform: scale(1.02); }
+
+/* ── Hero ── */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  position: relative; padding: 120px 32px 80px;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+}
+.hero-bg canvas { width: 100%; height: 100%; }
+.hero-content { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 18px; border: 1px solid rgba(218,119,86,0.35);
+  border-radius: 24px; font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 28px; background: rgba(218,119,86,0.06);
+}
+.hero-badge .pulse {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+.hero h1 {
+  font-size: clamp(42px, 7vw, 80px); font-weight: 800;
+  letter-spacing: -2px; line-height: 1.05; margin-bottom: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #a1a1a6 50%, #DA7756 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .subtitle {
+  font-size: clamp(17px, 2.5vw, 22px); color: var(--text2);
+  max-width: 700px; margin: 0 auto 40px; line-height: 1.6;
+}
+.hero-stats {
+  display: flex; gap: 48px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat .num {
+  font-size: 48px; font-weight: 800; letter-spacing: -2px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-stat .label {
+  font-size: 12px; font-weight: 500; color: var(--text3);
+  letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px;
+}
+.hero-cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--accent); color: #fff; border: none;
+  padding: 14px 32px; border-radius: 28px; font-size: 15px;
+  font-weight: 600; cursor: pointer; transition: all 0.3s;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(218,119,86,0.3); }
+.btn-secondary {
+  background: rgba(255,255,255,0.06); color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 14px 32px; border-radius: 28px; font-size: 15px;
+  font-weight: 600; cursor: pointer; transition: all 0.3s;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute; bottom: 40px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: var(--text3); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+.scroll-arrow {
+  width: 24px; height: 24px; border-right: 2px solid var(--text3);
+  border-bottom: 2px solid var(--text3); transform: rotate(45deg);
+}
+
+/* ── Sections ── */
+.section {
+  padding: 100px 0; position: relative;
+}
+.section-divider {
+  height: 1px; background: linear-gradient(90deg, transparent, rgba(218,119,86,0.2), transparent);
+  max-width: 800px; margin: 0 auto;
+}
+.section-header {
+  text-align: center; margin-bottom: 64px;
+}
+.section-label {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(32px, 5vw, 52px); font-weight: 800;
+  letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px;
+}
+.section-subtitle {
+  font-size: 18px; color: var(--text2); max-width: 650px; margin: 0 auto;
+}
+
+/* ── Four Purposes ── */
+.purposes-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.purpose-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius); padding: 36px 28px;
+  position: relative; overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: default;
+}
+.purpose-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(218,119,86,0.3);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px var(--accent-glow);
+}
+.purpose-card .glow {
+  position: absolute; top: -60px; right: -60px;
+  width: 160px; height: 160px; border-radius: 50%;
+  opacity: 0; transition: opacity 0.4s;
+}
+.purpose-card:hover .glow { opacity: 1; }
+.purpose-icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 20px;
+}
+.purpose-card h3 {
+  font-size: 20px; font-weight: 700; margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+.purpose-card p {
+  font-size: 14px; color: var(--text2); line-height: 1.65;
+}
+.purpose-card .purpose-tag {
+  display: inline-block; margin-top: 16px; padding: 4px 12px;
+  border-radius: 12px; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* ── Athlete Profile ── */
+.profile-hero {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: center;
+}
+.profile-text h2 {
+  font-size: 44px; font-weight: 800; letter-spacing: -1.5px;
+  line-height: 1.1; margin-bottom: 20px;
+}
+.profile-text h2 .gradient {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.profile-text .lead {
+  font-size: 17px; color: var(--text2); margin-bottom: 32px; line-height: 1.7;
+}
+.profile-pillars {
+  display: flex; gap: 12px; margin-bottom: 32px;
+}
+.pillar-chip {
+  padding: 8px 16px; border-radius: 20px; font-size: 13px;
+  font-weight: 600; border: 1px solid; cursor: default;
+  transition: all 0.3s;
+}
+.pillar-chip:hover { transform: scale(1.05); }
+
+/* ── Movement System Tower ── */
+.ms-tower {
+  position: relative; max-width: 700px; margin: 0 auto;
+}
+.ms-layer {
+  position: relative; padding: 24px 28px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px; cursor: pointer;
+  transition: all 0.4s;
+  overflow: hidden;
+}
+.ms-layer:hover {
+  border-color: rgba(218,119,86,0.3);
+  transform: scale(1.02);
+}
+.ms-layer .layer-num {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.ms-layer h4 {
+  font-size: 18px; font-weight: 700; margin-bottom: 6px;
+}
+.ms-layer .layer-desc {
+  font-size: 13px; color: var(--text2); margin-bottom: 0;
+  max-height: 0; overflow: hidden; transition: all 0.4s;
+}
+.ms-layer.expanded .layer-desc {
+  max-height: 400px; margin-bottom: 12px; margin-top: 8px;
+}
+.ms-layer .components {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  max-height: 0; overflow: hidden; transition: all 0.4s;
+}
+.ms-layer.expanded .components {
+  max-height: 200px; margin-top: 8px;
+}
+.component-tag {
+  padding: 4px 12px; border-radius: 8px; font-size: 11px;
+  font-weight: 600; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.ms-connector {
+  width: 2px; height: 24px; margin: 0 auto;
+  background: linear-gradient(to bottom, rgba(218,119,86,0.4), rgba(218,119,86,0.1));
+  position: relative;
+}
+.ms-connector::after {
+  content: ''; position: absolute; bottom: -3px; left: -3px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); opacity: 0.5;
+}
+
+/* ── Scoring Visualization ── */
+.scoring-visual {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+  align-items: start;
+}
+.scoring-matrix {
+  background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius); padding: 32px; position: relative; overflow: hidden;
+}
+.matrix-grid {
+  display: grid; grid-template-columns: auto 1fr 1fr; gap: 2px;
+  margin-top: 24px;
+}
+.matrix-cell {
+  padding: 20px 16px; text-align: center; border-radius: 8px;
+  font-size: 13px; font-weight: 600; transition: all 0.3s;
+  cursor: default;
+}
+.matrix-cell:hover { transform: scale(1.03); }
+.matrix-header {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--text3);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Define Measure Develop ── */
+.dmd-flow {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  max-width: 1000px;
+  margin: clamp(48px, 6vw, 88px) auto 0;
+  position: relative;
+}
+.dmd-step {
+  text-align: center; padding: 48px 32px; position: relative;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.4s;
+}
+.dmd-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.dmd-step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+.dmd-step:hover {
+  background: var(--surface);
+  border-color: rgba(218,119,86,0.2);
+}
+.dmd-number {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 800; margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+}
+.dmd-step h3 {
+  font-size: 24px; font-weight: 800; margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+.dmd-step p {
+  font-size: 14px; color: var(--text2); line-height: 1.65;
+}
+.dmd-arrow {
+  position: absolute; right: -14px; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px; background: var(--bg);
+  border: 1px solid rgba(218,119,86,0.3);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  z-index: 2; color: var(--accent); font-size: 14px;
+}
+
+/* ── Depth Counter ── */
+.depth-counter {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;
+  max-width: 900px; margin: 48px auto 0;
+}
+.depth-item {
+  text-align: center; padding: 24px 12px;
+  background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  transition: all 0.3s;
+}
+.depth-item:hover {
+  border-color: rgba(218,119,86,0.3);
+  transform: translateY(-4px);
+}
+.depth-num {
+  font-size: 36px; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.depth-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--text3); margin-top: 4px;
+}
+
+/* ── Video Placeholder ── */
+.video-placeholder {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 80px 40px; text-align: center;
+  position: relative; overflow: hidden;
+  cursor: pointer; transition: all 0.3s;
+}
+.video-placeholder:hover {
+  border-color: rgba(218,119,86,0.3);
+  box-shadow: 0 0 60px var(--accent-glow);
+}
+.play-btn {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+  box-shadow: 0 8px 40px rgba(218,119,86,0.3);
+  transition: all 0.3s;
+}
+.video-placeholder:hover .play-btn { transform: scale(1.1); }
+.play-btn svg { width: 32px; height: 32px; fill: #fff; margin-left: 4px; }
+.video-placeholder h4 {
+  font-size: 20px; font-weight: 700; margin-bottom: 8px;
+}
+.video-placeholder p {
+  font-size: 14px; color: var(--text3);
+}
+
+/* ── MY Volleyball Framework ── */
+.vb-framework {
+  position: relative;
+}
+.vb-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;
+}
+.vb-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius); padding: 32px;
+  transition: all 0.4s; position: relative; overflow: hidden;
+}
+.vb-card:hover {
+  border-color: rgba(218,119,86,0.3);
+  transform: translateY(-4px);
+}
+.vb-card .vb-icon {
+  font-size: 32px; margin-bottom: 16px;
+}
+.vb-card h4 {
+  font-size: 18px; font-weight: 700; margin-bottom: 8px;
+}
+.vb-card p {
+  font-size: 14px; color: var(--text2); line-height: 1.6;
+}
+
+/* ── App Mockup ── */
+.app-section {
+  background: linear-gradient(180deg, var(--bg) 0%, rgba(218,119,86,0.03) 50%, var(--bg) 100%);
+}
+.app-mockup-container {
+  display: flex; justify-content: center; gap: 24px;
+  perspective: 1200px; margin-top: 48px;
+}
+.phone-frame {
+  width: 300px; height: 620px;
+  background: var(--surface2);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 40px; padding: 12px;
+  position: relative; overflow: hidden;
+  transition: all 0.5s;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+}
+.phone-frame:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 60px 120px rgba(0,0,0,0.6), 0 0 60px var(--accent-glow);
+}
+.phone-notch {
+  width: 120px; height: 28px; background: var(--bg);
+  border-radius: 0 0 16px 16px; margin: 0 auto 12px;
+}
+.phone-screen {
+  background: var(--bg); border-radius: 28px;
+  height: calc(100% - 44px); padding: 20px 16px;
+  overflow: hidden; position: relative;
+}
+.phone-screen .screen-header {
+  text-align: center; margin-bottom: 16px;
+}
+.phone-screen .screen-header h5 {
+  font-size: 14px; font-weight: 700; color: var(--text);
+}
+.phone-screen .screen-header .screen-sub {
+  font-size: 10px; color: var(--text3);
+}
+.screen-profile-ring {
+  width: 72px; height: 72px; border-radius: 50%;
+  border: 3px solid var(--accent); margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.screen-profile-ring .inner-ring {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; color: #fff;
+}
+.screen-scores {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+  margin-bottom: 12px;
+}
+.screen-score {
+  background: var(--surface2); border-radius: 10px; padding: 8px 4px;
+  text-align: center;
+}
+.screen-score .ss-val {
+  font-size: 18px; font-weight: 800;
+}
+.screen-score .ss-label {
+  font-size: 8px; color: var(--text3); text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.screen-bar-chart {
+  margin-top: 8px;
+}
+.screen-bar {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+.screen-bar .bar-label {
+  font-size: 9px; color: var(--text3); width: 50px; text-align: right;
+  font-weight: 600;
+}
+.screen-bar .bar-track {
+  flex: 1; height: 8px; background: var(--surface3);
+  border-radius: 4px; overflow: hidden;
+}
+.screen-bar .bar-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.screen-bar .bar-val {
+  font-size: 9px; font-weight: 700; width: 20px;
+}
+
+/* ── Immersive Architecture ── */
+.arch-layer {
+  position: relative; z-index: 1; margin-bottom: 8px; cursor: pointer;
+}
+.arch-layer-inner {
+  display: grid; grid-template-columns: 1fr 140px; gap: 24px; align-items: center;
+  padding: 28px 32px; border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(var(--layer-color), 0.12);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative; overflow: hidden;
+}
+.arch-layer:hover .arch-layer-inner {
+  background: rgba(var(--layer-color), 0.05);
+  border-color: rgba(var(--layer-color), 0.3);
+  transform: scale(1.015);
+  box-shadow: 0 0 50px rgba(var(--layer-color), 0.08), 0 20px 60px rgba(0,0,0,0.3);
+}
+.arch-layer.active .arch-layer-inner {
+  background: rgba(var(--layer-color), 0.08);
+  border-color: rgba(var(--layer-color), 0.4);
+  box-shadow: 0 0 80px rgba(var(--layer-color), 0.12), 0 30px 80px rgba(0,0,0,0.4);
+}
+.arch-glow {
+  position: absolute; top: -50%; right: -20%; width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(var(--layer-color), 0.1), transparent 60%);
+  pointer-events: none; opacity: 0; transition: opacity 0.5s;
+}
+.arch-layer:hover .arch-glow, .arch-layer.active .arch-glow { opacity: 1; }
+.arch-badge {
+  display: inline-block; padding: 4px 14px; border-radius: 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(var(--layer-color), 0.9);
+  background: rgba(var(--layer-color), 0.08);
+  border: 1px solid rgba(var(--layer-color), 0.2);
+  margin-bottom: 10px;
+}
+.arch-title {
+  font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px;
+  color: var(--text);
+}
+.arch-subtitle {
+  font-size: 13px; color: var(--text3); font-weight: 500; margin-bottom: 0;
+}
+.arch-detail {
+  max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  margin-top: 0;
+}
+.arch-layer.active .arch-detail { max-height: 200px; margin-top: 12px; }
+.arch-detail p { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+.arch-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.arch-tags span {
+  padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 600;
+  background: rgba(var(--layer-color), 0.08);
+  border: 1px solid rgba(var(--layer-color), 0.15);
+  color: rgba(var(--layer-color), 0.8);
+}
+.arch-visual {
+  display: flex; align-items: center; justify-content: center;
+}
+.arch-icon {
+  width: 120px; height: 120px;
+  animation: icon-float 6s ease-in-out infinite;
+  transition: all 0.4s;
+}
+.arch-layer:hover .arch-icon { transform: scale(1.1); }
+.arch-layer:nth-child(2) .arch-icon { animation-delay: -1s; }
+.arch-layer:nth-child(3) .arch-icon { animation-delay: -2s; }
+.arch-layer:nth-child(4) .arch-icon { animation-delay: -3s; }
+.arch-layer:nth-child(5) .arch-icon { animation-delay: -4s; }
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes pulseUp {
+  0% { bottom: 0; opacity: 1; }
+  100% { bottom: 100%; opacity: 0; }
+}
+.arch-layer-foundation .arch-layer-inner {
+  background: rgba(218,119,86,0.04);
+  border-width: 1px;
+}
+
+@media (max-width: 900px) {
+  .arch-layer-inner { grid-template-columns: 1fr; }
+  .arch-visual { display: none; }
+}
+
+/* ── Animated Component Wheel ── */
+.wheel-container {
+  position: relative; width: 500px; height: 500px; margin: 0 auto;
+}
+.wheel-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px; height: 120px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; z-index: 2;
+  box-shadow: 0 0 60px rgba(218,119,86,0.3);
+}
+.wheel-center span {
+  font-size: 12px; font-weight: 800; color: #fff;
+  letter-spacing: 0.5px; line-height: 1.3;
+}
+.wheel-node {
+  position: absolute; width: 90px; height: 90px;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; text-align: center;
+  font-size: 9px; font-weight: 700; color: #fff;
+  cursor: default; transition: all 0.4s;
+  border: 2px solid rgba(255,255,255,0.1);
+  line-height: 1.2;
+}
+.wheel-node:hover {
+  transform: scale(1.15);
+  z-index: 3;
+  box-shadow: 0 0 30px rgba(218,119,86,0.4);
+}
+.wheel-ring {
+  position: absolute; top: 50%; left: 50%;
+  border: 1px dashed rgba(255,255,255,0.06);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin-slow 60s linear infinite;
+}
+@keyframes spin-slow {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ── Testimonials ── */
+.testimonials {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+@media (max-width: 1100px) {
+  .testimonials { grid-template-columns: repeat(2, 1fr); }
+}
+.testimonial-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius); padding: 32px;
+}
+.testimonial-card .stars {
+  color: var(--gold); margin-bottom: 12px; letter-spacing: 2px;
+}
+.testimonial-card blockquote {
+  font-size: 15px; color: var(--text2); line-height: 1.65;
+  font-style: italic; margin-bottom: 16px;
+}
+.testimonial-card .author {
+  font-size: 13px; font-weight: 700; color: var(--text);
+}
+.testimonial-card .role {
+  font-size: 12px; color: var(--text3);
+}
+
+/* ── CTA Footer ── */
+.cta-section {
+  text-align: center; padding: 120px 32px;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(218,119,86,0.08) 0%, transparent 60%);
+}
+.cta-content { position: relative; z-index: 1; }
+.cta-section h2 {
+  font-size: clamp(36px, 5vw, 56px); font-weight: 800;
+  letter-spacing: -1.5px; margin-bottom: 16px;
+}
+.cta-section p {
+  font-size: 18px; color: var(--text2); max-width: 600px;
+  margin: 0 auto 40px;
+}
+
+/* Footer */
+footer {
+  padding: 48px 32px; border-top: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+}
+footer p { font-size: 13px; color: var(--text3); }
+
+/* ── Animations ── */
+.fade-up {
+  opacity: 0; transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.fade-up.visible {
+  opacity: 1; transform: translateY(0);
+}
+.stagger-1 { transition-delay: 0.1s; }
+.stagger-2 { transition-delay: 0.2s; }
+.stagger-3 { transition-delay: 0.3s; }
+.stagger-4 { transition-delay: 0.4s; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .purposes-grid { grid-template-columns: repeat(2, 1fr); }
+  .profile-hero { grid-template-columns: 1fr; gap: 48px; }
+  .scoring-visual { grid-template-columns: 1fr; }
+  .dmd-flow { grid-template-columns: 1fr; }
+  .dmd-step { border-radius: var(--radius-sm) !important; }
+  .dmd-arrow { display: none; }
+  .vb-grid { grid-template-columns: 1fr; }
+  .depth-counter { grid-template-columns: repeat(3, 1fr); }
+  .app-mockup-container { flex-direction: column; align-items: center; }
+  .wheel-container { width: 340px; height: 340px; }
+  .wheel-node { width: 65px; height: 65px; font-size: 7px; }
+  .wheel-center { width: 90px; height: 90px; }
+  .testimonials { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .tech-grid { grid-template-columns: 1fr !important; }
+  .diagnostic-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  #profileScan div[style*="grid-template-columns: 100px"] { grid-template-columns: 70px 1fr 1fr 24px !important; }
+  .cvads-grid, .mockup-grid { grid-template-columns: repeat(2, 1fr); }
+  .case-grid { grid-template-columns: 1fr; }
+  .my-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .purposes-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 28px; }
+  .depth-counter { grid-template-columns: repeat(2, 1fr); }
+  .cvads-grid, .mockup-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Particle Background ── */
+.particles { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.particle {
+  position: absolute; width: 3px; height: 3px;
+  background: var(--accent); border-radius: 50%; opacity: 0;
+  animation: float-particle linear infinite;
+}
+@keyframes float-particle {
+  0% { opacity: 0; transform: translateY(100vh) scale(0); }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-20vh) scale(1); }
+}
+
+/* ── Glowing lines between sections ── */
+.glow-line {
+  height: 200px; position: relative; overflow: hidden;
+}
+.glow-line::before {
+  content: ''; position: absolute;
+  left: 50%; top: 0; width: 2px; height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+  opacity: 0.3;
+}
+
+/* ── Interactive Radar (Athlete Profile) ── */
+.radar-container {
+  width: 100%; max-width: 420px; margin: 0 auto;
+}
+.radar-container canvas {
+  width: 100%; height: auto;
+}
+
+/* ── C.VADS cards & interactive mockups ── */
+.cvads-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  margin-top: 56px; max-width: 1100px; margin-left: auto; margin-right: auto;
+}
+.cvads-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 28px 22px;
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex; flex-direction: column; min-height: 100%;
+}
+.cvads-card:hover {
+  border-color: rgba(218,119,86,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+.cvads-card .cvads-ico {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 14px;
+}
+.cvads-card h3 { font-size: 17px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.3px; }
+.cvads-card p { font-size: 13px; color: var(--text2); line-height: 1.55; flex: 1; margin-bottom: 14px; }
+.learn-more-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: var(--accent);
+  background: none; border: none; cursor: pointer;
+  padding: 0; text-align: left;
+  transition: gap 0.2s;
+}
+.learn-more-btn:hover { gap: 10px; color: var(--accent2); }
+.arch-subline {
+  font-size: 15px; color: var(--text3); font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase; margin-top: 12px;
+}
+.mockup-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-top: 48px; max-width: 1100px; margin-left: auto; margin-right: auto;
+}
+.mockup-card {
+  background: linear-gradient(165deg, var(--surface2), var(--surface));
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-sm);
+  padding: 0; overflow: hidden;
+  cursor: pointer; transition: all 0.35s;
+  position: relative;
+}
+.mockup-card:hover {
+  border-color: rgba(218,119,86,0.4);
+  transform: translateY(-6px);
+}
+.mockup-card .mockup-screen {
+  aspect-ratio: 9/16; max-height: 200px;
+  background: linear-gradient(180deg, #0a0a0f, #12121a);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.mockup-card .mockup-screen::after {
+  content: ''; position: absolute; inset: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(218,119,86,0.15);
+  pointer-events: none;
+}
+.mockup-card .mockup-body { padding: 18px 16px 20px; }
+.mockup-card .tagline {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+}
+.mockup-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 10px; }
+.pathway-tabs {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin: 40px 0 24px;
+}
+.pathway-tabs button {
+  padding: 10px 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface); color: var(--text2); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.25s;
+}
+.pathway-tabs button:hover { border-color: rgba(218,119,86,0.35); color: var(--text); }
+.pathway-tabs button.active {
+  background: rgba(218,119,86,0.15);
+  border-color: rgba(218,119,86,0.45);
+  color: var(--accent);
+}
+.pathway-panel {
+  display: none; max-width: 720px; margin: 0 auto;
+  padding: 32px; background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  text-align: left;
+}
+.pathway-panel.active { display: block; }
+.pathway-panel h3 { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+.pathway-panel p { font-size: 15px; color: var(--text2); line-height: 1.65; margin-bottom: 12px; }
+.pathway-panel ul { margin: 12px 0 0 18px; color: var(--text2); font-size: 14px; line-height: 1.6; }
+.case-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  margin-top: 40px;
+}
+.case-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 28px;
+  transition: all 0.35s;
+}
+.case-card:hover { border-color: rgba(218,119,86,0.25); }
+.case-card .case-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--teal); margin-bottom: 10px;
+}
+.case-card h4 { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+.case-card p { font-size: 14px; color: var(--text2); line-height: 1.6; }
+.my-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-top: 48px; text-align: center;
+}
+.my-stat {
+  padding: 28px 16px;
+  background: linear-gradient(180deg, rgba(218,119,86,0.06), var(--surface));
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+}
+.my-stat .big {
+  font-size: clamp(28px, 4vw, 40px); font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.my-stat .small { font-size: 12px; color: var(--text3); margin-top: 6px; line-height: 1.35; }
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: var(--surface2);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  max-width: 520px; width: 100%;
+  max-height: 85vh; overflow-y: auto;
+  padding: 32px;
+  transform: translateY(16px);
+  transition: transform 0.3s;
+  display: flow-root;
+}
+.modal-overlay.open .modal-box { transform: translateY(0); }
+.modal-box h3 { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+.modal-box p { font-size: 15px; color: var(--text2); line-height: 1.65; margin-bottom: 12px; }
+.modal-close {
+  float: right; background: rgba(255,255,255,0.06);
+  border: none; color: var(--text2);
+  width: 36px; height: 36px; border-radius: 50%;
+  cursor: pointer; font-size: 18px; line-height: 1;
+}
+.modal-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+
+/* ── Architecture layer video pop-out ── */
+.layer-video-overlay {
+  position: fixed; inset: 0; z-index: 2100;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex; align-items: center; justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.layer-video-overlay.open { opacity: 1; pointer-events: auto; }
+.layer-video-box {
+  width: 100%; max-width: min(960px, 100vw - 32px);
+  background: var(--surface2);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius);
+  padding: 20px 24px 28px;
+  max-height: min(92vh, 900px);
+  overflow: auto;
+  transform: translateY(20px) scale(0.82);
+  opacity: 0.96;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  transform-origin: center center;
+  will-change: transform;
+}
+.layer-video-overlay.open .layer-video-box.layer-video-pump {
+  animation: layerVideoPump 0.58s cubic-bezier(0.33, 1.35, 0.48, 1) forwards;
+}
+@keyframes layerVideoPump {
+  0% {
+    transform: translateY(36px) scale(0.72);
+    opacity: 0.5;
+    box-shadow: 0 0 0 rgba(218,119,86,0), 0 20px 60px rgba(0,0,0,0.4);
+  }
+  45% {
+    transform: translateY(-10px) scale(1.045);
+    opacity: 1;
+    box-shadow: 0 0 60px rgba(218,119,86,0.22), 0 48px 100px rgba(0,0,0,0.55);
+  }
+  75% { transform: translateY(4px) scale(0.995); }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.65);
+  }
+}
+.layer-video-overlay.open .layer-video-frame-wrap {
+  animation: layerFrameGlow 0.6s ease-out forwards;
+}
+@keyframes layerFrameGlow {
+  from { box-shadow: 0 0 0 rgba(218,119,86,0); }
+  40% { box-shadow: 0 0 28px rgba(218,119,86,0.2); }
+  to { box-shadow: none; }
+}
+.layer-video-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  margin-bottom: 16px;
+}
+.layer-video-head h3 {
+  font-size: clamp(18px, 2.5vw, 22px); font-weight: 800; letter-spacing: -0.4px;
+  line-height: 1.25; margin: 0; padding-right: 8px;
+}
+.layer-video-close {
+  flex-shrink: 0; background: rgba(255,255,255,0.08);
+  border: none; color: var(--text2);
+  width: 40px; height: 40px; border-radius: 50%;
+  cursor: pointer; font-size: 22px; line-height: 1;
+  transition: background 0.2s, color 0.2s;
+}
+.layer-video-close:hover { background: rgba(255,255,255,0.14); color: var(--text); }
+.layer-video-frame-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.layer-video-frame-wrap iframe {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}
+.layer-video-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; padding: 28px; text-align: center;
+  background: radial-gradient(ellipse at 50% 30%, rgba(218,119,86,0.12), #0a0a0f);
+}
+.layer-video-placeholder .ph-play {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 32px rgba(218,119,86,0.35);
+}
+.layer-video-placeholder .ph-play svg { width: 28px; height: 28px; fill: #fff; margin-left: 4px; }
+.layer-video-placeholder p { font-size: 14px; color: var(--text2); line-height: 1.55; max-width: 400px; margin: 0; }
+.layer-video-placeholder code {
+  font-size: 11px; color: var(--text3); background: rgba(255,255,255,0.06);
+  padding: 4px 8px; border-radius: 6px;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><span>FITS</span> Volleyball ADS</div>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#cvads-system">The System</a></li>
+      <li><a href="#system">Architecture</a></li>
+      <li><a href="#video-deep-dive">Deep Dive</a></li>
+      <li><a href="#proof">Results</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="top">
+  <div class="particles" id="particles"></div>
+  <div class="hero-content fade-up">
+    <div class="hero-badge">
+      <span class="pulse"></span>
+      Complete Volleyball ADS (C.VADS)
+    </div>
+    <h1>BUILDING BETTER<br>VOLLEYBALL ATHLETES</h1>
+    <p class="subtitle">For families and players who want clarity: one integrated system that defines how you move, measures what matters for the court, and develops you through four volleyball pathways—foundation, flight, arm health, and speed.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num" data-count="5">0</div>
+        <div class="label">Developmental Layers</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" data-count="12">0</div>
+        <div class="label">Movement Components</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" data-count="18">0</div>
+        <div class="label">Core Stability Qualities</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" data-count="19">0</div>
+        <div class="label">Solution Strategies</div>
+      </div>
+    </div>
+    <div class="hero-cta-group">
+      <a href="#cvads-system" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Explore the System
+      </a>
+      <a href="#video-overview" class="btn-secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Watch Overview
+      </a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ═══ VIDEO: THE FITS SYSTEM EXPLAINED ═══ -->
+<section class="section" id="video-overview">
+  <div class="container">
+    <div class="video-placeholder fade-up">
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </div>
+      <h4>Video: The FITS System Explained</h4>
+      <p>Placeholder for your walkthrough video—how C.VADS connects testing, training, and the court. Drop in a URL or embed when the asset is ready.</p>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ═══ APP MOCKUP ═══ -->
+<section class="section app-section" id="app">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Coming Soon</div>
+      <h2 class="section-title">The System. In Your Hands.</h2>
+      <p class="section-subtitle">Real-time athlete profiles, intelligent programming, and seamless feedback loops — the FITS system brought to life through technology.</p>
+    </div>
+
+    <div class="app-mockup-container fade-up">
+      <!-- Phone 1: Athlete Profile Dashboard -->
+      <div class="phone-frame" id="phone1">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="screen-header">
+            <div style="font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">FITS Athlete Profile</div>
+            <h5>Sarah M. — Outside Hitter</h5>
+            <div class="screen-sub">Last assessed: March 12, 2026</div>
+          </div>
+          <div class="screen-profile-ring">
+            <div class="inner-ring">SM</div>
+          </div>
+          <div class="screen-scores">
+            <div class="screen-score">
+              <div class="ss-val" style="color: var(--green);">2.4</div>
+              <div class="ss-label">Quality</div>
+            </div>
+            <div class="screen-score">
+              <div class="ss-val" style="color: var(--blue);">3</div>
+              <div class="ss-label">Perf Level</div>
+            </div>
+            <div class="screen-score">
+              <div class="ss-val" style="color: var(--gold);">1</div>
+              <div class="ss-label">CMDs</div>
+            </div>
+          </div>
+          <div style="font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin: 12px 0 8px;">Movement System Profile</div>
+          <div class="screen-bar-chart" id="profileBars">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 2: Session View -->
+      <div class="phone-frame" id="phone2">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="screen-header">
+            <div style="font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">Today's Session</div>
+            <h5>Foundation + Engine Day</h5>
+            <div class="screen-sub">Session 24 of 36 · Phase 2</div>
+          </div>
+          <div style="margin-top: 16px;" id="sessionBlocks">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone 3: Feedback Loop -->
+      <div class="phone-frame" id="phone3">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="screen-header">
+            <div style="font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">Active Learning</div>
+            <h5>Feedback & Progression</h5>
+            <div class="screen-sub">Real-time quality monitoring</div>
+          </div>
+          <div style="margin-top: 16px;" id="feedbackView">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+
+
+<!-- ═══ COMPLETE VOLLEYBALL DEVELOPMENT SYSTEM ═══ -->
+<section class="section" id="cvads-system" style="padding-bottom: 40px;">
+  <div class="container">
+    <!-- Big Impact Header -->
+    <div class="fade-up" style="text-align: center; margin-bottom: 80px; position: relative;">
+      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(218,119,86,0.08) 0%, transparent 60%); pointer-events: none;"></div>
+      <div style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border: 1px solid rgba(218,119,86,0.35); border-radius: 24px; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 32px; background: rgba(218,119,86,0.06);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        C.VADS
+      </div>
+      <h2 style="font-size: clamp(36px, 6vw, 64px); font-weight: 900; letter-spacing: -2px; line-height: 1.05; margin-bottom: 24px;">
+        <span style="display: block; color: var(--text);">The Complete Volleyball</span>
+        <span style="display: block; background: linear-gradient(135deg, #DA7756 0%, #E8956E 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Development System</span>
+      </h2>
+      <p style="font-size: clamp(17px, 2.5vw, 21px); color: var(--text2); max-width: 750px; margin: 0 auto; line-height: 1.65;">Built for parents and athletes: a single profile that shows how you move, where you stand versus meaningful norms, and exactly what we train next—mapped to four volleyball pathways below.</p>
+    </div>
+
+    <!-- Four C.VADS components -->
+    <div class="section-header fade-up" style="margin-top: 48px; margin-bottom: 8px;">
+      <div class="section-label">Pathways</div>
+      <h2 class="section-title" style="font-size: clamp(26px, 4vw, 36px);">Four components. One profile.</h2>
+      <p class="section-subtitle">Each pathway has its own curriculum hooks inside the FITS architecture. Open a card for a quick description.</p>
+    </div>
+    <div class="cvads-grid fade-up">
+      <div class="cvads-card">
+        <div class="cvads-ico" style="background: rgba(218,119,86,0.12);">🏗</div>
+        <h3>Foundation Development</h3>
+        <p>Joint integrity, core stability, and movement literacy—the base every jump and swing builds on.</p>
+        <button type="button" class="learn-more-btn" data-modal="cvads-foundation">Learn more →</button>
+      </div>
+      <div class="cvads-card">
+        <div class="cvads-ico" style="background: rgba(74,144,217,0.12);">🚀</div>
+        <h3>Flight School</h3>
+        <p>Approach, takeoff, and landing skills for repeatable vertical performance and safer landings.</p>
+        <button type="button" class="learn-more-btn" data-modal="cvads-flight">Learn more →</button>
+      </div>
+      <div class="cvads-card">
+        <div class="cvads-ico" style="background: rgba(139,92,246,0.12);">💪</div>
+        <h3>Arm Development System</h3>
+        <p>Shoulder health, arm swing mechanics, and rotational power—mapped from rehab to full swing.</p>
+        <button type="button" class="learn-more-btn" data-modal="cvads-arm">Learn more →</button>
+      </div>
+      <div class="cvads-card">
+        <div class="cvads-ico" style="background: rgba(45,212,191,0.12);">⚡</div>
+        <h3>Speed Development</h3>
+        <p>Lateral coverage, transition speed, and repeat explosiveness that show up between contacts.</p>
+        <button type="button" class="learn-more-btn" data-modal="cvads-speed">Learn more →</button>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 36px;" class="fade-up">
+      <a href="#contact" class="btn-secondary" id="btn-differentiators">What makes us different — Process → Results</a>
+    </div>
+
+    <!-- Three-Step Flow — Enhanced -->
+    <div class="dmd-flow fade-up">
+      <div class="dmd-step">
+        <div class="dmd-number">1</div>
+        <h3>Define</h3>
+        <p>We mapped the entire movement system — 5 layers, 12 components, from joint mechanics to game-speed perception. Every aspect of how an athlete moves, stabilizes, produces force, and makes decisions is architecturally defined. Nothing is left to guesswork. The system tells us <em>exactly</em> what to look for.</p>
+        <div class="dmd-arrow">→</div>
+      </div>
+      <div class="dmd-step">
+        <div class="dmd-number">2</div>
+        <h3>Measure</h3>
+        <p>Force plates. Computer vision. Motion capture. Speed testing. Power output. Elasticity and reactivity scores. Movement quality assessments grounded in <strong>global normative data</strong> — from developmental athletes to professionals. Every component scored. A complete movement fingerprint.</p>
+        <div class="dmd-arrow">→</div>
+      </div>
+      <div class="dmd-step">
+        <div class="dmd-number">3</div>
+        <h3>Develop</h3>
+        <p>The profile becomes the compass: it highlights gaps, surfaces injury risk early, and maps training to <em>your</em> athlete’s season and position—using the same language coaches and families can share.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="glow-line"></div>
+
+<!-- ═══ THE MOVEMENT SYSTEM — IMMERSIVE ═══ -->
+<section id="system" style="padding: 0; position: relative; overflow: hidden;">
+
+  <!-- Full-width immersive canvas background -->
+  <div style="position: absolute; inset: 0; z-index: 0;">
+    <canvas id="archCanvas" style="width: 100%; height: 100%;"></canvas>
+  </div>
+
+  <!-- Content over canvas -->
+  <div style="position: relative; z-index: 1; padding: 120px 0;">
+    <div class="container">
+      <div class="section-header fade-up" style="margin-bottom: 80px;">
+        <div class="section-label">The Architecture</div>
+        <p class="arch-subline">Rule-based architecture</p>
+        <h2 style="font-size: clamp(40px, 6vw, 64px); font-weight: 900; letter-spacing: -2px; line-height: 1.05; margin-bottom: 16px; text-align: center;">Five Layers.<br><span style="background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Built from the Ground Up.</span></h2>
+        <p class="section-subtitle">Each layer depends on the layers beneath it. You cannot build speed on a broken foundation. <strong style="color:var(--text);font-weight:600;">Click any layer</strong> to open its explainer video (set <code style="font-size:0.9em;background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:6px;">data-video-src</code> on each layer when your files are ready).</p>
+      </div>
+
+      <!-- Immersive Tower Visualization -->
+      <div id="immersiveTower" class="fade-up" style="max-width: 1100px; margin: 0 auto; position: relative;">
+
+        <!-- Pulsing energy spine -->
+        <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); z-index: 0;">
+          <div style="width: 100%; height: 100%; background: linear-gradient(to top, var(--accent), var(--purple), var(--red)); opacity: 0.15;"></div>
+          <div id="energyPulse" style="position: absolute; bottom: 0; left: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 20px var(--accent), 0 0 40px rgba(218,119,86,0.3); animation: pulseUp 3s ease-in-out infinite;"></div>
+        </div>
+
+        <!-- Layer 5 — Pinnacle -->
+        <div class="arch-layer fade-up" data-layer="5" data-video-src="" onclick="onArchLayerClick(this)" style="--layer-color: 239,68,68; --layer-hue: var(--red);">
+          <div class="arch-layer-inner">
+            <div class="arch-glow"></div>
+            <div class="arch-content">
+              <div class="arch-badge">Layer 5</div>
+              <h3 class="arch-title">Decision Making & Game Speed</h3>
+              <p class="arch-subtitle">Performance Pinnacle</p>
+              <div class="arch-detail">
+                <p>Perception → Decision → Action under real sport conditions. The ultimate integration of the entire Movement System — where the system meets the game.</p>
+                <div class="arch-tags">
+                  <span>Perception-Action Coupling</span><span>Decision Speed</span><span>Game Intelligence</span><span>Anticipation</span>
+                </div>
+              </div>
+            </div>
+            <div class="arch-visual">
+              <svg viewBox="0 0 120 120" class="arch-icon">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(239,68,68,0.2)" stroke-width="1"/>
+                <circle cx="60" cy="60" r="35" fill="none" stroke="rgba(239,68,68,0.15)" stroke-width="1"/>
+                <circle cx="60" cy="60" r="8" fill="rgba(239,68,68,0.6)"/>
+                <path d="M60 10 L60 25" stroke="rgba(239,68,68,0.4)" stroke-width="1.5"/>
+                <path d="M60 95 L60 110" stroke="rgba(239,68,68,0.4)" stroke-width="1.5"/>
+                <path d="M10 60 L25 60" stroke="rgba(239,68,68,0.4)" stroke-width="1.5"/>
+                <path d="M95 60 L110 60" stroke="rgba(239,68,68,0.4)" stroke-width="1.5"/>
+                <path d="M25 25 L38 38" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
+                <path d="M82 82 L95 95" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
+                <path d="M95 25 L82 38" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
+                <path d="M25 95 L38 82" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
+                <circle cx="60" cy="10" r="3" fill="rgba(239,68,68,0.5)"/>
+                <circle cx="110" cy="60" r="3" fill="rgba(239,68,68,0.5)"/>
+                <circle cx="60" cy="110" r="3" fill="rgba(239,68,68,0.5)"/>
+                <circle cx="10" cy="60" r="3" fill="rgba(239,68,68,0.5)"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 4 -->
+        <div class="arch-layer fade-up stagger-1" data-layer="4" data-video-src="" onclick="onArchLayerClick(this)" style="--layer-color: 139,92,246; --layer-hue: var(--purple);">
+          <div class="arch-layer-inner">
+            <div class="arch-glow"></div>
+            <div class="arch-content">
+              <div class="arch-badge">Layer 4</div>
+              <h3 class="arch-title">Motor Programs</h3>
+              <p class="arch-subtitle">Governing Software</p>
+              <div class="arch-detail">
+                <p>The brain's internal movement templates — they predict, select, organize, adjust, and update movement solutions before movement even begins.</p>
+                <div class="arch-tags">
+                  <span>Predictive Models</span><span>Movement Selection</span><span>Real-Time Adaptation</span><span>Pattern Recognition</span>
+                </div>
+              </div>
+            </div>
+            <div class="arch-visual">
+              <svg viewBox="0 0 120 120" class="arch-icon">
+                <rect x="20" y="20" width="80" height="80" rx="12" fill="none" stroke="rgba(139,92,246,0.2)" stroke-width="1"/>
+                <line x1="20" y1="50" x2="100" y2="50" stroke="rgba(139,92,246,0.12)" stroke-width="1"/>
+                <line x1="20" y1="70" x2="100" y2="70" stroke="rgba(139,92,246,0.12)" stroke-width="1"/>
+                <line x1="50" y1="20" x2="50" y2="100" stroke="rgba(139,92,246,0.12)" stroke-width="1"/>
+                <line x1="70" y1="20" x2="70" y2="100" stroke="rgba(139,92,246,0.12)" stroke-width="1"/>
+                <circle cx="50" cy="50" r="6" fill="rgba(139,92,246,0.5)"/>
+                <circle cx="70" cy="50" r="4" fill="rgba(139,92,246,0.35)"/>
+                <circle cx="50" cy="70" r="4" fill="rgba(139,92,246,0.35)"/>
+                <circle cx="70" cy="70" r="3" fill="rgba(139,92,246,0.25)"/>
+                <path d="M50 50 L70 50 L70 70" fill="none" stroke="rgba(139,92,246,0.4)" stroke-width="1.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 3 -->
+        <div class="arch-layer fade-up stagger-2" data-layer="3" data-video-src="" onclick="onArchLayerClick(this)" style="--layer-color: 45,212,191; --layer-hue: var(--teal);">
+          <div class="arch-layer-inner">
+            <div class="arch-glow"></div>
+            <div class="arch-content">
+              <div class="arch-badge">Layer 3</div>
+              <h3 class="arch-title">Movement Skills</h3>
+              <p class="arch-subtitle">Expression</p>
+              <div class="arch-detail">
+                <p>The observable outputs — 7 Foundation Movements for coordination literacy, 8 Speed Skills for high-velocity expression, and Sport Speed patterns under competitive demands.</p>
+                <div class="arch-tags">
+                  <span>7 Foundation Movements</span><span>8 Speed Skills</span><span>Speed Patterns</span><span>Sport Speed</span>
+                </div>
+              </div>
+            </div>
+            <div class="arch-visual">
+              <svg viewBox="0 0 120 120" class="arch-icon">
+                <path d="M60 15 L95 40 L95 80 L60 105 L25 80 L25 40Z" fill="none" stroke="rgba(45,212,191,0.25)" stroke-width="1"/>
+                <path d="M60 30 L85 48 L85 72 L60 90 L35 72 L35 48Z" fill="none" stroke="rgba(45,212,191,0.15)" stroke-width="1"/>
+                <circle cx="60" cy="15" r="4" fill="rgba(45,212,191,0.5)"/>
+                <circle cx="95" cy="40" r="3" fill="rgba(45,212,191,0.4)"/>
+                <circle cx="95" cy="80" r="3" fill="rgba(45,212,191,0.4)"/>
+                <circle cx="60" cy="105" r="3" fill="rgba(45,212,191,0.4)"/>
+                <circle cx="25" cy="80" r="3" fill="rgba(45,212,191,0.4)"/>
+                <circle cx="25" cy="40" r="3" fill="rgba(45,212,191,0.4)"/>
+                <circle cx="60" cy="60" r="6" fill="rgba(45,212,191,0.4)"/>
+                <line x1="60" y1="60" x2="60" y2="15" stroke="rgba(45,212,191,0.2)" stroke-width="1"/>
+                <line x1="60" y1="60" x2="95" y2="40" stroke="rgba(45,212,191,0.2)" stroke-width="1"/>
+                <line x1="60" y1="60" x2="25" y2="40" stroke="rgba(45,212,191,0.2)" stroke-width="1"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 2 -->
+        <div class="arch-layer fade-up stagger-3" data-layer="2" data-video-src="" onclick="onArchLayerClick(this)" style="--layer-color: 74,144,217; --layer-hue: var(--blue);">
+          <div class="arch-layer-inner">
+            <div class="arch-glow"></div>
+            <div class="arch-content">
+              <div class="arch-badge">Layer 2</div>
+              <h3 class="arch-title">Coordination Functions</h3>
+              <p class="arch-subtitle">Software — 8 Functions</p>
+              <div class="arch-detail">
+                <p>How the nervous system organizes capability into movement solutions. Eight functions across Stability, Expression, and Universal domains.</p>
+                <div class="arch-tags">
+                  <span>Position & Stability</span><span>Impulse</span><span>Absorption</span><span>Rotation</span><span>Elastic</span><span>Redirection</span><span>Rhythm & Timing</span><span>Integration</span>
+                </div>
+              </div>
+            </div>
+            <div class="arch-visual">
+              <svg viewBox="0 0 120 120" class="arch-icon">
+                <circle cx="60" cy="60" r="45" fill="none" stroke="rgba(74,144,217,0.15)" stroke-width="1"/>
+                <circle cx="60" cy="60" r="20" fill="none" stroke="rgba(74,144,217,0.2)" stroke-width="1"/>
+                <circle cx="60" cy="15" r="4" fill="rgba(74,144,217,0.5)"/>
+                <circle cx="92" cy="37" r="4" fill="rgba(74,144,217,0.45)"/>
+                <circle cx="92" cy="83" r="4" fill="rgba(74,144,217,0.4)"/>
+                <circle cx="60" cy="105" r="4" fill="rgba(74,144,217,0.45)"/>
+                <circle cx="28" cy="83" r="4" fill="rgba(74,144,217,0.4)"/>
+                <circle cx="28" cy="37" r="4" fill="rgba(74,144,217,0.45)"/>
+                <circle cx="78" cy="20" r="3" fill="rgba(74,144,217,0.3)"/>
+                <circle cx="42" cy="20" r="3" fill="rgba(74,144,217,0.3)"/>
+                <line x1="60" y1="15" x2="60" y2="40" stroke="rgba(74,144,217,0.2)" stroke-width="1"/>
+                <line x1="92" y1="37" x2="75" y2="48" stroke="rgba(74,144,217,0.2)" stroke-width="1"/>
+                <line x1="28" y1="37" x2="45" y2="48" stroke="rgba(74,144,217,0.2)" stroke-width="1"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 1 — Foundation (widest, most prominent) -->
+        <div class="arch-layer arch-layer-foundation fade-up stagger-4" data-layer="1" data-video-src="" onclick="onArchLayerClick(this)" style="--layer-color: 218,119,86; --layer-hue: var(--accent);">
+          <div class="arch-layer-inner" style="border-width: 2px;">
+            <div class="arch-glow" style="opacity: 0.4;"></div>
+            <div class="arch-content">
+              <div class="arch-badge" style="background: rgba(218,119,86,0.15); border-color: rgba(218,119,86,0.4);">Layer 1 — Foundation</div>
+              <h3 class="arch-title" style="font-size: 26px;">Movement System Characteristics</h3>
+              <p class="arch-subtitle">Hardware — The Capability Stack</p>
+              <div class="arch-detail" style="max-height: 300px;">
+                <p>The physical foundation everything is built upon. Five equal components forming the capability stack. You cannot express what you do not possess.</p>
+                <div class="arch-tags">
+                  <span>Joint Structure</span><span>Range</span><span style="background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.25); color: var(--purple);">Core Stability — 18 CSQ</span><span>Engine — 6 Qualities</span><span>Energy Systems</span>
+                </div>
+              </div>
+            </div>
+            <div class="arch-visual">
+              <svg viewBox="0 0 120 120" class="arch-icon">
+                <rect x="10" y="85" width="100" height="25" rx="4" fill="rgba(218,119,86,0.12)" stroke="rgba(218,119,86,0.25)" stroke-width="1"/>
+                <rect x="15" y="62" width="90" height="20" rx="4" fill="rgba(218,119,86,0.10)" stroke="rgba(218,119,86,0.2)" stroke-width="1"/>
+                <rect x="20" y="39" width="80" height="20" rx="4" fill="rgba(218,119,86,0.08)" stroke="rgba(218,119,86,0.15)" stroke-width="1"/>
+                <rect x="25" y="16" width="70" height="20" rx="4" fill="rgba(218,119,86,0.06)" stroke="rgba(218,119,86,0.12)" stroke-width="1"/>
+                <rect x="30" y="-3" width="60" height="16" rx="4" fill="rgba(218,119,86,0.04)" stroke="rgba(218,119,86,0.1)" stroke-width="1"/>
+                <text x="60" y="101" text-anchor="middle" fill="rgba(218,119,86,0.6)" font-size="7" font-weight="700">STRUCTURE</text>
+                <text x="60" y="76" text-anchor="middle" fill="rgba(218,119,86,0.5)" font-size="7" font-weight="700">RANGE</text>
+                <text x="60" y="53" text-anchor="middle" fill="rgba(218,119,86,0.5)" font-size="7" font-weight="700">CORE STABILITY</text>
+                <text x="60" y="30" text-anchor="middle" fill="rgba(218,119,86,0.4)" font-size="7" font-weight="700">ENGINE</text>
+                <text x="60" y="9" text-anchor="middle" fill="rgba(218,119,86,0.35)" font-size="6" font-weight="700">ENERGY</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom label -->
+        <div style="text-align: center; margin-top: 24px; opacity: 0.5;">
+          <span style="font-size: 11px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase;">Select any layer to explore</span>
+        </div>
+      </div>
+
+      <!-- Governing Principles — Cinematic -->
+      <div style="margin-top: 100px;">
+        <div class="section-header fade-up" style="margin-bottom: 48px;">
+          <div class="section-label">Governing Principles</div>
+          <h2 class="section-title" style="font-size: 36px;">The Science Behind Every Decision</h2>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; border-radius: var(--radius); overflow: hidden;" class="fade-up">
+          <div style="background: linear-gradient(180deg, rgba(218,119,86,0.06), var(--surface)); padding: 40px 28px; border-top: 2px solid var(--accent); transition: all 0.4s;" onmouseover="this.style.background='linear-gradient(180deg, rgba(218,119,86,0.12), var(--surface))'" onmouseout="this.style.background='linear-gradient(180deg, rgba(218,119,86,0.06), var(--surface))'">
+            <div style="font-size: 48px; font-weight: 900; color: rgba(218,119,86,0.15); letter-spacing: -3px; margin-bottom: 8px;">01</div>
+            <h3 style="color: var(--accent); font-size: 17px; font-weight: 800; margin-bottom: 10px;">"If You Can't, You Won't"</h3>
+            <p style="font-size: 14px; color: var(--text2); line-height: 1.65;">Hardware limitations prevent movement solutions. If the range, strength, or structure isn't there — the movement simply cannot happen.</p>
+          </div>
+          <div style="background: linear-gradient(180deg, rgba(74,144,217,0.06), var(--surface)); padding: 40px 28px; border-top: 2px solid var(--blue); transition: all 0.4s;" onmouseover="this.style.background='linear-gradient(180deg, rgba(74,144,217,0.12), var(--surface))'" onmouseout="this.style.background='linear-gradient(180deg, rgba(74,144,217,0.06), var(--surface))'">
+            <div style="font-size: 48px; font-weight: 900; color: rgba(74,144,217,0.15); letter-spacing: -3px; margin-bottom: 8px;">02</div>
+            <h3 style="color: var(--blue); font-size: 17px; font-weight: 800; margin-bottom: 10px;">"Just Because You Can, Doesn't Mean You Will"</h3>
+            <p style="font-size: 14px; color: var(--text2); line-height: 1.65;">Having the physical capacity doesn't guarantee the nervous system will use it. Software limitations prevent expression of existing capability.</p>
+          </div>
+          <div style="background: linear-gradient(180deg, rgba(45,212,191,0.06), var(--surface)); padding: 40px 28px; border-top: 2px solid var(--teal); transition: all 0.4s;" onmouseover="this.style.background='linear-gradient(180deg, rgba(45,212,191,0.12), var(--surface))'" onmouseout="this.style.background='linear-gradient(180deg, rgba(45,212,191,0.06), var(--surface))'">
+            <div style="font-size: 48px; font-weight: 900; color: rgba(45,212,191,0.15); letter-spacing: -3px; margin-bottom: 8px;">03</div>
+            <h3 style="color: var(--teal); font-size: 17px; font-weight: 800; margin-bottom: 10px;">"It's Not the Parts, But How They Work Together"</h3>
+            <p style="font-size: 14px; color: var(--text2); line-height: 1.65;">Integration and coordination are the bridge. The magic is in how 12 components synchronize under competitive demands.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</section>
+
+<!-- ═══ TECHNOLOGY & MEASUREMENT DEEP DIVE ═══ -->
+<section class="section" style="padding-top: 20px;">
+  <div class="container">
+    <!-- Measurement Technology Showcase -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 64px;" class="fade-up tech-grid">
+
+      <!-- Left: Technology Stack -->
+      <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 40px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -80px; right: -80px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(74,144,217,0.08), transparent); pointer-events: none;"></div>
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 16px;">Measurement Technology</div>
+        <h3 style="font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px;">Precision at Every Layer</h3>
+        <p style="font-size: 15px; color: var(--text2); line-height: 1.7; margin-bottom: 28px;">We don't guess. We capture movement data using the same technology trusted by professional sports organizations — then map it against our five-layer architecture to reveal what matters most.</p>
+
+        <!-- Tech Items -->
+        <div style="display: grid; gap: 12px;" id="techStack">
+          <div class="tech-item" style="display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: rgba(74,144,217,0.06); border: 1px solid rgba(74,144,217,0.12); border-radius: 12px; transition: all 0.3s; cursor: default;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(74,144,217,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 18v3M8 21h8"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Force Plates</div>
+              <div style="font-size: 12px; color: var(--text3);">Ground reaction forces, rate of force development, asymmetry detection, jump profiling</div>
+            </div>
+          </div>
+          <div class="tech-item" style="display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.12); border-radius: 12px; transition: all 0.3s; cursor: default;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(139,92,246,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Computer Vision & Motion Capture</div>
+              <div style="font-size: 12px; color: var(--text3);">Joint angle tracking, movement quality scoring, compensation detection in real time</div>
+            </div>
+          </div>
+          <div class="tech-item" style="display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: rgba(45,212,191,0.06); border: 1px solid rgba(45,212,191,0.12); border-radius: 12px; transition: all 0.3s; cursor: default;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(45,212,191,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Speed & Velocity Testing</div>
+              <div style="font-size: 12px; color: var(--text3);">Sprint profiling, acceleration curves, top-speed mechanics, deceleration efficiency</div>
+            </div>
+          </div>
+          <div class="tech-item" style="display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: rgba(218,119,86,0.06); border: 1px solid rgba(218,119,86,0.12); border-radius: 12px; transition: all 0.3s; cursor: default;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(218,119,86,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 700;">Movement Quality Assessment</div>
+              <div style="font-size: 12px; color: var(--text3);">7 foundation patterns + 8 speed skills scored for quality, control, and compensation</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: What We Measure -->
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+
+        <!-- CSQ Showcase — Featured Card -->
+        <div style="background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(74,144,217,0.04)); border: 1px solid rgba(139,92,246,0.2); border-radius: var(--radius); padding: 32px; position: relative; overflow: hidden;">
+          <div style="position: absolute; top: -80px; right: -80px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(139,92,246,0.1), transparent); pointer-events: none;"></div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--purple);">Core Stability Qualities</div>
+            <div style="padding: 3px 10px; border-radius: 10px; background: rgba(139,92,246,0.15); font-size: 10px; font-weight: 700; color: var(--purple);">SIGNATURE</div>
+          </div>
+          <h3 style="font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 10px;">18 CSQ × 5 Joint Systems × 4 Demands</h3>
+          <p style="font-size: 14px; color: var(--text2); line-height: 1.65; margin-bottom: 20px;">Our most granular measurement. 18 Core Stability Qualities analyzed across 5 joint systems — Hip, Knee, Ankle & Foot, Shoulder, and Trunk — under 4 demand types to serve all 4 purposes simultaneously.</p>
+
+          <!-- 5 Joint Systems -->
+          <div style="display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;">
+            <div style="padding: 6px 12px; border-radius: 8px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.15); font-size: 11px; font-weight: 600; color: var(--purple);">Hip</div>
+            <div style="padding: 6px 12px; border-radius: 8px; background: rgba(74,144,217,0.1); border: 1px solid rgba(74,144,217,0.15); font-size: 11px; font-weight: 600; color: var(--blue);">Knee</div>
+            <div style="padding: 6px 12px; border-radius: 8px; background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.15); font-size: 11px; font-weight: 600; color: var(--teal);">Ankle & Foot</div>
+            <div style="padding: 6px 12px; border-radius: 8px; background: rgba(218,119,86,0.1); border: 1px solid rgba(218,119,86,0.15); font-size: 11px; font-weight: 600; color: var(--accent);">Shoulder</div>
+            <div style="padding: 6px 12px; border-radius: 8px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.15); font-size: 11px; font-weight: 600; color: var(--gold);">Trunk</div>
+          </div>
+
+          <!-- 4 Demand Types -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+            <div style="text-align: center; padding: 10px 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px;">
+              <div style="font-size: 14px; font-weight: 800; color: var(--text);">ML</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px; line-height: 1.3;">Mechanical<br>Load</div>
+            </div>
+            <div style="text-align: center; padding: 10px 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px;">
+              <div style="font-size: 14px; font-weight: 800; color: var(--text);">MC</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px; line-height: 1.3;">Mechanical<br>Complexity</div>
+            </div>
+            <div style="text-align: center; padding: 10px 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px;">
+              <div style="font-size: 14px; font-weight: 800; color: var(--text);">VE</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px; line-height: 1.3;">Velocity-<br>Elasticity</div>
+            </div>
+            <div style="text-align: center; padding: 10px 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px;">
+              <div style="font-size: 14px; font-weight: 800; color: var(--text);">CPL</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px; line-height: 1.3;">Cognitive-<br>Perceptual</div>
+            </div>
+          </div>
+          <div style="margin-top: 14px; padding: 10px 14px; background: rgba(139,92,246,0.06); border-radius: 10px; border: 1px solid rgba(139,92,246,0.1);">
+            <div style="font-size: 11px; color: var(--text2); line-height: 1.5;">→ Every CSQ is evaluated under each demand type to reveal <strong style="color: var(--text);">where stability breaks</strong> and <strong style="color: var(--text);">why compensation occurs</strong> — serving Performance, Prevention, Return, and Readiness simultaneously.</div>
+          </div>
+        </div>
+
+        <!-- Engine Qualities Card -->
+        <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 28px; position: relative; overflow: hidden;">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px;">Six Engine Qualities</div>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;" id="engineGrid">
+            <div style="text-align: center; padding: 12px 4px; background: rgba(218,119,86,0.06); border: 1px solid rgba(218,119,86,0.12); border-radius: 10px;">
+              <div style="font-size: 18px; font-weight: 800; color: var(--accent);">MS</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px;">Max Str</div>
+            </div>
+            <div style="text-align: center; padding: 12px 4px; background: rgba(74,144,217,0.06); border: 1px solid rgba(74,144,217,0.12); border-radius: 10px;">
+              <div style="font-size: 18px; font-weight: 800; color: var(--blue);">PW</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px;">Power</div>
+            </div>
+            <div style="text-align: center; padding: 12px 4px; background: rgba(45,212,191,0.06); border: 1px solid rgba(45,212,191,0.12); border-radius: 10px;">
+              <div style="font-size: 18px; font-weight: 800; color: var(--teal);">SP</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px;">Speed</div>
+            </div>
+            <div style="text-align: center; padding: 12px 4px; background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.12); border-radius: 10px;">
+              <div style="font-size: 18px; font-weight: 800; color: var(--purple);">EC</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px;">Eccentric</div>
+            </div>
+            <div style="text-align: center; padding: 12px 4px; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.12); border-radius: 10px;">
+              <div style="font-size: 18px; font-weight: 800; color: var(--gold);">EL</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px;">Elastic</div>
+            </div>
+            <div style="text-align: center; padding: 12px 4px; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.12); border-radius: 10px;">
+              <div style="font-size: 18px; font-weight: 800; color: var(--red);">RX</div>
+              <div style="font-size: 8px; color: var(--text3); margin-top: 2px;">Reactive</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Normative Data Card -->
+        <div style="background: linear-gradient(135deg, rgba(218,119,86,0.08), rgba(139,92,246,0.05)); border: 1px solid rgba(218,119,86,0.15); border-radius: var(--radius); padding: 32px; position: relative; overflow: hidden;">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">Global Normative Data</div>
+          <h3 style="font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 10px;">We Know Where Your Athlete Stands</h3>
+          <p style="font-size: 14px; color: var(--text2); line-height: 1.65; margin-bottom: 20px;">Every score is calibrated against normative data that spans the full developmental spectrum — from recreational youth athletes to elite professionals across the globe. Your athlete isn't scored in a vacuum. They're mapped against the world.</p>
+          <!-- Performance Level Spectrum -->
+          <div style="position: relative; height: 48px; background: var(--surface); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="position: absolute; inset: 0; display: flex;">
+              <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(245,158,11,0.1); border-right: 1px solid rgba(255,255,255,0.06);">
+                <span style="font-size: 10px; font-weight: 700; color: var(--gold); letter-spacing: 0.5px;">DEV I</span>
+              </div>
+              <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(74,144,217,0.1); border-right: 1px solid rgba(255,255,255,0.06);">
+                <span style="font-size: 10px; font-weight: 700; color: var(--blue); letter-spacing: 0.5px;">DEV II</span>
+              </div>
+              <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(139,92,246,0.1); border-right: 1px solid rgba(255,255,255,0.06);">
+                <span style="font-size: 10px; font-weight: 700; color: var(--purple); letter-spacing: 0.5px;">HIGH PERF</span>
+              </div>
+              <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(218,119,86,0.15);">
+                <span style="font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.5px;">ELITE</span>
+              </div>
+            </div>
+            <!-- Animated marker -->
+            <div id="plMarker" style="position: absolute; top: 4px; left: 55%; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(218,119,86,0.5); transition: left 2s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 2;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--text3);">
+            <span>Recreational / Youth</span>
+            <span>Club Level</span>
+            <span>Provincial / Collegiate</span>
+            <span>National / Pro</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive: Simulated Profile Scan -->
+    <div class="fade-up" style="background: var(--surface); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 48px; position: relative; overflow: hidden;">
+      <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(218,119,86,0.05), transparent 60%); pointer-events: none;"></div>
+      <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; align-items: center; position: relative; z-index: 1;">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">Interactive Profile</div>
+          <h3 style="font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px;">Try the profile explorer</h3>
+          <p style="font-size: 15px; color: var(--text2); line-height: 1.7; margin-bottom: 24px;">Each bar is a movement component: quality and output update together so families can see <em>where</em> training will focus—before the next block of work is planned.</p>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button onclick="loadProfile('development')" style="padding: 8px 18px; border-radius: 20px; border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); color: var(--gold); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(245,158,11,0.15)'" onmouseout="this.style.background='rgba(245,158,11,0.08)'">Dev I Athlete</button>
+            <button onclick="loadProfile('club')" style="padding: 8px 18px; border-radius: 20px; border: 1px solid rgba(74,144,217,0.3); background: rgba(74,144,217,0.08); color: var(--blue); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(74,144,217,0.15)'" onmouseout="this.style.background='rgba(74,144,217,0.08)'">Club Athlete</button>
+            <button onclick="loadProfile('elite')" style="padding: 8px 18px; border-radius: 20px; border: 1px solid rgba(218,119,86,0.3); background: rgba(218,119,86,0.08); color: var(--accent); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(218,119,86,0.15)'" onmouseout="this.style.background='rgba(218,119,86,0.08)'">Elite Athlete</button>
+          </div>
+        </div>
+        <!-- Animated Profile Visualization -->
+        <div>
+          <div id="profileScan" style="display: grid; gap: 7px;">
+            <!-- Built by JS -->
+          </div>
+          <div id="profileDiagnosis" style="margin-top: 16px; padding: 14px 18px; background: rgba(52,199,89,0.06); border: 1px solid rgba(52,199,89,0.15); border-radius: 12px; transition: all 0.5s;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 4px;" id="diagLabel">Diagnosis: Target Profile</div>
+            <div style="font-size: 12px; color: var(--text3);" id="diagDesc">High quality with strong output. Ready for progressive demand layering.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Depth Counter -->
+    <div class="depth-counter fade-up" style="margin-top: 64px;">
+      <div class="depth-item">
+        <div class="depth-num" data-count="5">0</div>
+        <div class="depth-label">System Layers</div>
+      </div>
+      <div class="depth-item">
+        <div class="depth-num" data-count="12">0</div>
+        <div class="depth-label">Components</div>
+      </div>
+      <div class="depth-item">
+        <div class="depth-num" data-count="8">0</div>
+        <div class="depth-label">Coordination Functions</div>
+      </div>
+      <div class="depth-item">
+        <div class="depth-num" data-count="6">0</div>
+        <div class="depth-label">Engine Qualities</div>
+      </div>
+      <div class="depth-item">
+        <div class="depth-num" data-count="18">0</div>
+        <div class="depth-label">Core Stability Qualities</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<div class="glow-line"></div>
+
+<!-- ═══ VIDEO DEEP DIVE ═══ -->
+<section class="section" id="video-deep-dive">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Deep Dive Into the System</div>
+      <h2 class="section-title" style="font-size: 36px;">Video library (coming next)</h2>
+      <p class="section-subtitle">Reserve these slots for your three hero videos—each one maps to how families and athletes experience FITS.</p>
+    </div>
+    <div class="purposes-grid fade-up" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="video-placeholder" style="padding: 48px 24px;">
+        <div class="play-btn" style="width: 56px; height: 56px; margin-bottom: 16px;">
+          <svg viewBox="0 0 24 24" style="width: 22px; height: 22px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <h4 style="font-size: 16px;">The 5 Layers Explained</h4>
+        <p style="font-size: 12px;">How hardware builds to game speed</p>
+      </div>
+      <div class="video-placeholder" style="padding: 48px 24px;">
+        <div class="play-btn" style="width: 56px; height: 56px; margin-bottom: 16px;">
+          <svg viewBox="0 0 24 24" style="width: 22px; height: 22px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <h4 style="font-size: 16px;">Athlete Profiling in Action</h4>
+        <p style="font-size: 12px;">Watch a real assessment walkthrough</p>
+      </div>
+      <div class="video-placeholder" style="padding: 48px 24px;">
+        <div class="play-btn" style="width: 56px; height: 56px; margin-bottom: 16px;">
+          <svg viewBox="0 0 24 24" style="width: 22px; height: 22px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <h4 style="font-size: 16px;">Profile → Program</h4>
+        <p style="font-size: 12px;">From scores to individualized training</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ═══ MY DEVELOPMENT ═══ -->
+<section class="section" id="my-development">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">MY Development</div>
+      <h2 class="section-title">Principles in action</h2>
+      <p class="section-subtitle">Three short stories you can replace with real club names and metrics. They show how C.VADS turns profile data into a season-long plan.</p>
+    </div>
+    <div class="case-grid fade-up">
+      <div class="case-card">
+        <div class="case-label">Case 01</div>
+        <h4>Foundation → Flight</h4>
+        <p>A middle with big jump numbers but harsh landings. We held volume, rebuilt landing strategy, then reopened approach work—vertical climbed once quality stuck.</p>
+      </div>
+      <div class="case-card">
+        <div class="case-label">Case 02</div>
+        <h4>ARM recovery</h4>
+        <p>Outside hitter returning from shoulder irritation. Arm care blocks paired with swing volume caps; clearance criteria shared with parents each week.</p>
+      </div>
+      <div class="case-card">
+        <div class="case-label">Case 03</div>
+        <h4>Speed transformation</h4>
+        <p>Libero with clean patterns but flat acceleration. Added elastic and lateral problem-solving—transfer showed up in first-step metrics and eye-test coverage.</p>
+      </div>
+    </div>
+    <div class="my-stats fade-up">
+      <div class="my-stat">
+        <div class="big" data-count="94">0</div>
+        <div class="small">Illustrative % injury reduction vs. prior season cohort — replace with your stat</div>
+      </div>
+      <div class="my-stat">
+        <div class="big" style="-webkit-text-fill-color: unset; color: transparent; background: linear-gradient(135deg, var(--accent), var(--gold)); -webkit-background-clip: text; background-clip: text;">3.2″</div>
+        <div class="small">Illustrative avg. approach vertical gain after foundation phase—replace with your data</div>
+      </div>
+      <div class="my-stat">
+        <div class="big" data-count="12">0</div>
+        <div class="small">Movement components tracked in profile</div>
+      </div>
+      <div class="my-stat">
+        <div class="big" data-count="4">0</div>
+        <div class="small">Volleyball pathways in C.VADS</div>
+      </div>
+    </div>
+    <div style="margin-top: 40px; text-align: center;" class="fade-up">
+      <div class="video-placeholder" style="padding: 56px 32px;">
+        <div class="play-btn" style="width: 64px; height: 64px;">
+          <svg viewBox="0 0 24 24" style="width: 26px; height: 26px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <h4>Optional: MY Development reel</h4>
+        <p>Slot for a second video—culture, facility, or athlete stories.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SOCIAL PROOF ═══ -->
+<section class="section" id="proof">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Proven Results</div>
+      <h2 class="section-title">We've Produced the Best.</h2>
+      <p class="section-subtitle">This system is the culmination of years developing elite athletes. And now it's a significant level up from anything we've ever built.</p>
+    </div>
+    <div class="testimonials fade-up">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Finally a system that speaks to parents—we can see <em>why</em> training changes when our daughter’s profile changes."</blockquote>
+        <div class="author">Parent — Club Volleyball</div>
+        <div class="role">U16 Outside Hitter family</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The five-layer model is the language our staff was missing. It connects the weight room to what we watch on the court."</blockquote>
+        <div class="author">Head Coach</div>
+        <div class="role">Provincial youth program</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Twelve components sounded like a lot until we saw the profile—now every progression has a reason."</blockquote>
+        <div class="author">S&amp;C lead</div>
+        <div class="role">University volleyball</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Landing work wasn’t ‘extra’—it unlocked our middles’ second jump. Parents noticed before we even showed them the numbers."</blockquote>
+        <div class="author">Club director</div>
+        <div class="role">National-level club</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Arm care finally lives in the same system as power development. Our medical staff and coaches share one roadmap."</blockquote>
+        <div class="author">Athletic therapist</div>
+        <div class="role">Volleyball academy</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Speed sessions look like volleyball—coverage, transitions, repeat jumps—not random sprints."</blockquote>
+        <div class="author">Parent &amp; former college player</div>
+        <div class="role">U18 libero family</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ═══ 4 SERVICES ═══ -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">The Foundation</div>
+      <h2 class="section-title">4 Services. One System.</h2>
+      <p class="section-subtitle">Every session, test, and progression serves the same architecture—so parents see the thread from assessment to the court. Tap any card for a short explainer.</p>
+    </div>
+    <div class="purposes-grid">
+      <div class="purpose-card fade-up stagger-1">
+        <div class="glow" style="background: radial-gradient(circle, rgba(74,144,217,0.15), transparent);"></div>
+        <div class="purpose-icon" style="background: rgba(74,144,217,0.12); color: var(--blue);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>Sport Performance</h3>
+        <p>Train the jump, arm swing, and transitions that show up in matches—not generic gym numbers. Solutions are built for volleyball demands.</p>
+        <span class="purpose-tag" style="background: rgba(74,144,217,0.1); color: var(--blue);">Power · Efficiency · Adaptability</span>
+        <button type="button" class="learn-more-btn" data-modal="svc-performance" style="margin-top:14px;">Learn more →</button>
+      </div>
+      <div class="purpose-card fade-up stagger-2">
+        <div class="glow" style="background: radial-gradient(circle, rgba(52,199,89,0.15), transparent);"></div>
+        <div class="purpose-icon" style="background: rgba(52,199,89,0.12); color: var(--green);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Athletic Development &amp; Injury Prevention</h3>
+        <p>Long-term development and staying healthy go together: we build capacity while tracking signs—landing quality, shoulder load, fatigue—before pain sidelines a season. Families get plain-language context, not jargon.</p>
+        <span class="purpose-tag" style="background: rgba(52,199,89,0.1); color: var(--green);">Development · Signs · Prevention</span>
+        <button type="button" class="learn-more-btn" data-modal="svc-prevention" style="margin-top:14px;">Learn more →</button>
+      </div>
+      <div class="purpose-card fade-up stagger-3">
+        <div class="glow" style="background: radial-gradient(circle, rgba(139,92,246,0.15), transparent);"></div>
+        <div class="purpose-icon" style="background: rgba(139,92,246,0.12); color: var(--purple);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+        </div>
+        <h3>Return to Performance</h3>
+        <p>Coming back from injury follows the same five layers—nothing is skipped. Progress is visible at each step for athletes and parents.</p>
+        <span class="purpose-tag" style="background: rgba(139,92,246,0.1); color: var(--purple);">Layered · Systematic · Complete</span>
+        <button type="button" class="learn-more-btn" data-modal="svc-return" style="margin-top:14px;">Learn more →</button>
+      </div>
+      <div class="purpose-card fade-up stagger-4">
+        <div class="glow" style="background: radial-gradient(circle, rgba(245,158,11,0.15), transparent);"></div>
+        <div class="purpose-icon" style="background: rgba(245,158,11,0.12); color: var(--gold);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>Training Readiness</h3>
+        <p>Load, recovery, and quality work together—so hard weeks stay productive without breaking movement.</p>
+        <span class="purpose-tag" style="background: rgba(245,158,11,0.1); color: var(--gold);">Monitor · Adapt · Protect</span>
+        <button type="button" class="learn-more-btn" data-modal="svc-readiness" style="margin-top:14px;">Learn more →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta-section" id="contact">
+  <div class="cta-content fade-up">
+    <h2>Ready when you are</h2>
+    <p>Book a conversation or assessment—we’ll walk families through the profile, the four pathways, and what development looks like across a season.</p>
+    <div class="hero-cta-group">
+      <a href="#" class="btn-primary" style="font-size: 17px; padding: 16px 40px;">
+        Book an Assessment
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#" class="btn-secondary" style="font-size: 17px; padding: 16px 40px;">Contact Us</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 FITS Volleyball ADS — Complete Volleyball Athletic Development System.</p>
+</footer>
+
+<div class="modal-overlay" id="infoModal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="layer-video-overlay" id="layerVideoModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="layerVideoTitle">
+  <div class="layer-video-box" id="layerVideoBox">
+    <div class="layer-video-head">
+      <h3 id="layerVideoTitle">Layer video</h3>
+      <button type="button" class="layer-video-close" id="layerVideoClose" aria-label="Close video">&times;</button>
+    </div>
+    <div class="layer-video-frame-wrap">
+      <iframe id="layerVideoFrame" title="Layer explainer video" style="display:none" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+      <div class="layer-video-placeholder" id="layerVideoPlaceholder">
+        <div class="ph-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <p id="layerVideoPhText">Set <code>data-video-src</code> on this layer to a hosted embed URL (YouTube, Vimeo, or MP4 page). Until then, this preview shows where the video will play.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════ -->
+<script>
+// ── Particles ──
+(function initParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+    container.appendChild(p);
+  }
+})();
+
+// ── Scroll Animations ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ── Number Counter ──
+function animateCountersIn(root) {
+  root.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count, 10);
+    const duration = 1500;
+    const start = performance.now();
+    function update(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased);
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+function animateCounters() {
+  const hero = document.querySelector('.hero-stats');
+  const depth = document.querySelector('.depth-counter');
+  if (hero) animateCountersIn(hero);
+  if (depth) animateCountersIn(depth);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounters();
+      counterObserver.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+
+const firstCounter = document.querySelector('.hero-stats [data-count]');
+if (firstCounter) counterObserver.observe(firstCounter.closest('.hero-stats'));
+
+const myStatsBlock = document.querySelector('.my-stats');
+if (myStatsBlock) {
+  const myObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCountersIn(myStatsBlock);
+        myObs.disconnect();
+      }
+    });
+  }, { threshold: 0.25 });
+  myObs.observe(myStatsBlock);
+}
+
+// ── Architecture Layer Activation + video pop-out ──
+function activateLayer(el) {
+  const wasActive = el.classList.contains('active');
+  document.querySelectorAll('.arch-layer').forEach(l => l.classList.remove('active'));
+  if (!wasActive) el.classList.add('active');
+}
+function onArchLayerClick(el) {
+  activateLayer(el);
+  openLayerVideoModal(el);
+}
+function openLayerVideoModal(layerEl) {
+  const modal = document.getElementById('layerVideoModal');
+  const iframe = document.getElementById('layerVideoFrame');
+  const placeholder = document.getElementById('layerVideoPlaceholder');
+  const titleEl = document.getElementById('layerVideoTitle');
+  if (!modal || !iframe || !placeholder || !titleEl) return;
+
+  const title = layerEl.querySelector('.arch-title')?.textContent?.trim() || 'Layer';
+  const badge = layerEl.querySelector('.arch-badge')?.textContent?.trim() || '';
+  titleEl.textContent = badge ? badge + ' — ' + title : title;
+
+  let src = (layerEl.getAttribute('data-video-src') || '').trim();
+  if (src) {
+    if (src.includes('youtube.com/watch?v=')) {
+      const id = src.match(/[?&]v=([^&]+)/);
+      if (id) src = 'https://www.youtube.com/embed/' + id[1];
+    }
+    iframe.src = src;
+    iframe.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    iframe.removeAttribute('src');
+    iframe.style.display = 'none';
+    placeholder.style.display = 'flex';
+  }
+
+  const box = document.getElementById('layerVideoBox');
+  if (box) {
+    box.classList.remove('layer-video-pump');
+    void box.offsetWidth;
+    box.classList.add('layer-video-pump');
+  }
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+function closeLayerVideoModal() {
+  const modal = document.getElementById('layerVideoModal');
+  const iframe = document.getElementById('layerVideoFrame');
+  const box = document.getElementById('layerVideoBox');
+  if (!modal) return;
+  if (box) box.classList.remove('layer-video-pump');
+  if (iframe) {
+    iframe.src = '';
+    iframe.style.display = 'none';
+  }
+  const placeholder = document.getElementById('layerVideoPlaceholder');
+  if (placeholder) placeholder.style.display = 'flex';
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+(function initLayerVideoModal() {
+  const modal = document.getElementById('layerVideoModal');
+  const closeBtn = document.getElementById('layerVideoClose');
+  if (!modal) return;
+  if (closeBtn) closeBtn.addEventListener('click', closeLayerVideoModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeLayerVideoModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (modal.classList.contains('open')) {
+      e.preventDefault();
+      closeLayerVideoModal();
+    }
+  });
+})();
+// Legacy support
+function toggleLayer(el) {
+  const wasExpanded = el.classList.contains('expanded');
+  document.querySelectorAll('.ms-layer').forEach(l => l.classList.remove('expanded'));
+  if (!wasExpanded) el.classList.add('expanded');
+}
+
+// ── Architecture Canvas — Particle Network ──
+(function initArchCanvas() {
+  const canvas = document.getElementById('archCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [], mouse = { x: -1000, y: -1000 };
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    w = canvas.width = rect.width;
+    h = canvas.height = rect.height;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Create particles
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * 2000,
+      y: Math.random() * 3000,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: 1.5 + Math.random() * 2,
+      hue: [218, 139, 74, 45, 239][Math.floor(Math.random() * 5)]
+    });
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+
+      // Draw particle
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.hue}, ${p.hue === 218 ? 119 : p.hue === 139 ? 92 : p.hue === 74 ? 144 : p.hue === 45 ? 212 : 68}, ${p.hue === 218 ? 86 : p.hue === 139 ? 246 : p.hue === 74 ? 217 : p.hue === 45 ? 191 : 68}, 0.4)`;
+      ctx.fill();
+    });
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(218, 119, 86, ${0.06 * (1 - dist / 150)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+
+      // Mouse interaction
+      const mdx = particles[i].x - mouse.x;
+      const mdy = particles[i].y - mouse.y;
+      const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+      if (mdist < 200) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.strokeStyle = `rgba(218, 119, 86, ${0.12 * (1 - mdist / 200)})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── App Mockup: Profile Bars ──
+(function initProfileBars() {
+  const container = document.getElementById('profileBars');
+  if (!container) return;
+  const bars = [
+    { label: 'Range', value: 85, color: 'var(--accent)' },
+    { label: 'Core', value: 72, color: 'var(--accent2)' },
+    { label: 'Engine', value: 68, color: 'var(--blue)' },
+    { label: 'Impulse', value: 78, color: 'var(--teal)' },
+    { label: 'Elastic', value: 62, color: 'var(--purple)' },
+    { label: 'Absorb', value: 74, color: 'var(--green)' },
+    { label: 'Rotation', value: 70, color: 'var(--gold)' },
+    { label: 'Speed', value: 65, color: 'var(--red)' },
+  ];
+  bars.forEach(b => {
+    const row = document.createElement('div');
+    row.className = 'screen-bar';
+    row.innerHTML = `
+      <span class="bar-label">${b.label}</span>
+      <div class="bar-track"><div class="bar-fill" style="width: 0%; background: ${b.color};"></div></div>
+      <span class="bar-val" style="color: ${b.color};">${b.value}%</span>
+    `;
+    container.appendChild(row);
+  });
+
+  // Animate on scroll
+  const phoneObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          container.querySelectorAll('.bar-fill').forEach((fill, i) => {
+            setTimeout(() => { fill.style.width = bars[i].value + '%'; }, i * 100);
+          });
+        }, 400);
+        phoneObs.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  phoneObs.observe(document.getElementById('phone1'));
+})();
+
+// ── App Mockup: Session Blocks ──
+(function initSession() {
+  const container = document.getElementById('sessionBlocks');
+  if (!container) return;
+  const blocks = [
+    { name: 'Foundation Complex', type: 'FDC', time: '12 min', color: 'var(--accent)', items: 'Squat · Hinge · Push-Up' },
+    { name: 'Engine Block', type: 'ENG', time: '15 min', color: 'var(--blue)', items: 'Max Strength · Power' },
+    { name: 'Speed Skills', type: 'SPD', time: '10 min', color: 'var(--teal)', items: 'Landing · Plyos · Accel' },
+    { name: 'ESD Finisher', type: 'ESD', time: '8 min', color: 'var(--gold)', items: 'Anaerobic Capacity' },
+  ];
+  blocks.forEach(b => {
+    const el = document.createElement('div');
+    el.style.cssText = `background: var(--surface2); border-radius: 12px; padding: 12px; margin-bottom: 8px; border-left: 3px solid ${b.color};`;
+    el.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span style="font-size: 12px; font-weight: 700; color: var(--text);">${b.name}</span>
+        <span style="font-size: 9px; padding: 2px 8px; background: rgba(255,255,255,0.06); border-radius: 8px; color: var(--text3);">${b.time}</span>
+      </div>
+      <div style="font-size: 10px; color: var(--text3);">${b.items}</div>
+    `;
+    container.appendChild(el);
+  });
+})();
+
+// ── App Mockup: Feedback View ──
+(function initFeedback() {
+  const container = document.getElementById('feedbackView');
+  if (!container) return;
+
+  // Quality trend mini chart
+  const chartHtml = `
+    <div style="background: var(--surface2); border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+      <div style="font-size: 11px; font-weight: 700; margin-bottom: 8px; color: var(--text);">Quality Trend — 8 Weeks</div>
+      <svg viewBox="0 0 240 60" style="width: 100%; height: auto;">
+        <defs>
+          <linearGradient id="qg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(218,119,86,0.3)"/>
+            <stop offset="100%" stop-color="rgba(218,119,86,0)"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,45 L30,40 L60,38 L90,32 L120,28 L150,22 L180,18 L210,12 L240,8 L240,60 L0,60Z" fill="url(#qg)"/>
+        <polyline points="0,45 30,40 60,38 90,32 120,28 150,22 180,18 210,12 240,8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="240" cy="8" r="4" fill="var(--accent)"/>
+      </svg>
+      <div style="display: flex; justify-content: space-between; font-size: 9px; color: var(--text3); margin-top: 4px;">
+        <span>Week 1</span><span>Week 8</span>
+      </div>
+    </div>
+    <div style="background: var(--surface2); border-radius: 12px; padding: 14px; margin-bottom: 10px;">
+      <div style="font-size: 11px; font-weight: 700; margin-bottom: 8px; color: var(--text);">Active Feedback Loop</div>
+      <div style="font-size: 10px; color: var(--text2); line-height: 1.5;">
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+          <div style="width: 18px; height: 18px; border-radius: 50%; background: rgba(52,199,89,0.15); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0;">✓</div>
+          Squat quality: MOQ 2 → 3
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+          <div style="width: 18px; height: 18px; border-radius: 50%; background: rgba(245,158,11,0.15); color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0;">!</div>
+          Knee valgus detected — CMD mild (−1)
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <div style="width: 18px; height: 18px; border-radius: 50%; background: rgba(74,144,217,0.15); color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0;">↑</div>
+          Engine PL: 2 → 3 (Max Strength)
+        </div>
+      </div>
+    </div>
+    <div style="background: var(--surface2); border-radius: 12px; padding: 14px;">
+      <div style="font-size: 11px; font-weight: 700; margin-bottom: 6px; color: var(--text);">Readiness Score</div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="font-size: 28px; font-weight: 800; color: var(--green);">87</div>
+        <div style="font-size: 10px; color: var(--text3); line-height: 1.4;">Sleep: 8.2h · Recovery: Good<br>Recommendation: Full Session</div>
+      </div>
+    </div>
+  `;
+  container.innerHTML = chartHtml;
+})();
+
+// ── Smooth scroll ──
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ── Nav scroll effect ──
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 50) {
+    nav.style.background = 'rgba(5,5,7,0.95)';
+  } else {
+    nav.style.background = 'rgba(5,5,7,0.85)';
+  }
+});
+
+// ── Interactive Profile Scanner ──
+const profileData = {
+  development: {
+    label: 'Development I — Youth Recreational',
+    components: [
+      { name: 'Range', quality: 1, pl: 1, color: '#DA7756' },
+      { name: 'Core Support', quality: 1, pl: 1, color: '#E8956E' },
+      { name: 'Engine', quality: 1, pl: 1, color: '#4A90D9' },
+      { name: 'Energy Systems', quality: 1, pl: 1, color: '#2DD4BF' },
+      { name: 'Position & Stability', quality: 1, pl: 1, color: '#8B5CF6' },
+      { name: 'Impulse', quality: 1, pl: 1, color: '#34C759' },
+      { name: 'Absorption', quality: 2, pl: 1, color: '#F59E0B' },
+      { name: 'Elastic', quality: 1, pl: 1, color: '#EF4444' },
+      { name: 'Foundation Mvts', quality: 1, pl: 1, color: '#DA7756' },
+      { name: 'Speed Skills', quality: 1, pl: 1, color: '#4A90D9' },
+    ],
+    diagnosis: { type: 'foundation', label: 'Diagnosis: Foundation Gap', desc: 'Both quality and output are underdeveloped. Build hardware and software together — highest ROI phase.', color: '#F59E0B', bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.15)' }
+  },
+  club: {
+    label: 'Development II — Club Competitive',
+    components: [
+      { name: 'Range', quality: 2, pl: 2, color: '#DA7756' },
+      { name: 'Core Support', quality: 2, pl: 2, color: '#E8956E' },
+      { name: 'Engine', quality: 1, pl: 3, color: '#4A90D9' },
+      { name: 'Energy Systems', quality: 2, pl: 2, color: '#2DD4BF' },
+      { name: 'Position & Stability', quality: 2, pl: 2, color: '#8B5CF6' },
+      { name: 'Impulse', quality: 1, pl: 3, color: '#34C759' },
+      { name: 'Absorption', quality: 1, pl: 3, color: '#F59E0B' },
+      { name: 'Elastic', quality: 2, pl: 2, color: '#EF4444' },
+      { name: 'Foundation Mvts', quality: 2, pl: 2, color: '#DA7756' },
+      { name: 'Speed Skills', quality: 1, pl: 3, color: '#4A90D9' },
+    ],
+    diagnosis: { type: 'hidden', label: 'Diagnosis: Hidden Risk Detected', desc: 'Engine output exceeds movement quality in 3 components. Producing through compensation — address quality before progressing load.', color: '#EF4444', bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.15)' }
+  },
+  elite: {
+    label: 'High Performance — Provincial / Collegiate',
+    components: [
+      { name: 'Range', quality: 3, pl: 3, color: '#DA7756' },
+      { name: 'Core Support', quality: 3, pl: 3, color: '#E8956E' },
+      { name: 'Engine', quality: 3, pl: 3, color: '#4A90D9' },
+      { name: 'Energy Systems', quality: 2, pl: 3, color: '#2DD4BF' },
+      { name: 'Position & Stability', quality: 3, pl: 3, color: '#8B5CF6' },
+      { name: 'Impulse', quality: 3, pl: 4, color: '#34C759' },
+      { name: 'Absorption', quality: 3, pl: 3, color: '#F59E0B' },
+      { name: 'Elastic', quality: 3, pl: 3, color: '#EF4444' },
+      { name: 'Foundation Mvts', quality: 3, pl: 3, color: '#DA7756' },
+      { name: 'Speed Skills', quality: 3, pl: 3, color: '#4A90D9' },
+    ],
+    diagnosis: { type: 'target', label: 'Diagnosis: Target Profile', desc: 'High quality with strong output across all components. Ready for advanced demand layering and sport-speed integration.', color: '#34C759', bg: 'rgba(52,199,89,0.06)', border: 'rgba(52,199,89,0.15)' }
+  }
+};
+
+function buildProfileScan(data) {
+  const container = document.getElementById('profileScan');
+  if (!container) return;
+  container.innerHTML = '';
+  data.components.forEach((comp, i) => {
+    const qWidth = (comp.quality / 3) * 100;
+    const plWidth = (comp.pl / 4) * 100;
+    const isRisk = comp.quality < 2 && comp.pl >= 3;
+    const row = document.createElement('div');
+    row.style.cssText = 'display: grid; grid-template-columns: 100px 1fr 1fr 30px; gap: 8px; align-items: center;';
+    row.innerHTML = `
+      <span style="font-size: 11px; font-weight: 600; color: var(--text2); text-align: right;">${comp.name}</span>
+      <div style="position: relative; height: 14px; background: rgba(255,255,255,0.04); border-radius: 7px; overflow: hidden;">
+        <div class="scan-bar" style="width: 0%; height: 100%; border-radius: 7px; background: ${comp.color}; transition: width 1s cubic-bezier(0.25,0.46,0.45,0.94); transition-delay: ${i * 80}ms;" data-target="${qWidth}"></div>
+        <span style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.7);">Q${comp.quality}</span>
+      </div>
+      <div style="position: relative; height: 14px; background: rgba(255,255,255,0.04); border-radius: 7px; overflow: hidden;">
+        <div class="scan-bar" style="width: 0%; height: 100%; border-radius: 7px; background: ${isRisk ? '#EF4444' : comp.color}; opacity: ${isRisk ? '1' : '0.5'}; transition: width 1s cubic-bezier(0.25,0.46,0.45,0.94); transition-delay: ${i * 80 + 100}ms;" data-target="${plWidth}"></div>
+        <span style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.7);">PL${comp.pl}</span>
+      </div>
+      <div style="text-align: center;">${isRisk ? '<span style="font-size: 12px; color: var(--red);" title="Hidden Risk: Quality below Performance Level">&#9888;</span>' : ''}</div>
+    `;
+    container.appendChild(row);
+  });
+  // Add column headers
+  const header = document.createElement('div');
+  header.style.cssText = 'display: grid; grid-template-columns: 100px 1fr 1fr 30px; gap: 8px; margin-bottom: 4px;';
+  header.innerHTML = `
+    <span></span>
+    <span style="font-size: 9px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; text-align: center;">Quality (1–3)</span>
+    <span style="font-size: 9px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; text-align: center;">Performance (1–4)</span>
+    <span></span>
+  `;
+  container.insertBefore(header, container.firstChild);
+
+  // Animate bars after a tick
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      container.querySelectorAll('.scan-bar').forEach(bar => {
+        bar.style.width = bar.dataset.target + '%';
+      });
+    }, 50);
+  });
+
+  // Update diagnosis
+  const diag = data.diagnosis;
+  const diagBox = document.getElementById('profileDiagnosis');
+  const diagLabel = document.getElementById('diagLabel');
+  const diagDesc = document.getElementById('diagDesc');
+  diagBox.style.background = diag.bg;
+  diagBox.style.borderColor = diag.border;
+  diagLabel.style.color = diag.color;
+  diagLabel.textContent = diag.label;
+  diagDesc.textContent = diag.desc;
+}
+
+function loadProfile(type) {
+  buildProfileScan(profileData[type]);
+  // Animate PL marker
+  const marker = document.getElementById('plMarker');
+  if (marker) {
+    const positions = { development: '8%', club: '30%', elite: '58%' };
+    marker.style.left = positions[type];
+  }
+}
+
+// Initialize with club athlete (the most interesting diagnostic)
+(function initProfileScan() {
+  const scanObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        loadProfile('club');
+        scanObs.disconnect();
+      }
+    });
+  }, { threshold: 0.2 });
+  const scanEl = document.getElementById('profileScan');
+  if (scanEl) scanObs.observe(scanEl);
+})();
+
+// ── Pathway tabs ──
+(function initPathwayTabs() {
+  const tabs = document.querySelectorAll('#pathwayTabs button');
+  if (!tabs.length) return;
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const id = btn.getAttribute('data-path');
+      document.querySelectorAll('.pathway-panel').forEach(p => {
+        p.classList.toggle('active', p.id === id);
+      });
+    });
+  });
+})();
+
+// ── Modal (services + C.VADS) ──
+const MODAL_COPY = {
+  'svc-performance': {
+    title: 'Sport performance',
+    html: '<p>Volleyball-specific power and expression: we connect gym work to approach, arm swing, and transition problems you actually face in matches—not abstract strength scores.</p>'
+  },
+  'svc-prevention': {
+    title: 'Athletic development & injury prevention',
+    html: '<p>This service pairs progressive athletic development with proactive monitoring: we watch for early signs in landing, shoulder loading, and fatigue before pain shows up—while still building the qualities that matter for volleyball.</p><p>Families get a clear story: what we saw, what we changed, and what improved.</p>'
+  },
+  'svc-return': {
+    title: 'Return to performance',
+    html: '<p>Return follows the same layers as development. Each phase has exit criteria so coaches, medical staff, and parents stay aligned.</p>'
+  },
+  'svc-readiness': {
+    title: 'Training readiness',
+    html: '<p>Readiness blends subjective check-ins with objective signals so hard weeks stay productive and fragile tissues stay protected.</p>'
+  },
+  'cvads-foundation': {
+    title: 'Foundation Development',
+    html: '<p>Builds joint integrity, trunk strategy, and movement literacy. Everything else—jump height, arm speed, coverage—stacks on this layer.</p><p><strong>Link-out:</strong> pair with your “What Makes Us Different” page for process and curriculum detail.</p>'
+  },
+  'cvads-flight': {
+    title: 'Flight School',
+    html: '<p>Approach timing, takeoff, and landing skills for repeatable jumps. Volume and intensity track with profile scores so athletes don’t out-train their control.</p>'
+  },
+  'cvads-arm': {
+    title: 'Arm Development System',
+    html: '<p>Shoulder health, swing mechanics, and rotational power progress together—from return-to-throw to full competition swings.</p>'
+  },
+  'cvads-speed': {
+    title: 'Speed Development',
+    html: '<p>Lateral movement, transition speed, and repeat explosiveness—trained as volleyball problems, not generic conditioning.</p>'
+  }
+};
+
+(function initModal() {
+  const overlay = document.getElementById('infoModal');
+  const titleEl = document.getElementById('modalTitle');
+  const bodyEl = document.getElementById('modalBody');
+  const closeBtn = document.getElementById('modalClose');
+  if (!overlay || !titleEl || !bodyEl) return;
+
+  function openModal(key) {
+    const data = MODAL_COPY[key];
+    if (!data) return;
+    titleEl.textContent = data.title;
+    bodyEl.innerHTML = data.html;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-modal]');
+    if (t) {
+      e.preventDefault();
+      openModal(t.getAttribute('data-modal'));
+    }
+  });
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+  });
+
+  document.querySelectorAll('.mockup-card').forEach(card => {
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const k = card.getAttribute('data-modal');
+        if (k) openModal(k);
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
