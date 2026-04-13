@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FITS L.E.A.R.N. — Athletic Performance Command Center</title>
+  <style>
+    :root {
+      --bg: #050507;
+      --surface: #0c0c10;
+      --surface2: #12121a;
+      --surface3: #181822;
+      --text: #f5f5f7;
+      --text2: #a8a8b0;
+      --text3: #6e6e78;
+      --navigate: #da7756;
+      --navigate-glow: rgba(218, 119, 86, 0.45);
+      --learn: #22d3ee;
+      --learn-glow: rgba(34, 211, 238, 0.5);
+      --evaluate: #a78bfa;
+      --evaluate-glow: rgba(167, 139, 250, 0.45);
+      --apply: #34d399;
+      --apply-glow: rgba(52, 211, 153, 0.45);
+      --reflect: #fbbf24;
+      --reflect-glow: rgba(251, 191, 36, 0.45);
+      --line: rgba(255, 255, 255, 0.12);
+      --line-bright: rgba(255, 255, 255, 0.28);
+      --radius: 14px;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(280px, 340px) 1fr minmax(300px, 380px);
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+      gap: 0;
+    }
+
+    header.shell-header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(8, 8, 12, 0.92);
+      backdrop-filter: blur(20px);
+    }
+    .shell-header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .shell-header h1 span { color: var(--navigate); }
+    .shell-header .sub {
+      font-size: 11px;
+      color: var(--text3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text2);
+    }
+
+    /* Left: stage detail */
+    .panel-left {
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      transition: border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+    .panel-left[data-accent="learn"] {
+      border-right-color: rgba(34, 211, 238, 0.25);
+      box-shadow: inset -12px 0 40px -28px var(--learn-glow);
+    }
+    .panel-left[data-accent="evaluate"] {
+      border-right-color: rgba(167, 139, 250, 0.25);
+      box-shadow: inset -12px 0 40px -28px var(--evaluate-glow);
+    }
+    .panel-left[data-accent="apply"] {
+      border-right-color: rgba(52, 211, 153, 0.25);
+      box-shadow: inset -12px 0 40px -28px var(--apply-glow);
+    }
+    .panel-left[data-accent="reflect"] {
+      border-right-color: rgba(251, 191, 36, 0.25);
+      box-shadow: inset -12px 0 40px -28px var(--reflect-glow);
+    }
+    .panel-left[data-accent="navigate"] {
+      border-right-color: rgba(218, 119, 86, 0.3);
+      box-shadow: inset -12px 0 40px -28px var(--navigate-glow);
+    }
+
+    .stage-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .stage-pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .stage-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+    .tagline {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.55;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 8px;
+    }
+
+    .components {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      font-size: 11px;
+      padding: 6px 11px;
+      border-radius: 8px;
+      background: var(--surface2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text2);
+    }
+
+    /* Feedback loop timeline */
+    .loop-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: var(--surface2);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .loop-step {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.25s, background 0.25s, box-shadow 0.25s;
+    }
+    .loop-step.active {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+    .loop-arrow {
+      color: var(--text3);
+      font-size: 11px;
+      padding: 0 2px;
+      opacity: 0.7;
+    }
+
+    /* Relationship log */
+    .rel-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .rel-card {
+      position: relative;
+      padding: 12px 12px 12px 14px;
+      border-radius: var(--radius);
+      background: var(--surface3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+    .rel-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+      opacity: 0.9;
+    }
+    .rel-card[data-to="learn"]::before { background: var(--learn); }
+    .rel-card[data-to="evaluate"]::before { background: var(--evaluate); }
+    .rel-card[data-to="apply"]::before { background: var(--apply); }
+    .rel-card[data-to="reflect"]::before { background: var(--reflect); }
+    .rel-card[data-to="navigate"]::before { background: var(--navigate); }
+
+    .rel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .rel-target {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .rel-target.learn { color: var(--learn); }
+    .rel-target.evaluate { color: var(--evaluate); }
+    .rel-target.apply { color: var(--apply); }
+    .rel-target.reflect { color: var(--reflect); }
+    .rel-target.navigate { color: var(--navigate); }
+
+    .light-line {
+      height: 1px;
+      flex: 1;
+      min-width: 24px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.15), rgba(255,255,255,0.45), rgba(255,255,255,0.15));
+      opacity: 0.6;
+    }
+    .rel-desc {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.45;
+    }
+
+    .placeholder-hint {
+      font-size: 12px;
+      color: var(--text3);
+      line-height: 1.5;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    /* Center: diagram */
+    .center-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px 32px;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 45%, rgba(218, 119, 86, 0.08) 0%, transparent 55%),
+        var(--bg);
+    }
+
+    .diagram-frame {
+      width: min(92vw, 560px);
+      aspect-ratio: 1;
+      max-height: min(72vh, 560px);
+    }
+
+    .diagram-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 1px rgba(0,0,0,0.5));
+    }
+
+    .spoke-line {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 1.35;
+      transition: stroke 0.35s, stroke-width 0.35s, opacity 0.35s;
+    }
+    .spoke-line.dim {
+      stroke: rgba(255, 255, 255, 0.05);
+      opacity: 0.55;
+    }
+    .spoke-line.lit {
+      stroke: var(--spoke-color, rgba(255, 255, 255, 0.28));
+      stroke-width: 1.85;
+      opacity: 1;
+    }
+
+    .node-group {
+      cursor: pointer;
+      transition: transform 0.25s ease;
+    }
+    .node-group:hover { transform: scale(1.04); }
+    .node-group:active { transform: scale(0.98); }
+    .node-group:focus {
+      outline: none;
+    }
+    .node-group:focus-visible .node-ring {
+      stroke-width: 3;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.35));
+    }
+
+    .node-ring {
+      transition: stroke 0.35s, stroke-width 0.35s, filter 0.35s;
+    }
+    .node-group.selected .node-ring {
+      stroke-width: 3;
+      filter: drop-shadow(0 0 12px currentColor);
+    }
+    .node-group.glow .node-ring {
+      filter: drop-shadow(0 0 18px currentColor);
+    }
+
+    .node-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      fill: rgba(255, 255, 255, 0.92);
+      pointer-events: none;
+    }
+    .node-sub {
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      fill: rgba(255, 255, 255, 0.45);
+      pointer-events: none;
+    }
+
+    .navigate-core .node-ring {
+      stroke: var(--navigate);
+      fill: rgba(218, 119, 86, 0.12);
+    }
+    .learn-node .node-ring { stroke: var(--learn); fill: rgba(34, 211, 238, 0.1); color: var(--learn); }
+    .evaluate-node .node-ring { stroke: var(--evaluate); fill: rgba(167, 139, 250, 0.1); color: var(--evaluate); }
+    .apply-node .node-ring { stroke: var(--apply); fill: rgba(52, 211, 153, 0.1); color: var(--apply); }
+    .reflect-node .node-ring { stroke: var(--reflect); fill: rgba(251, 191, 36, 0.1); color: var(--reflect); }
+
+    .legend-mini {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Right panel */
+    .panel-right {
+      border-left: 1px solid rgba(255, 255, 255, 0.06);
+      background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .right-block h2 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 12px;
+    }
+
+    .results-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: flex-start;
+    }
+    .result-icon {
+      width: 56px;
+      text-align: center;
+      cursor: default;
+      transition: transform 0.2s;
+    }
+    .result-icon:hover { transform: translateY(-2px); }
+    .result-icon .circle {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 6px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      background: var(--surface2);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .result-icon:hover .circle {
+      border-color: var(--navigate);
+      box-shadow: 0 0 16px rgba(218, 119, 86, 0.2);
+    }
+    .result-icon .lbl {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text2);
+      line-height: 1.25;
+    }
+
+    table.dev-matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .dev-matrix th,
+    .dev-matrix td {
+      padding: 8px 6px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .dev-matrix th {
+      background: var(--surface2);
+      color: var(--text2);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .dev-matrix th:first-child,
+    .dev-matrix td:first-child {
+      text-align: left;
+      padding-left: 10px;
+      color: var(--text2);
+      font-weight: 500;
+    }
+    .cell-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text3);
+    }
+    .cell-dot.on-learn { background: var(--learn); box-shadow: 0 0 8px var(--learn-glow); }
+    .cell-dot.on-eval { background: var(--evaluate); }
+    .cell-dot.on-app { background: var(--apply); }
+    .cell-dot.on-ref { background: var(--reflect); }
+    .cell-dot.on-nav { background: var(--navigate); }
+
+    .tiles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .takeaway-tile {
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.45;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .takeaway-tile:hover {
+      border-color: rgba(218, 119, 86, 0.35);
+      background: var(--surface3);
+      transform: translateY(-1px);
+    }
+    .takeaway-tile strong {
+      display: block;
+      color: var(--text);
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+    .takeaway-tile.expanded {
+      grid-column: 1 / -1;
+      border-color: rgba(218, 119, 86, 0.45);
+    }
+
+    @media (max-width: 1100px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+      }
+      .panel-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); max-height: 42vh; }
+      .panel-right { border-left: none; border-top: 1px solid rgba(255,255,255,0.06); }
+      .center-wrap { min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="shell-header">
+      <div>
+        <h1>FITS Athletic Performance <span>L.E.A.R.N.</span></h1>
+        <div class="sub">Hub-and-spoke command center — development cycle &amp; information flow</div>
+      </div>
+      <div class="badge-row">
+        <span class="badge">Integrated model</span>
+        <span class="badge">Athlete view</span>
+      </div>
+    </header>
+
+    <aside class="panel-left" id="panelLeft" data-accent="learn">
+      <div id="leftContent"></div>
+    </aside>
+
+    <main class="center-wrap" id="centerWrap" data-selected="learn" style="--spoke-color: rgba(34, 211, 238, 0.55);">
+      <div class="diagram-frame">
+        <svg class="diagram-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="L.E.A.R.N. model diagram">
+          <!-- interconnecting arcs (mutual); data-nodes = endpoints for highlight -->
+          <path class="spoke-line" data-nodes="learn reflect" d="M 280 120 Q 200 200 120 280" />
+          <path class="spoke-line" data-nodes="learn evaluate" d="M 280 120 Q 300 160 320 200" />
+          <path class="spoke-line" data-nodes="learn navigate" d="M 280 120 L 200 200" />
+          <path class="spoke-line" data-nodes="evaluate reflect" d="M 320 200 Q 200 260 120 280" />
+          <path class="spoke-line" data-nodes="evaluate apply" d="M 320 200 L 280 280" />
+          <path class="spoke-line" data-nodes="apply reflect" d="M 280 280 L 120 280" />
+          <path class="spoke-line" data-nodes="navigate learn" d="M 200 200 L 280 120" />
+          <path class="spoke-line" data-nodes="navigate evaluate" d="M 200 200 L 320 200" />
+          <path class="spoke-line" data-nodes="navigate apply" d="M 200 200 L 280 280" />
+          <path class="spoke-line" data-nodes="navigate reflect" d="M 200 200 L 120 280" />
+          <path class="spoke-line" data-nodes="learn apply" d="M 280 120 Q 240 200 280 280" />
+          <path class="spoke-line" data-nodes="evaluate learn" d="M 320 200 Q 300 140 280 120" />
+
+          <!-- center Navigate -->
+          <g class="node-group navigate-core" id="node-navigate" data-key="navigate" transform="translate(200,200)" aria-label="Navigate — core stage">
+            <circle class="node-ring" r="44" cx="0" cy="0" />
+            <text class="node-label" x="0" y="-4" text-anchor="middle">Navigate</text>
+            <text class="node-sub" x="0" y="12" text-anchor="middle">Core</text>
+          </g>
+
+          <!-- Learn top-right -->
+          <g class="node-group learn-node selected glow" id="node-learn" data-key="learn" transform="translate(280,120)" aria-label="Learn — input stage">
+            <circle class="node-ring" r="38" cx="0" cy="0" />
+            <text class="node-label" x="0" y="-4" text-anchor="middle">Learn</text>
+            <text class="node-sub" x="0" y="12" text-anchor="middle">Input</text>
+          </g>
+
+          <!-- Evaluate right -->
+          <g class="node-group evaluate-node" id="node-evaluate" data-key="evaluate" transform="translate(320,200)" aria-label="Evaluate — measure stage">
+            <circle class="node-ring" r="36" cx="0" cy="0" />
+            <text class="node-label" x="0" y="-4" text-anchor="middle">Evaluate</text>
+            <text class="node-sub" x="0" y="12" text-anchor="middle">Measure</text>
+          </g>
+
+          <!-- Apply bottom -->
+          <g class="node-group apply-node" id="node-apply" data-key="apply" transform="translate(280,280)" aria-label="Apply — train stage">
+            <circle class="node-ring" r="36" cx="0" cy="0" />
+            <text class="node-label" x="0" y="-4" text-anchor="middle">Apply</text>
+            <text class="node-sub" x="0" y="12" text-anchor="middle">Train</text>
+          </g>
+
+          <!-- Reflect bottom-left -->
+          <g class="node-group reflect-node" id="node-reflect" data-key="reflect" transform="translate(120,280)" aria-label="Reflect — own stage">
+            <circle class="node-ring" r="36" cx="0" cy="0" />
+            <text class="node-label" x="0" y="-4" text-anchor="middle">Reflect</text>
+            <text class="node-sub" x="0" y="12" text-anchor="middle">Own</text>
+          </g>
+        </svg>
+      </div>
+      <p class="legend-mini">Click a stage — Navigate stays central; orbit stages open detail &amp; flows</p>
+    </main>
+
+    <aside class="panel-right">
+      <div class="right-block">
+        <h2>Measurable results</h2>
+        <div class="results-row" id="resultsRow"></div>
+      </div>
+      <div class="right-block">
+        <h2>Development matrix</h2>
+        <table class="dev-matrix" id="devMatrix">
+          <thead>
+            <tr>
+              <th>Quality</th>
+              <th>L</th>
+              <th>E</th>
+              <th>A</th>
+              <th>R</th>
+              <th>N</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="right-block">
+        <h2>Takeaways &amp; results</h2>
+        <div class="tiles" id="takeawayTiles"></div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    (function () {
+      const DATA = {
+        navigate: {
+          accent: "navigate",
+          pill: "#da7756",
+          title: "Navigate",
+          tagline:
+            "The self-sustaining core: you steer intent, priority, and ownership across every cycle—turning information into aligned action.",
+          components: ["Intent & priority", "Session design", "Load & recovery decisions", "Athlete–coach alignment"],
+          loop: ["Standards", "CMOQ", "Demand stack", "Session feedback", "Re-align"],
+          loopActive: 2,
+          relationships: [
+            { to: "learn", label: "Learn", cls: "learn", text: "Sets the learning agenda from goals, constraints, and context." },
+            { to: "evaluate", label: "Evaluate", cls: "evaluate", text: "Chooses what gets measured and how often signals update." },
+            { to: "apply", label: "Apply", cls: "apply", text: "Translates plan into training prescriptions and micro-adjustments." },
+            { to: "reflect", label: "Reflect", cls: "reflect", text: "Captures meaning so the next loop starts with clearer ownership." },
+          ],
+        },
+        learn: {
+          accent: "learn",
+          pill: "#22d3ee",
+          title: "Learn",
+          tagline:
+            "Build the mental models and language of performance—standards, terminology, and cause–effect so evaluation and training have meaning.",
+          components: ["FITS terminology", "Standards & benchmarks", "Cause–effect maps", "Video & demonstration"],
+          loop: ["Standards", "CMOQ", "Practice design", "Feedback", "Understand"],
+          loopActive: 4,
+          relationships: [
+            {
+              to: "evaluate",
+              label: "Evaluate",
+              cls: "evaluate",
+              text: "Concepts define what you measure—without shared definitions, scores are noise.",
+            },
+            {
+              to: "apply",
+              label: "Apply",
+              cls: "apply",
+              text: "Knowledge becomes constraints and coaching cues inside each session.",
+            },
+            {
+              to: "reflect",
+              label: "Reflect",
+              cls: "reflect",
+              text: "Reflection turns facts into stories, beliefs, and next learning priorities.",
+            },
+            {
+              to: "navigate",
+              label: "Navigate",
+              cls: "navigate",
+              text: "Learning sharpens intent: you choose what matters next in the cycle.",
+            },
+          ],
+        },
+        evaluate: {
+          accent: "evaluate",
+          pill: "#a78bfa",
+          title: "Evaluate",
+          tagline:
+            "Objective signals—profiles, trends, and gaps—so training decisions are earned, not guessed.",
+          components: ["Profiling & baselines", "Trend & variability", "Risk & readiness flags", "Progress documentation"],
+          loop: ["Profile", "Compare", "Diagnose", "Prioritize", "Communicate"],
+          loopActive: 3,
+          relationships: [
+            { to: "learn", label: "Learn", cls: "learn", text: "Gaps point back to what must be understood more deeply." },
+            { to: "apply", label: "Apply", cls: "apply", text: "Metrics set dosage, emphasis, and progression rules." },
+            { to: "reflect", label: "Reflect", cls: "reflect", text: "Data gives anchors for honest self-assessment." },
+            { to: "navigate", label: "Navigate", cls: "navigate", text: "Evaluation reallocates focus and updates the game plan." },
+          ],
+        },
+        apply: {
+          accent: "apply",
+          pill: "#34d399",
+          title: "Apply",
+          tagline:
+            "Repetition under constraint—where knowledge and measurement become skill, capacity, and habit.",
+          components: ["Session execution", "Constraint progressions", "Intent–output coupling", "Environment design"],
+          loop: ["Warm-up", "Prime", "Work", "Cool-down", "Log"],
+          loopActive: 2,
+          relationships: [
+            { to: "learn", label: "Learn", cls: "learn", text: "Training surfaces questions that send you back to the whiteboard." },
+            { to: "evaluate", label: "Evaluate", cls: "evaluate", text: "Application validates or challenges what you thought was true." },
+            { to: "reflect", label: "Reflect", cls: "reflect", text: "Effort and feel become data for the debrief." },
+            { to: "navigate", label: "Navigate", cls: "navigate", text: "Execution stress-tests priorities—what actually moved the needle?" },
+          ],
+        },
+        reflect: {
+          accent: "reflect",
+          pill: "#fbbf24",
+          title: "Reflect",
+          tagline:
+            "Ownership layer: meaning, identity, and commitment—where results become durable behavior change.",
+          components: ["Self-assessment", "Narrative & meaning", "Commitments", "Social accountability"],
+          loop: ["Notice", "Name", "Reframe", "Commit", "Share"],
+          loopActive: 2,
+          relationships: [
+            { to: "learn", label: "Learn", cls: "learn", text: "Insights reopen the curriculum—what to study next." },
+            { to: "evaluate", label: "Evaluate", cls: "evaluate", text: "Honesty about effort and mindset reframes what you track." },
+            { to: "apply", label: "Apply", cls: "apply", text: "Commitments change how you show up in the next block." },
+            { to: "navigate", label: "Navigate", cls: "navigate", text: "Reflection resets direction—your true north for the next loop." },
+          ],
+        },
+      };
+
+      const RESULTS = [
+        { id: "R1", abbr: "GS", name: "Game speed", hint: "Sport-relevant tempo & transition" },
+        { id: "R2", abbr: "IR", name: "Injury resilience", hint: "Tissue tolerance & movement quality" },
+        { id: "R3", abbr: "FP", name: "Force profile", hint: "Expression & timing of force" },
+        { id: "R4", abbr: "MC", name: "Motor control", hint: "Coordination under fatigue" },
+        { id: "R5", abbr: "MW", name: "Mind wellness", hint: "Regulation, focus, confidence" },
+        { id: "R6", abbr: "TP", name: "Team performance", hint: "Role clarity & cohesion" },
+      ];
+
+      const MATRIX = [
+        { q: "Explosiveness", l: 1, e: 1, a: 1, r: 0, n: 1 },
+        { q: "Movement quality", l: 1, e: 1, a: 1, r: 1, n: 1 },
+        { q: "Workload literacy", l: 1, e: 1, a: 1, r: 1, n: 1 },
+        { q: "Competitive readiness", l: 0, e: 1, a: 1, r: 1, n: 1 },
+      ];
+
+      const TAKEAWAYS = [
+        { title: "Knowledge → ownership", body: "When Learn and Reflect stay linked, athletes explain their plan in their own words—not yours." },
+        { title: "Measure what you coach", body: "Evaluate must track behaviors Apply actually trains, or the loop breaks." },
+        { title: "Navigate is the flywheel", body: "Orange-center intent turns sporadic effort into a repeatable development rhythm." },
+        { title: "Close every loop", body: "End each micro-cycle with one named commitment tied to a measurable result (R1–R6)." },
+      ];
+
+      const panelLeft = document.getElementById("panelLeft");
+      const leftContent = document.getElementById("leftContent");
+
+      function renderLeft(key) {
+        const d = DATA[key];
+        if (!d) return;
+
+        panelLeft.setAttribute("data-accent", d.accent);
+
+        const loopHtml = d.loop
+          .map((step, i) => {
+            const active = i === d.loopActive ? " active" : "";
+            return `<span class="loop-step${active}">${step}</span>`;
+          })
+          .join('<span class="loop-arrow">→</span>');
+
+        const relHtml = d.relationships
+          .map(
+            (r) => `
+          <div class="rel-card" data-to="${r.to}">
+            <div class="rel-head">
+              <span class="rel-target ${r.cls}">→ ${r.label}</span>
+              <span class="light-line" aria-hidden="true"></span>
+            </div>
+            <p class="rel-desc">${r.text}</p>
+          </div>
+        `
+          )
+          .join("");
+
+        leftContent.innerHTML = `
+          <div class="stage-pill" style="color:${d.pill}">
+            <span class="dot" style="background:${d.pill}"></span>
+            Stage detail
+          </div>
+          <h2 class="stage-title">${d.title}</h2>
+          <p class="tagline">${d.tagline}</p>
+          <div>
+            <div class="section-label">Components</div>
+            <div class="components">
+              ${d.components.map((c) => `<span class="chip">${c}</span>`).join("")}
+            </div>
+          </div>
+          <div>
+            <div class="section-label">Feedback loop (linear)</div>
+            <div class="loop-bar" role="list">${loopHtml}</div>
+          </div>
+          <div>
+            <div class="section-label">Relationship log</div>
+            <div class="rel-grid">${relHtml}</div>
+          </div>
+        `;
+      }
+
+      const SPOKE_COLORS = {
+        learn: "rgba(34, 211, 238, 0.55)",
+        evaluate: "rgba(167, 139, 250, 0.55)",
+        apply: "rgba(52, 211, 153, 0.55)",
+        reflect: "rgba(251, 191, 36, 0.58)",
+        navigate: "rgba(218, 119, 86, 0.62)",
+      };
+
+      const centerWrap = document.getElementById("centerWrap");
+
+      function setSelectedNode(key) {
+        document.querySelectorAll(".node-group").forEach((g) => {
+          g.classList.toggle("selected", g.getAttribute("data-key") === key);
+          g.classList.toggle("glow", g.getAttribute("data-key") === key);
+        });
+
+        centerWrap.setAttribute("data-selected", key);
+        centerWrap.style.setProperty("--spoke-color", SPOKE_COLORS[key] || SPOKE_COLORS.navigate);
+
+        document.querySelectorAll(".spoke-line").forEach((line) => {
+          const nodes = line.getAttribute("data-nodes");
+          if (!nodes) return;
+          const list = nodes.split(/\s+/);
+          const hit = list.includes(key);
+          line.classList.toggle("lit", hit);
+          line.classList.toggle("dim", !hit);
+        });
+      }
+
+      const resultsRow = document.getElementById("resultsRow");
+      RESULTS.forEach((r) => {
+        const el = document.createElement("div");
+        el.className = "result-icon";
+        el.title = r.hint;
+        el.innerHTML = `<div class="circle" aria-hidden="true">${r.abbr}</div><div class="lbl">${r.name}</div>`;
+        resultsRow.appendChild(el);
+      });
+
+      const tbody = document.querySelector("#devMatrix tbody");
+      MATRIX.forEach((row) => {
+        const tr = document.createElement("tr");
+        const dot = (v, cls) =>
+          `<span class="cell-dot ${v ? "on-" + cls : ""}" title="${v ? "Primary" : "—"}"></span>`;
+        tr.innerHTML = `
+          <td>${row.q}</td>
+          <td>${dot(row.l, "learn")}</td>
+          <td>${dot(row.e, "eval")}</td>
+          <td>${dot(row.a, "app")}</td>
+          <td>${dot(row.r, "ref")}</td>
+          <td>${dot(row.n, "nav")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const tiles = document.getElementById("takeawayTiles");
+      TAKEAWAYS.forEach((t, idx) => {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className = "takeaway-tile";
+        el.innerHTML = `<strong>${t.title}</strong>${t.body}`;
+        el.addEventListener("click", () => {
+          document.querySelectorAll(".takeaway-tile").forEach((x) => x.classList.remove("expanded"));
+          el.classList.toggle("expanded");
+        });
+        tiles.appendChild(el);
+      });
+
+      document.querySelectorAll(".node-group").forEach((node) => {
+        node.addEventListener("click", () => {
+          const key = node.getAttribute("data-key");
+          setSelectedNode(key);
+          renderLeft(key);
+        });
+        node.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            node.click();
+          }
+        });
+        node.setAttribute("tabindex", "0");
+        node.setAttribute("role", "button");
+      });
+
+      setSelectedNode("learn");
+      renderLeft("learn");
+    })();
+  </script>
+</body>
+</html>

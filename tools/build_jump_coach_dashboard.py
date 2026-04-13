@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
 Build Coach_Team_Jump_Metric_Dashboard.html from:
-  - Flight_School_Coach_Team_Report.html (layout + styles)
+  - tools/coach_team_template.html (bundled jump-dashboard shell; no OneDrive required)
   - Parsed jump reports (data)
+
+Use --legacy-patch --template /path/to/Flight_School_Coach_Team_Report.html only if you have
+that file locally and need the full HTML transform from the original coach layout.
 """
 from __future__ import annotations
 
@@ -57,6 +60,41 @@ def to_dashboard_athletes(raw: dict) -> list[dict]:
             }
         )
     return out
+
+
+def inject_bundle(html: str, bundle: dict) -> str:
+    """Swap roster JSON and banner meta into the bundled jump-dashboard template."""
+    meta = bundle["meta"]
+    athletes = bundle["athletes"]
+    html = re.sub(
+        r"const athletes = \[[\s\S]*?\];",
+        "const athletes = "
+        + json.dumps(athletes, ensure_ascii=False)
+        + ";",
+        html,
+        count=1,
+    )
+    html = re.sub(
+        r"<span>📅 Testing: [^<]*</span>",
+        f"<span>📅 Testing: {meta.get('dateRange') or '—'}</span>",
+        html,
+        count=1,
+    )
+    html = re.sub(
+        r"<span>👥 Roster: \d+ Athletes</span>",
+        f"<span>👥 Roster: {meta.get('reportCount', len(athletes))} Athletes</span>",
+        html,
+        count=1,
+    )
+    gen = meta.get("generated") or ""
+    if gen:
+        html = re.sub(
+            r"Generated \d{4}-\d{2}-\d{2} ",
+            f"Generated {gen} ",
+            html,
+            count=1,
+        )
+    return html
 
 
 def patch_template(html: str, bundle: dict) -> str:
@@ -445,9 +483,13 @@ def main() -> None:
     ap.add_argument(
         "--template",
         type=Path,
-        default=Path(
-            "/Users/thomaslam/Library/CloudStorage/OneDrive-Personal/18.ISDS/1.4 GUIDES/ADS GUIDES/FITS ADS/X1 - VISUALIZATIONS IN DEVELOPMENT/VISUALIZATIONS IN DEVELOPMENT/Flight_School_Coach_Team_Report.html"
-        ),
+        default=None,
+        help="HTML template (default: tools/coach_team_template.html in this repo)",
+    )
+    ap.add_argument(
+        "--legacy-patch",
+        action="store_true",
+        help="Expect original Flight_School_Coach_Team_Report.html at --template and run full transform",
     )
     ap.add_argument(
         "-o",
@@ -463,13 +505,36 @@ def main() -> None:
     args = ap.parse_args()
     exclude = args.exclude_sample
 
-    raw = parse_reports(args.reports, exclude)
+    tmpl = args.template or (_repo_root() / "tools" / "coach_team_template.html")
+    if not tmpl.is_file():
+        print(
+            f"error: template not found: {tmpl}\n"
+            "  Fix: ensure tools/coach_team_template.html exists, or pass:\n"
+            "    --template /path/to/Coach_Team_Jump_Metric_Dashboard.html\n"
+            "  For the original FITS coach report (local file only):\n"
+            "    --legacy-patch --template /path/to/Flight_School_Coach_Team_Report.html",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    try:
+        raw = parse_reports(args.reports, exclude)
+    except subprocess.CalledProcessError as e:
+        print(e.stderr or e.stdout or str(e), file=sys.stderr)
+        sys.exit(e.returncode)
+    except FileNotFoundError as e:
+        print(f"error: {e}", file=sys.stderr)
+        sys.exit(1)
+
     bundle = {
         "meta": raw["meta"],
         "athletes": to_dashboard_athletes(raw),
     }
-    template = args.template.read_text(encoding="utf-8", errors="replace")
-    out = patch_template(template, bundle)
+    template_text = tmpl.read_text(encoding="utf-8", errors="replace")
+    if args.legacy_patch:
+        out = patch_template(template_text, bundle)
+    else:
+        out = inject_bundle(template_text, bundle)
     args.output.write_text(out, encoding="utf-8")
     print(f"Wrote {args.output} ({bundle['meta']['reportCount']} athletes)")
 
