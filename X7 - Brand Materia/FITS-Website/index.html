@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FITS Volleyball — Complete Athletic Development System (C.VADS)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════
    FITS ATHLETIC DEVELOPMENT SYSTEM — WEBSITE
@@ -1165,69 +1168,9 @@ footer p { font-size: 13px; color: var(--text3); }
       <p class="section-subtitle">Real-time athlete profiles, intelligent programming, and seamless feedback loops — the FITS system brought to life through technology.</p>
     </div>
 
-    <div class="app-mockup-container fade-up">
-      <!-- Phone 1: Athlete Profile Dashboard -->
-      <div class="phone-frame" id="phone1">
-        <div class="phone-notch"></div>
-        <div class="phone-screen">
-          <div class="screen-header">
-            <div style="font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">FITS Athlete Profile</div>
-            <h5>Sarah M. — Outside Hitter</h5>
-            <div class="screen-sub">Last assessed: March 12, 2026</div>
-          </div>
-          <div class="screen-profile-ring">
-            <div class="inner-ring">SM</div>
-          </div>
-          <div class="screen-scores">
-            <div class="screen-score">
-              <div class="ss-val" style="color: var(--green);">2.4</div>
-              <div class="ss-label">Quality</div>
-            </div>
-            <div class="screen-score">
-              <div class="ss-val" style="color: var(--blue);">3</div>
-              <div class="ss-label">Perf Level</div>
-            </div>
-            <div class="screen-score">
-              <div class="ss-val" style="color: var(--gold);">1</div>
-              <div class="ss-label">CMDs</div>
-            </div>
-          </div>
-          <div style="font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin: 12px 0 8px;">Movement System Profile</div>
-          <div class="screen-bar-chart" id="profileBars">
-            <!-- Filled by JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Phone 2: Session View -->
-      <div class="phone-frame" id="phone2">
-        <div class="phone-notch"></div>
-        <div class="phone-screen">
-          <div class="screen-header">
-            <div style="font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">Today's Session</div>
-            <h5>Foundation + Engine Day</h5>
-            <div class="screen-sub">Session 24 of 36 · Phase 2</div>
-          </div>
-          <div style="margin-top: 16px;" id="sessionBlocks">
-            <!-- Filled by JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Phone 3: Feedback Loop -->
-      <div class="phone-frame" id="phone3">
-        <div class="phone-notch"></div>
-        <div class="phone-screen">
-          <div class="screen-header">
-            <div style="font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">Active Learning</div>
-            <h5>Feedback & Progression</h5>
-            <div class="screen-sub">Real-time quality monitoring</div>
-          </div>
-          <div style="margin-top: 16px;" id="feedbackView">
-            <!-- Filled by JS -->
-          </div>
-        </div>
-      </div>
+    <div class="fits-dashboard-wrap fade-up" style="max-width: 440px; margin: 0 auto;">
+      <div id="fitsDashboardMount" class="fits-dashboard-mount"></div>
+      <p style="text-align: center; font-size: 12px; color: var(--text3); margin-top: 16px; line-height: 1.5;">Interactive athlete dashboard preview — tap any composite for full detail. Served from this folder (no <code style="font-size: 11px;">file://</code> fetch to other paths).</p>
     </div>
   </div>
 </section>
@@ -2017,6 +1960,11 @@ footer p { font-size: 13px; color: var(--text3); }
 <!-- ═══════════════════════════════════════════════
      JAVASCRIPT
      ═══════════════════════════════════════════════ -->
+<!-- FITS athlete dashboard: React + in-browser Babel (same folder as index.html; works with file://) -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel" src="fits-athlete-dashboard.jsx"></script>
 <script>
 // ── Particles ──
 (function initParticles() {
