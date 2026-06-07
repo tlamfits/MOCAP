@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basement Display</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/display/display.css" />
+</head>
+<body>
+  <div id="connecting" class="connecting-overlay">Connecting…</div>
+  <div id="screenBadge" class="screen-badge">Screen 1</div>
+
+  <div id="root" class="display-root hidden">
+    <!-- Calm -->
+    <div id="calmMode" class="hidden">
+      <video id="calmVideo" class="bg-video" autoplay muted loop playsinline></video>
+      <div class="vignette"></div>
+      <div class="content-layer">
+        <div class="mode-label">Ambient</div>
+        <div id="calmLabel" class="calm-scene-label">Mountains</div>
+        <div id="calmTime" class="calm-time"></div>
+      </div>
+    </div>
+
+    <!-- Sports -->
+    <div id="sportsMode" class="hidden">
+      <div id="sportsHeroBg" class="sports-hero-image"></div>
+      <div class="vignette"></div>
+      <div class="content-layer" id="sportsContent"></div>
+      <div id="sportsTicker" class="ticker hidden">
+        <div class="ticker-track" id="tickerTrack"></div>
+      </div>
+    </div>
+
+    <!-- Movie -->
+    <div id="movieMode" class="hidden">
+      <div class="curtain-top"></div>
+      <div class="curtain-side"></div>
+      <div class="curtain-side right"></div>
+      <div class="vignette"></div>
+      <div class="content-layer" id="movieContent"></div>
+      <div id="movieMarquee" class="marquee hidden">
+        <div class="marquee-text" id="marqueeText"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/display/display.js"></script>
+</body>
+</html>

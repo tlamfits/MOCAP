@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basement Screens — Control</title>
+  <link rel="stylesheet" href="/static/control/control.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Basement <span>Screens</span></h1>
+        <div class="sub">Triple 4K portrait displays · sports · calm · theater</div>
+      </div>
+      <div class="status-pill">
+        <span id="statusDot" class="status-dot off"></span>
+        <span id="statusText">Connecting…</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="section-title">Scene Mode</div>
+      <div class="mode-grid">
+        <button class="mode-btn" data-mode="calm">
+          <div class="icon">🌲</div>
+          <div class="label">Calm / Focus</div>
+          <div class="desc">Nature scenes — mountains, ocean, forest</div>
+        </button>
+        <button class="mode-btn" data-mode="sports">
+          <div class="icon">🏈</div>
+          <div class="label">Sports Lounge</div>
+          <div class="desc">Live scores, athletes, quotes &amp; facts</div>
+        </button>
+        <button class="mode-btn" data-mode="movie">
+          <div class="icon">🎬</div>
+          <div class="label">Movie Theater</div>
+          <div class="desc">Poster, marquee &amp; coming soon</div>
+        </button>
+      </div>
+
+      <div id="layoutPreview" class="layout-preview"></div>
+    </section>
+
+    <div class="grid-2">
+      <section class="section">
+        <div class="card">
+          <h3>Open on Each Monitor</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5">
+            Open each link in a browser on the corresponding TV. Press <strong>F</strong> for fullscreen.
+          </p>
+          <div class="screen-links" id="screenLinks"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="card" id="sportsSettings">
+          <h3>Sports Settings</h3>
+          <div style="margin-bottom:16px">
+            <span style="font-size:12px;color:var(--muted)">Leagues</span>
+            <div class="league-chips" id="leagueChips" style="margin-top:8px"></div>
+          </div>
+          <div class="toggle-row">
+            <span style="font-size:13px">Show quotes overlay</span>
+            <div class="toggle" id="toggleQuotes" data-key="show_quotes"></div>
+          </div>
+          <div class="toggle-row">
+            <span style="font-size:13px">Show fun facts</span>
+            <div class="toggle" id="toggleFacts" data-key="show_facts"></div>
+          </div>
+        </div>
+
+        <div class="card" id="movieSettings" style="margin-top:16px">
+          <h3>Movie Night</h3>
+          <label class="field">
+            <span>Feature Title</span>
+            <input type="text" id="movieTitle" placeholder="Dune: Part Two" />
+          </label>
+          <label class="field">
+            <span>Tagline</span>
+            <input type="text" id="movieTagline" placeholder="Long live the fighters." />
+          </label>
+          <label class="field">
+            <span>Year</span>
+            <input type="text" id="movieYear" placeholder="2024" />
+          </label>
+          <label class="field">
+            <span>Poster URL (optional)</span>
+            <input type="text" id="moviePoster" placeholder="https://…" />
+          </label>
+          <button class="btn" id="saveMovie">Save Movie</button>
+        </div>
+      </section>
+    </div>
+
+    <section class="section">
+      <div class="card">
+        <h3>Coming Soon</h3>
+        <ul class="upcoming-list" id="upcomingFeatures"></ul>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/static/control/control.js"></script>
+</body>
+</html>

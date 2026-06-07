@@ -1,0 +1,25 @@
+{
+  "mode": "calm",
+  "sports": {
+    "leagues": ["nfl", "nba", "mlb", "nhl"],
+    "favorite_teams": [],
+    "show_quotes": true,
+    "show_facts": true,
+    "highlight_rotation_seconds": 45
+  },
+  "calm": {
+    "scenes": ["mountains", "ocean", "forest"],
+    "ambient_text": false
+  },
+  "movie": {
+    "title": "Dune: Part Two",
+    "year": "2024",
+    "tagline": "Long live the fighters.",
+    "poster_url": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80",
+    "upcoming": [
+      { "title": "Gladiator II", "year": "2024" },
+      { "title": "Wicked", "year": "2024" },
+      { "title": "Moana 2", "year": "2024" }
+    ]
+  }
+}
