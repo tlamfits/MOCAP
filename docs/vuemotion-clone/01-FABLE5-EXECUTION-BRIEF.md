@@ -12,13 +12,20 @@ Where it says "VERIFY," confirm the fact at build time before depending on it.
 Build a **lab-grade, multi-camera, true-3D markerless motion-capture system** for athletic
 movement analysis that clones VueMotion's capabilities and surpasses them on accuracy and on
 force estimation. **Hybrid processing:** on-device live 2D preview + cloud heavy 3D
-biomechanics. **Four output families:** (1) sprint/running mechanics, (2) jump/hop & landing,
-(3) GRF/impact force from video, (4) change-of-direction/cutting + injury-risk screening.
+biomechanics. **Core output families (kinematic):** (1) sprint/running mechanics, (2) jump/hop
+& landing, (3) change-of-direction/cutting + injury-risk screening. **Optional:** CV-estimated
+GRF/impact force (public-data-trained, uncertainty-bounded — see Ground Rule 3).
+
+> **SCOPE DECISION (locked): the CV system and FITS's force plates are SEPARATE systems.**
+> They are not synchronized, fused, or used to produce paired training data. The plates remain
+> FITS's independent, authoritative force tool. This demotes GRF from a core pillar to an
+> optional feature and removes all force-plate integration from the capture rig.
 
 **North-star architecture (DECISION):** clone the **OpenCap pipeline** —
 `multi-view 2D pose → calibrated triangulation → LSTM/Transformer marker augmentation →
 OpenSim IK/ID → metrics` — swapping in commercially-licensed components and retraining the
-marker-augmentation and GRF networks on athletic data.
+marker-augmentation (and 2D pose) networks on athletic **video** data. The optional GRF network
+trains on **public** data only.
 
 ---
 
@@ -33,11 +40,14 @@ marker-augmentation and GRF networks on athletic data.
 2. **Report accuracy by plane and by movement.** Never collapse to a single headline number.
    Sagittal-plane kinematics are strong (2–5°); transverse-plane rotation is weak
    industry-wide (SEM > 5°). Kinetics carry uncertainty bands.
-3. **The FITS force plates are the moat.** Design the capture protocol to record
-   **synchronized multi-camera video + force-plate GRF** from day one. This trains and
-   validates the GRF model on-domain.
+3. **Force plates are SEPARATE — do not integrate them.** No shared trigger, no timecode
+   bridge, no paired video+force dataset. The capture rig syncs **cameras to each other only.**
+   CV-GRF, if built, trains and validates on **public** datasets (AddBiomechanics, public sync
+   sets), not FITS plates. Your on-facility advantage is **athletic video volume** for
+   pose/kinematics fine-tuning, not paired force data.
 4. **Fine-tune, don't train from scratch.** Start from pretrained pose backbones. Spend
-   compute on the small marker-augmentation and GRF networks where your data advantage lives.
+   compute on the small marker-augmentation network (and 2D pose fine-tune) where your
+   athletic-video advantage lives.
 5. **Every phase ends with a measured number vs a reference**, not "it runs."
 
 ---
@@ -63,9 +73,9 @@ marker-augmentation and GRF networks on athletic data.
 | Cloud 2D pose | **RTMPose-l/x** (ship) + ViTPose (compare); Sapiens for labeling only | Max accuracy offline |
 | Calibration | OpenCV/Pose2Sim ChArUco intrinsics + extrinsics + bundle adjustment | Re-verify per session; store with capture |
 | Triangulation | Robust DLT + RANSAC, per-keypoint confidence weighting, temporal smoothing | Reject outlier views |
-| Marker augmentation | **Retrain OpenCap LSTM/Transformer enhancer on athletic data** (20→43 markers) | Hold ≤ ~5° on unseen sprint/cut |
+| Marker augmentation | **Retrain OpenCap LSTM/Transformer enhancer on athletic video** (20→43 markers) | Hold ≤ ~5° on unseen sprint/cut |
 | Biomech | **OpenSim** scaling + IK + ID + static optimization | Full-body model (arms matter for sprint) |
-| GRF/kinetics | **ML predict (temporal CNN/Transformer) → OpenSim dynamic-consistency refine** | ≤ 8 %BW RMSE on jumps/hops (v1) |
+| GRF/kinetics *(OPTIONAL)* | **ML predict (temporal CNN/Transformer) → OpenSim dynamic-consistency refine**, trained on **public** data | ≤ 8 %BW RMSE on **public** jump data; uncertainty-banded; not a v1 gate |
 | Mobile runtime | CoreML (iOS first), ONNX/TFLite (Android later) | FP16/INT8 quantization, validate accuracy retention |
 | Cloud | Containerized GPU workers + job queue + object storage + per-athlete DB | Async; store calibration + raw + derived |
 
@@ -78,11 +88,12 @@ marker-augmentation and GRF networks on athletic data.
 - [ ] Reproduce OpenCap and Pose2Sim end-to-end on public sample data; record their output
       numbers as your internal baseline.
 - [ ] Repo skeleton: `capture/`, `calibration/`, `pose2d/`, `triangulation/`, `augment/`,
-      `opensim/`, `grf/`, `ondevice/`, `cloud/`, `eval/`, `data/`.
+      `opensim/`, `grf/` *(optional)*, `ondevice/`, `cloud/`, `eval/`, `data/`.
 - **Exit:** both reference pipelines produce published-ballpark kinematics on a public clip.
 
 ### P1 — Multi-cam 3D kinematics (cloud)
 - [ ] Camera rig: start with **4 global-shutter cameras at 120–240 fps** (scale to 8).
+      **Inter-camera sync only — no force-plate integration.**
 - [ ] Sync (hardware genlock preferred; software timecode acceptable for v1) + calibration.
 - [ ] Pipeline: RTMPose multi-view → triangulation → OpenSim scaling + IK → joint-angle
       time series.
@@ -96,31 +107,32 @@ marker-augmentation and GRF networks on athletic data.
   cloud tier.
 
 ### P3 — Marker-augmentation retrain (biggest kinematic win)
-- [ ] Assemble athletic training set: AthletePose3D + BEDLAM synthetic + FITS captures.
+- [ ] Assemble athletic training set: AthletePose3D + BEDLAM synthetic + FITS **video** captures.
 - [ ] Retrain/extend the enhancer (20 sparse keypoints → 43 anatomical markers).
 - [ ] Generalization eval on **held-out sprint/cut/land** movements.
 - **Exit:** retrained enhancer holds accuracy on unseen dynamic movements where the stock
   enhancer collapses (stock degrades to ~40° mean / 252° max on unseen diverse motion).
 
-### P4 — GRF/kinetics (the moat)
-- [ ] **Synchronized video + force-plate capture protocol** at FITS (shared trigger/timecode).
-- [ ] Build proprietary labeled GRF dataset: CMJ, hops, sprint starts, cuts.
-- [ ] Train temporal CNN/Transformer: 3D kinematics (+segment accelerations) → 3-axis GRF + CoP.
-      Supplement with AddBiomechanics.
-- [ ] Hybrid refinement: predicted GRF → OpenSim dynamic-consistency correction.
-- [ ] Reports carry **uncertainty bands**; segment error by movement type.
-- **Exit:** **≤ 8 %BW GRF RMSE** on jumps/hops vs force plate; uncertainty-banded output.
-
-### P5 — Sprint/cut coverage + product
+### P4 — Sprint/cut coverage + product
 - [ ] Cutting/CoD metrics (approach speed, deceleration, cut angle, asymmetry) + injury-risk
       screens (report with plane-honesty caveats).
 - [ ] Coach dashboards; **integrate with FITS's existing jump-metric dashboards**
       (`Coach_Team_Jump_Metric_Dashboard.html`, `tools/build_jump_coach_dashboard.py`).
 - [ ] End-to-end athlete report generation.
-- **Exit:** full four-family report; head-to-head capture vs VueMotion on the same athlete.
+- **Exit:** full kinematic report (sprint + jump/hop + cut); head-to-head capture vs VueMotion.
+
+### P5 — CV-GRF (OPTIONAL — public data only)
+> Build only if the "field force estimate where a plate can't reach" use case is worth the
+> accuracy caveats. Otherwise skip: the force plates own force as a separate FITS workflow.
+- [ ] Train temporal CNN/Transformer: 3D kinematics (+segment accelerations) → 3-axis GRF + CoP,
+      on **AddBiomechanics + public sync sets** (NOT FITS plates).
+- [ ] Hybrid refinement: predicted GRF → OpenSim dynamic-consistency correction.
+- [ ] Reports carry **uncertainty bands**; segment error by movement type; defer to plate
+      readings wherever they exist.
+- **Exit:** **≤ 8 %BW GRF RMSE** on **public** jump data; uncertainty-banded output.
 
 ### P6 — Validation study & hardening
-- [ ] Formal concurrent-validity study vs VICON + force plates on sprint/cut/jump.
+- [ ] Formal concurrent-validity study vs **VICON (kinematics)** on sprint/cut/jump.
 - [ ] Test-retest reliability (between-day SEM).
 - **Exit:** documented accuracy meeting the targets in `00-STRATEGY.md` §9.
 
@@ -132,26 +144,27 @@ marker-augmentation and GRF networks on athletic data.
 |---|---|---|
 | Lower-limb **sagittal** kinematics RMSE | ≤ 5° | OpenCap 3.85° MAE; Pose2Sim 3–4°; Theia3D 0.96–3.71° |
 | Frontal/transverse kinematics | *Documented*, not necessarily better | Industry ceiling; SEM > 5° transverse |
-| **GRF** RMSE (jump/hop) | ≤ 8 %BW | Lit best ~6.7 %BW smartphone; force-plate training should beat this |
-| Joint-moment RMSE | ≤ 1.5 %BW·height | Lit ~1.1–1.34 %BW·height |
+| **CV-GRF** RMSE (jump/hop) *(optional)* | ≤ 8 %BW on **public** data | Lit best ~6.7 %BW smartphone; no FITS-plate training data, so treat as stretch/optional |
+| Joint-moment RMSE *(optional)* | ≤ 1.5 %BW·height | Lit ~1.1–1.34 %BW·height |
 | On-device pose | ≥ 30 fps, stable skeleton | RTMPose 35+ fps on 2020-era mobile SoC |
 
 ---
 
-## 6. Datasets (fetch/build in P0–P4)
+## 6. Datasets (fetch/build in P0–P5)
 
 - **AthletePose3D** (CVPRW 2025) — sprint/jump/cut 3D pose benchmark → primary athletic fine-tune/eval.
 - **BEDLAM** — synthetic humans, perfect 3D GT → cheap volume / rare-pose coverage.
 - **OpenCap dataset** — marker-enhancer training corpus.
-- **AddBiomechanics** — kinematics+kinetics → GRF model training.
-- **Nature Sci Data 2024** synced video+mocap+force-plate set → pipeline validation GT.
-- **★ FITS proprietary** synced multi-cam video + force plate → the moat; fine-tune + on-domain validation.
+- **AddBiomechanics** — kinematics+kinetics → **optional** CV-GRF model training (public).
+- **Nature Sci Data 2024** synced video+mocap+force-plate set → pipeline validation GT (public — this is the GRF ground truth, not FITS plates).
+- **★ FITS proprietary** multi-cam **video** of athletes (**no** force-plate pairing) → fine-tune pose + marker-augmentation; on-domain **kinematic** validation.
 
 ---
 
 ## 7. Non-negotiable "don'ts"
 
 - ❌ Don't ship OpenPose, Ultralytics YOLO-Pose, or Sapiens weights in the product.
+- ❌ Don't wire the force plates into the CV capture timeline — they are a separate system.
 - ❌ Don't present video-only GRF/impact on cutting as ground truth — bands + caveats.
 - ❌ Don't claim transverse-plane rotation precision you can't back with your own validation.
 - ❌ Don't train giant pose backbones from scratch — fine-tune; spend compute on the small nets.
@@ -165,9 +178,9 @@ marker-augmentation and GRF networks on athletic data.
    commercial-use verdict; confirm the shippable stack is clean.
 2. **P0-2:** Stand up and reproduce **OpenCap** end-to-end on a public sample; log its output
    kinematics as the internal baseline.
-3. **P1-1:** Design the **4-camera, 120–240 fps, global-shutter capture + sync + calibration**
-   protocol (including force-plate timecode integration) as a written spec, then implement
-   calibration + triangulation and measure sagittal RMSE vs a reference clip.
+3. **P1-1:** Design the **4-camera, 120–240 fps, global-shutter capture + inter-camera sync +
+   calibration** protocol (**cameras only — no force-plate integration**) as a written spec,
+   then implement calibration + triangulation and measure sagittal RMSE vs a reference clip.
 
 *Escalate to the user only for: capital hardware purchases, buying a commercial license
 (OpenPose/Sapiens), or any product accuracy claim that goes to marketing.*

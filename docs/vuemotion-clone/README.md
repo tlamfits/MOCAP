@@ -23,11 +23,14 @@ execution to **Fable 5**.
 - Upgrade it to **multi-camera true-3D at 120–240 fps** with **commercially-licensed**
   components (**RTMPose** front-end, not OpenPose/Sapiens/YOLO) and **hybrid on-device+cloud**
   delivery.
-- Win on the two things that matter most: **retrain the marker-augmentation network on
-  athletic movement**, and **train a GRF model on FITS's own synchronized video + force-plate
-  data** — a moat almost no competitor has.
+- **The CV system and FITS's force plates are separate** — not synced or fused. Kinematics is
+  the product; win by **retraining the marker-augmentation network on athletic video** (and
+  fine-tuning 2D pose second).
+- **CV-based GRF is optional:** public-data-trained, uncertainty-bounded, useful only as a
+  *field estimate* where a plate can't reach. If not worth the caveats, cut it — the plates
+  own force outright.
 - Be honest about the industry-wide ceiling: **transverse-plane rotation** and **video-only
-  kinetics** are hard for everyone; win on sagittal kinematics, jump/hop, and force-plate-trained GRF.
+  kinetics** are hard for everyone; win on sagittal kinematics, jump/hop, and sprint/cut mechanics.
 - Fable 5 executes the phased roadmap (P0 legal/foundations → P6 validation study) against
   measured accuracy gates.
 
