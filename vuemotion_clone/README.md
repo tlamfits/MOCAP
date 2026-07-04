@@ -36,8 +36,16 @@ capture ──▶ calibration ──▶ pose2d ──▶ triangulation ──▶
 
 ## Status
 
-Scaffold only. Each module has a stub with its interface contract and a `TODO` referencing the
-execution brief phase that fills it in. Nothing here runs yet.
+- ✅ **`triangulation/`** — implemented + tested. Robust DLT + RANSAC multi-view 3D, confidence
+  weighting, outlier-view rejection. The deterministic mathematical core.
+- ✅ **`eval/`** — implemented + tested. MAE / RMSE / CMC / Pearson, per-DOF and per-plane,
+  with the ≤5° sagittal v1 acceptance flag.
+- 🚧 Everything else — interface stubs (raise `NotImplementedError`), filled in per the
+  execution-brief phase noted in each module. `pose2d`, `opensim`, `capture` need the ML/native
+  stack + hardware (see phase gates).
+
+Run the tests (CPU-only, no hardware): `pytest vuemotion_clone/tests/ -q` (11 tests, synthetic
+round-trip proves triangulation recovers known 3D to sub-µm and rejects a corrupted view).
 
 ## Build order (from the execution brief)
 
