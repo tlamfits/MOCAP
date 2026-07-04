@@ -150,6 +150,11 @@ OpenCap's **kinematic path only**; its optional muscle-driven dynamics is out of
 
 *(No kinetics datasets — force is out of scope.)*
 
+> ⚠️ **License gate before P3 (see `LICENSE-CLEARANCE.md`):** AthletePose3D, AMASS, BEDLAM, SMPL,
+> Human3.6M are **non-commercial / license-on-request** (AMASS bans commercial NN training) →
+> **R&D-only.** A shipped model must train on **owned consented athletic video + permissive/
+> licensed data**. COCO-pretrained RTMPose/ViTPose base weights ship fine (attribution).
+
 ---
 
 ## 7. Non-negotiable "don'ts"

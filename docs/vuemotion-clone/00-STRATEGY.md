@@ -231,6 +231,13 @@ that powers both of these.
 > Note: your on-facility advantage is **athletic video volume** for pose/kinematics fine-tuning.
 > The force plates stay a separate workflow and are not part of any training data.
 
+> ⚠️ **Licensing caveat (see `LICENSE-CLEARANCE.md`):** AthletePose3D, AMASS, BEDLAM, SMPL and
+> Human3.6M are **non-commercial or license-on-request** — AMASS explicitly bans commercial NN
+> training. They may be used for **R&D/benchmarking only**. A **commercially shipped** model
+> must be trained on **owned (consented) athletic video + genuinely permissive/licensed data**.
+> COCO-pretrained RTMPose/ViTPose base weights are commercially OK (CC-BY-4.0 + Apache). This
+> is a decision gate before P3.
+
 **How a small team trains effectively (the realistic recipe):**
 1. **Don't train pose estimators from scratch.** Start from pretrained RTMPose/ViTPose;
    *fine-tune* on athletic data (AthletePose3D + your video captures + BEDLAM synthetic).
