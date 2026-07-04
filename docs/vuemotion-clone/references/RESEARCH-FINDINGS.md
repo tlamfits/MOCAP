@@ -68,7 +68,12 @@ Source: Kanko et al., J Biomech 2021 (S0021929021004346) · Theia3D systematic r
 
 ---
 
-## C. GRF & kinetics from video (the hard, differentiating output)
+## C. GRF & kinetics from video — *why it was cut from scope*
+
+> **Scope note:** The product is a **pure kinematic system** — it does not estimate force from
+> video (force is owned by FITS's force plates). The findings below are retained as the
+> **evidence base for that decision**: video-based kinetics is coarse, unvalidated on
+> sprint/cut extremes, and doesn't improve with better kinematics. They are not a build plan.
 
 **C1. GRF-from-video is feasible but coarse; kinematics ≠ kinetics.** `high · 3-0`
 Best from smartphone video via muscle-driven tracking: **~6.7 ± 4.3 %BW GRF RMSE**,
