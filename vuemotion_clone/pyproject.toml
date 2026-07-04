@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vuemotion_clone"
+version = "0.0.0"  # P0 scaffold
+description = "Pure kinematic multi-camera markerless motion capture for athletic movement"
+readme = "README.md"
+requires-python = ">=3.10"
+# All runtime deps are commercially permissive (Apache-2.0 / BSD-3 / MIT).
+# See ../docs/vuemotion-clone/LICENSE-CLEARANCE.md before adding any dependency.
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "opencv-python>=4.8",   # Apache-2.0
+    # Added per-phase (kept out of scaffold to avoid heavy installs):
+    #  P1: mmpose/mmdeploy (RTMPose, Apache-2.0), opensim (Apache-2.0)
+    #  P3: torch (marker-augmentation retrain)
+    # NEVER add: openpose (non-commercial), ultralytics (AGPL), sapiens weights (CC-BY-NC)
+]
+
+[tool.setuptools.packages.find]
+include = ["vuemotion_clone*"]

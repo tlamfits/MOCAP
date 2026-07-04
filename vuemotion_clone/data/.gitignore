@@ -1,0 +1,5 @@
+# Never commit captured video, datasets, or model weights.
+# Athlete video is consent-governed; research datasets are license-restricted.
+*
+!.gitignore
+!__init__.py
