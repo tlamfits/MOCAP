@@ -1,0 +1,24 @@
+vuemotion_clone
+Third-party attributions (to be kept current as dependencies are added).
+
+This product is built on permissively-licensed components. Attribution and NOTICE
+requirements below must ship with any released product. See
+../docs/vuemotion-clone/LICENSE-CLEARANCE.md for the full clearance memo.
+
+Apache License 2.0:
+  - RTMPose / MMPose / MMDeploy (OpenMMLab)
+  - ViTPose (OpenMMLab)
+  - OpenSim (opensim-org)
+  - OpenCap-core (Stanford NMBL)  [use kinematic path; replace OpenPose backend]
+  - OpenCV
+
+BSD-3-Clause:
+  - Pose2Sim (perfanalytics)
+
+Data attribution:
+  - COCO Keypoints — CC-BY-4.0 (attribution required for models pretrained on COCO)
+
+NOT DISTRIBUTED WITH THIS PRODUCT (non-commercial / incompatible):
+  - OpenPose (CMU, non-commercial), Ultralytics YOLO (AGPL-3.0),
+    Sapiens weights (CC-BY-NC-4.0), AthletePose3D / AMASS / BEDLAM / SMPL / Human3.6M
+    (non-commercial or license-on-request — R&D only, never in a shipped model).

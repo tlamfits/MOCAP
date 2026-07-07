@@ -1,0 +1,1280 @@
+
+<style>
+  :root{
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    /* light base */
+    --ground:#f4f6f9; --panel:#ffffff; --panel-2:#eef1f6; --line:#d9dee7;
+    --ink:#1b2430; --ink-dim:#54617340; --ink-dim:#546173; --ink-faint:#8a95a4;
+    --accent:#e8531f;
+    --c-approach:#7a8797; --c-loading:#4a63d8; --c-prop:#12a069;
+    --c-flight:#1f9ec9; --c-landing:#cf3d84; --c-plant:#c98a12; --c-release:#c0392b;
+    --good:#12a069; --warn:#c98a12; --risk:#d23b3b;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0d1014; --panel:#14181e; --panel-2:#1a2029; --line:#262e39;
+      --ink:#eef2f6; --ink-dim:#93a1b0; --ink-faint:#5f6c7b; --accent:#ff6a3d;
+      --c-approach:#9aa7b4; --c-loading:#6c8cff; --c-prop:#34c98a;
+      --c-flight:#46c3e6; --c-landing:#e85d9a; --c-plant:#f2b134; --c-release:#ff6b5a;
+      --good:#34c98a; --warn:#f2b134; --risk:#ff5470;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#f4f6f9; --panel:#ffffff; --panel-2:#eef1f6; --line:#d9dee7;
+    --ink:#1b2430; --ink-dim:#546173; --ink-faint:#8a95a4; --accent:#e8531f;
+    --c-approach:#7a8797; --c-loading:#4a63d8; --c-prop:#12a069;
+    --c-flight:#1f9ec9; --c-landing:#cf3d84; --c-plant:#c98a12; --c-release:#c0392b;
+    --good:#12a069; --warn:#c98a12; --risk:#d23b3b;
+  }
+  :root[data-theme="dark"]{
+    --ground:#0d1014; --panel:#14181e; --panel-2:#1a2029; --line:#262e39;
+    --ink:#eef2f6; --ink-dim:#93a1b0; --ink-faint:#5f6c7b; --accent:#ff6a3d;
+    --c-approach:#9aa7b4; --c-loading:#6c8cff; --c-prop:#34c98a;
+    --c-flight:#46c3e6; --c-landing:#e85d9a; --c-plant:#f2b134; --c-release:#ff6b5a;
+    --good:#34c98a; --warn:#f2b134; --risk:#ff5470;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .app{display:grid;grid-template-rows:auto 1fr auto;height:100vh;min-height:0}
+  /* topbar */
+  .topbar{display:flex;align-items:center;gap:18px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .brand{display:flex;align-items:baseline;gap:9px;white-space:nowrap}
+  .brand b{font-weight:700;letter-spacing:-.01em}
+  .brand .kx{color:var(--accent);font-family:var(--mono);font-weight:700;font-size:12px;
+    border:1px solid var(--accent);padding:1px 6px;border-radius:5px;letter-spacing:.04em}
+  .tb-title{min-width:0}
+  .tb-title h1{margin:0;font-size:16px;font-weight:650;letter-spacing:-.01em;text-wrap:balance}
+  .tb-title p{margin:0;color:var(--ink-faint);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tb-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .viewtag{font-family:var(--mono);font-size:11px;color:var(--ink-dim);
+    background:var(--panel-2);border:1px solid var(--line);padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.05em}
+  .ref{font-size:11px;color:var(--ink-faint)}
+  .ref b{color:var(--ink-dim)}
+  /* stage */
+  .stage{display:grid;grid-template-columns:216px 1fr 302px;min-height:0;overflow:hidden}
+  .rail{background:var(--panel);overflow-y:auto;min-height:0}
+  .rail.left{border-right:1px solid var(--line)}
+  .rail.right{border-left:1px solid var(--line);display:flex;flex-direction:column}
+  .section-h{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-faint);padding:14px 14px 7px}
+  /* movement list */
+  .rail-actions{padding:12px 8px 4px}
+  .btn.wide{width:100%;justify-content:flex-start;height:36px;font-family:var(--sans);font-size:13px;font-weight:550}
+  .btn.wide:hover{border-color:var(--accent);color:var(--accent)}
+  #mvList{display:flex;flex-direction:column;padding:0 8px 10px}
+  .mv-item{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    text-align:left;width:100%;background:transparent;border:1px solid transparent;border-radius:8px;
+    padding:8px 10px;color:var(--ink);cursor:pointer;font-family:inherit;font-size:13px}
+  .mv-item:hover{background:var(--panel-2)}
+  .mv-item.active{background:var(--panel-2);border-color:var(--line)}
+  .mv-item.active .mv-name{color:var(--accent)}
+  .mv-item.captured{border-color:color-mix(in srgb,var(--accent) 40%,var(--line));margin-bottom:6px}
+  .mv-item.captured .mv-name{color:var(--accent)}
+  .mv-item.captured .mv-sub{color:var(--accent)}
+  .mv-name{font-weight:550}
+  .mv-sub{font-family:var(--mono);font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em}
+  .meta{padding:8px 14px 16px;color:var(--ink-faint);font-size:11.5px;line-height:1.6}
+  .meta code{font-family:var(--mono);color:var(--ink-dim)}
+  /* center viewport */
+  .center{position:relative;min-width:0;min-height:0;background:
+    radial-gradient(120% 90% at 50% 8%, color-mix(in srgb,var(--panel) 65%, transparent), transparent 70%),var(--ground);
+    display:flex}
+  #view{width:100%;height:100%;display:block;touch-action:none}
+  .legend{position:absolute;left:14px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px 12px;max-width:70%}
+  .legend span{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em}
+  .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+  /* right rail panels */
+  .angles{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .ang{background:var(--panel);padding:9px 12px}
+  .ang .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .ang .v{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+  .ang.full{grid-column:1/3;display:flex;align-items:center;justify-content:space-between}
+  .chip{font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:20px;font-weight:600}
+  .chip.grd{background:color-mix(in srgb,var(--c-plant) 22%,transparent);color:var(--c-plant)}
+  .chip.air{background:color-mix(in srgb,var(--c-flight) 22%,transparent);color:var(--c-flight)}
+  #metrics{padding:4px 0}
+  .metric{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:7px 14px;border-bottom:1px solid var(--line)}
+  .metric .mlab{color:var(--ink-dim);font-size:12.5px}
+  .metric .mval{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .warn-dot{color:var(--warn);cursor:help}
+  /* keyframes */
+  .kf-wrap{margin-top:auto;border-top:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  #keyList{overflow-y:auto;max-height:26vh;padding:6px 8px;display:flex;flex-direction:column;gap:3px}
+  .kf{display:flex;align-items:center;gap:8px;text-align:left;width:100%;background:transparent;border:1px solid transparent;
+    border-radius:7px;padding:6px 9px;cursor:pointer;font-family:inherit;color:var(--ink)}
+  .kf:hover{background:var(--panel-2)}
+  .kf.sel{background:var(--panel-2);border-color:var(--accent)}
+  .kf-dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .kf-name{font-size:12.5px;font-weight:550}
+  .kf-meta{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-faint);white-space:nowrap}
+  .kf-tools{display:flex;gap:6px;padding:8px 12px;flex-wrap:wrap;align-items:center}
+  .kf-tools input{flex:1;min-width:90px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    border-radius:6px;padding:5px 8px;font-family:var(--mono);font-size:11px}
+  #exportArea{display:none;width:calc(100% - 24px);margin:0 12px 12px;height:96px;background:var(--panel-2);
+    color:var(--ink-dim);border:1px solid var(--line);border-radius:6px;font-family:var(--mono);font-size:10px;padding:8px;resize:vertical}
+  /* transport */
+  .transport{border-top:1px solid var(--line);background:var(--panel);padding:10px 16px 12px}
+  .transport-row{display:flex;align-items:center;gap:14px}
+  .tbtns{display:flex;gap:6px}
+  .btn{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:7px;
+    height:32px;min-width:34px;padding:0 10px;cursor:pointer;font-family:var(--mono);font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn:hover{border-color:var(--ink-faint)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.play{width:44px;font-size:14px}
+  .slider{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:3px;background:var(--line);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--panel)}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--panel)}
+  #scrub{flex:1}
+  #speed{width:96px}
+  #timeline{width:100%;height:64px;display:block;margin-top:8px;cursor:pointer;touch-action:none}
+  .tl-meta{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+  .toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%) translateY(8px);opacity:0;pointer-events:none;
+    background:var(--ink);color:var(--ground);font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:8px;transition:.25s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:880px){
+    .stage{grid-template-columns:1fr;grid-auto-rows:min-content}
+    .rail{max-height:none;border:0;border-top:1px solid var(--line)}
+    .center{min-height:52vh}
+    #keyList{max-height:32vh}
+  }
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span class="kx">FITS·CV</span><b>Keyframe Studio</b></div>
+    <div class="tb-title"><h1 id="mvTitle">Approach Jump</h1><p id="mvBlurb">—</p></div>
+    <div class="tb-right">
+      <span class="viewtag" id="viewTag">sagittal · 60 fps</span>
+      <span class="ref">reference product · <b>VueMotion</b></span>
+    </div>
+  </header>
+
+  <div class="stage">
+    <aside class="rail left">
+      <div class="rail-actions">
+        <button class="btn wide" id="importVideoBtn">▤ Import video…</button>
+        <input type="file" id="videoFile" accept="video/*" hidden>
+      </div>
+      <div class="section-h">Movement library</div>
+      <div id="mvList"></div>
+      <div class="section-h">Capture</div>
+      <div class="meta">
+        Multi-cam 3D markerless → <code>OpenSim</code> IK.<br>
+        Demo takes are <b>synthetic</b> stand-ins; the studio reads the same
+        keypoint schema the P1 pipeline emits, so real triangulated takes drop
+        straight in.<br><br>
+        <code>space</code> play · <code>← →</code> step · drag markers to move keyframes.
+      </div>
+    </aside>
+
+    <section class="center">
+      <canvas id="view"></canvas>
+      <div class="legend">
+        <span><i style="background:var(--c-loading)"></i>loading</span>
+        <span><i style="background:var(--c-prop)"></i>propulsion</span>
+        <span><i style="background:var(--c-flight)"></i>flight</span>
+        <span><i style="background:var(--c-plant)"></i>contact</span>
+        <span><i style="background:var(--c-landing)"></i>landing</span>
+      </div>
+    </section>
+
+    <aside class="rail right">
+      <div class="section-h">Joint angles · live</div>
+      <div class="angles">
+        <div class="ang"><div class="l">Trunk lean</div><div class="v" id="aTrunk">0°</div></div>
+        <div class="ang"><div class="l">Hip flex R</div><div class="v" id="aHip">0°</div></div>
+        <div class="ang"><div class="l">Knee flex R</div><div class="v" id="aKnee">0°</div></div>
+        <div class="ang"><div class="l">Ankle R</div><div class="v" id="aAnkle">0°</div></div>
+        <div class="ang"><div class="l">Elbow R</div><div class="v" id="aElbow">0°</div></div>
+        <div class="ang"><div class="l">Knee sep</div><div class="v" id="aSep">0cm</div></div>
+        <div class="ang full"><div class="l">Foot contact</div><span class="chip grd" id="aContact">ground</span></div>
+      </div>
+      <div class="section-h">Take metrics</div>
+      <div id="metrics"></div>
+      <div class="kf-wrap">
+        <div class="section-h">Keyframes</div>
+        <div id="keyList"></div>
+        <div class="kf-tools">
+          <input id="renameKf" placeholder="rename selected keyframe" aria-label="Rename selected keyframe">
+          <button class="btn" id="delKf" title="Delete selected">✕</button>
+          <button class="btn primary" id="exportBtn">Export</button>
+        </div>
+        <textarea id="exportArea" spellcheck="false" aria-label="Exported keyframe JSON"></textarea>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="transport">
+    <div class="transport-row">
+      <div class="tbtns">
+        <button class="btn" id="restartBtn" title="Restart">⤒</button>
+        <button class="btn" id="stepB" title="Step back">◂</button>
+        <button class="btn play" id="playBtn" aria-label="Play">▶</button>
+        <button class="btn" id="stepF" title="Step forward">▸</button>
+        <button class="btn" id="addKf" title="Add keyframe at playhead">+ keyframe</button>
+      </div>
+      <input type="range" id="scrub" min="0" max="119" value="0" aria-label="Scrub frames">
+      <div class="slider">speed <input type="range" id="speed" min="0.1" max="1.5" step="0.05" value="1"><span id="speedVal">1.00×</span></div>
+    </div>
+    <canvas id="timeline"></canvas>
+    <div class="tl-meta"><span>phases + editable keyframes</span><span>drag a marker to retime · click to scrub</span></div>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>window.CAPTURED={"movement": "broad_jump", "fps": 60, "frames": [{"f": 0, "t": 0.0, "joints3d": [[0.0809, 1.6837, -0.0005], [0.0541, 1.471, 0.0037], [0.0532, 1.4682, 0.1795], [0.0526, 1.4643, -0.1781], [0.0924, 1.1706, 0.1774], [0.1021, 1.1698, -0.1771], [0.1566, 0.8998, 0.1803], [0.1514, 0.894, -0.1803], [-0.0018, 0.9532, 0.1017], [-0.0037, 0.9531, -0.0947], [0.0161, 0.513, 0.1073], [0.0224, 0.5079, -0.0935], [0.0523, 0.0893, 0.105], [0.0441, 0.0907, -0.0898], [0.2602, 0.0906, 0.0994], [0.254, 0.0974, -0.098], [-0.0014, 0.9487, -0.0]], "angles": {"trunkLean": 6.08, "hipFlexR": 14.53, "kneeFlexR": 0.52, "ankleR": 91.13, "hipFlexL": 13.03, "kneeFlexL": 2.76, "ankleL": 94.53, "elbowR": 1.03, "kneeSep": 0.2}, "airborne": true}, {"f": 1, "t": 0.008403361344537815, "joints3d": [[0.0744, 1.6851, 0.0016], [0.0571, 1.4684, -0.0004], [0.0536, 1.4692, 0.1769], [0.0586, 1.465, -0.1771], [0.0983, 1.177, 0.1802], [0.0972, 1.1725, -0.1817], [0.162, 0.8956, 0.1866], [0.1506, 0.8967, -0.1829], [0.0036, 0.9508, 0.1066], [0.0013, 0.9491, -0.104], [0.0184, 0.5094, 0.1019], [0.0309, 0.5101, -0.105], [0.048, 0.0893, 0.1018], [0.0519, 0.0914, -0.0997], [0.2559, 0.0866, 0.1019], [0.2508, 0.0894, -0.0898], [-0.0011, 0.95, 0.0022]], "angles": {"trunkLean": 6.41, "hipFlexR": 14.88, "kneeFlexR": 1.3, "ankleR": 93.48, "hipFlexL": 14.49, "kneeFlexL": 2.19, "ankleL": 94.77, "elbowR": 3.5, "kneeSep": 0.21}, "airborne": true}, {"f": 2, "t": 0.01680672268907563, "joints3d": [[0.0849, 1.6737, -0.0053], [0.0528, 1.4634, 0.0027], [0.0628, 1.4669, 0.1813], [0.0586, 1.4625, -0.1806], [0.0901, 1.1686, 0.1805], [0.0886, 1.1633, -0.1857], [0.1452, 0.8887, 0.1735], [0.1448, 0.8858, -0.1818], [0.0031, 0.9468, 0.1041], [-0.0026, 0.9448, -0.091], [0.0262, 0.5036, 0.095], [0.0274, 0.5015, -0.1007], [0.0593, 0.0883, 0.1016], [0.0556, 0.0874, -0.1027], [0.2643, 0.0834, 0.0954], [0.2666, 0.092, -0.0981], [0.0036, 0.94, 0.0059]], "angles": {"trunkLean": 5.38, "hipFlexR": 13.34, "kneeFlexR": 0.97, "ankleR": 92.64, "hipFlexL": 14.85, "kneeFlexL": 2.61, "ankleL": 95.9, "elbowR": 5.99, "kneeSep": 0.2}, "airborne": true}, {"f": 3, "t": 0.025210084033613446, "joints3d": [[0.0956, 1.68, -0.0014], [0.067, 1.456, 0.0036], [0.0659, 1.4543, 0.1772], [0.0582, 1.4569, -0.1852], [0.09, 1.1576, 0.1774], [0.0955, 1.1615, -0.1847], [0.1419, 0.8848, 0.1775], [0.1389, 0.8821, -0.1781], [0.0007, 0.9404, 0.1011], [0.0008, 0.9475, -0.0961], [0.0268, 0.5038, 0.101], [0.0321, 0.5047, -0.0982], [0.0651, 0.0851, 0.1044], [0.0625, 0.0831, -0.0973], [0.2717, 0.0828, 0.1022], [0.276, 0.0824, -0.0963], [0.0007, 0.943, 0.0021]], "angles": {"trunkLean": 7.37, "hipFlexR": 15.65, "kneeFlexR": 0.4, "ankleR": 94.31, "hipFlexL": 15.08, "kneeFlexL": 1.87, "ankleL": 95.86, "elbowR": 2.05, "kneeSep": 0.2}, "airborne": true}, {"f": 4, "t": 0.03361344537815126, "joints3d": [[0.1024, 1.6678, 0.0007], [0.067, 1.4495, -0.0012], [0.0718, 1.45, 0.1786], [0.0703, 1.4461, -0.1775], [0.0804, 1.146, 0.1829], [0.0838, 1.1506, -0.1815], [0.1324, 0.8721, 0.179], [0.1252, 0.8682, -0.1823], [0.0011, 0.9289, 0.1036], [-0.0019, 0.9265, -0.1081], [0.0382, 0.495, 0.0981], [0.0352, 0.4911, -0.1082], [0.082, 0.0733, 0.0994], [0.0713, 0.0776, -0.0964], [0.2899, 0.0781, 0.1012], [0.2846, 0.0771, -0.1062], [-0.0025, 0.9315, 0.0064]], "angles": {"trunkLean": 7.69, "hipFlexR": 16.79, "kneeFlexR": 1.65, "ankleR": 95.04, "hipFlexL": 17.0, "kneeFlexL": 1.38, "ankleL": 94.61, "elbowR": 5.76, "kneeSep": 0.21}, "airborne": true}, {"f": 5, "t": 0.04201680672268908, "joints3d": [[0.1166, 1.6522, 0.0006], [0.078, 1.441, -0.0012], [0.078, 1.4408, 0.1807], [0.081, 1.4363, -0.1826], [0.0725, 1.1333, 0.1769], [0.0724, 1.1364, -0.1754], [0.1176, 0.8617, 0.1886], [0.1125, 0.8565, -0.1766], [0.0004, 0.9254, 0.0974], [0.0004, 0.9213, -0.1036], [0.0429, 0.4879, 0.1015], [0.0477, 0.4845, -0.1043], [0.0927, 0.0705, 0.0971], [0.101, 0.0654, -0.1068], [0.3052, 0.0591, 0.1009], [0.3045, 0.0587, -0.0878], [0.0034, 0.9183, 0.007]], "angles": {"trunkLean": 8.17, "hipFlexR": 18.23, "kneeFlexR": 1.1, "ankleR": 99.06, "hipFlexL": 17.32, "kneeFlexL": 1.69, "ankleL": 99.86, "elbowR": 9.93, "kneeSep": 0.21}, "airborne": false}, {"f": 6, "t": 0.05042016806722689, "joints3d": [[0.1274, 1.6459, 0.0026], [0.0819, 1.4237, 0.0003], [0.0909, 1.4245, 0.1813], [0.0892, 1.4275, -0.1818], [0.0722, 1.1255, 0.1814], [0.0675, 1.1222, -0.1843], [0.1016, 0.8509, 0.1715], [0.1003, 0.8464, -0.1757], [0.0006, 0.9133, 0.1004], [-0.0073, 0.9104, -0.0975], [0.0488, 0.4769, 0.1002], [0.0544, 0.4749, -0.0996], [0.1194, 0.0593, 0.1031], [0.1164, 0.0561, -0.0987], [0.3253, 0.0508, 0.1071], [0.3261, 0.0461, -0.1002], [-0.0013, 0.9105, -0.0001]], "angles": {"trunkLean": 9.21, "hipFlexR": 20.61, "kneeFlexR": 0.53, "ankleR": 101.15, "hipFlexL": 18.8, "kneeFlexL": 3.32, "ankleL": 101.96, "elbowR": 11.08, "kneeSep": 0.2}, "airborne": false}, {"f": 7, "t": 0.058823529411764705, "joints3d": [[0.1435, 1.6264, 0.0031], [0.1023, 1.4104, -0.0087], [0.11, 1.4109, 0.1742], [0.0953, 1.412, -0.183], [0.0636, 1.1147, 0.1791], [0.0585, 1.1183, -0.1708], [0.0827, 0.833, 0.1765], [0.0803, 0.8293, -0.1811], [-0.0026, 0.8987, 0.0959], [-0.0018, 0.8933, -0.1007], [0.0625, 0.4652, 0.1108], [0.0594, 0.4667, -0.0933], [0.1346, 0.055, 0.0969], [0.1424, 0.0557, -0.0999], [0.349, 0.0445, 0.1007], [0.3482, 0.0348, -0.1014], [-0.004, 0.9045, -0.0051]], "angles": {"trunkLean": 11.87, "hipFlexR": 22.29, "kneeFlexR": 3.76, "ankleR": 107.22, "hipFlexL": 22.06, "kneeFlexL": 4.11, "ankleL": 102.73, "elbowR": 12.27, "kneeSep": 0.2}, "airborne": false}, {"f": 8, "t": 0.06722689075630252, "joints3d": [[0.1524, 1.6105, 0.0026], [0.1142, 1.3918, 0.0026], [0.1043, 1.3919, 0.1791], [0.1088, 1.3939, -0.1876], [0.0514, 1.0947, 0.1797], [0.0538, 1.1047, -0.1833], [0.066, 0.8192, 0.1786], [0.0664, 0.8191, -0.1769], [0.0025, 0.8865, 0.1002], [-0.0004, 0.8856, -0.1049], [0.0749, 0.4568, 0.102], [0.0754, 0.4511, -0.0984], [0.167, 0.0406, 0.0989], [0.1641, 0.0412, -0.0974], [0.3757, 0.0305, 0.1017], [0.3784, 0.0251, -0.0988], [-0.0001, 0.8881, -0.0008]], "angles": {"trunkLean": 12.79, "hipFlexR": 25.76, "kneeFlexR": 2.42, "ankleR": 106.51, "hipFlexL": 24.26, "kneeFlexL": 2.99, "ankleL": 105.24, "elbowR": 13.3, "kneeSep": 0.2}, "airborne": false}, {"f": 9, "t": 0.07563025210084033, "joints3d": [[0.1713, 1.5907, -0.0005], [0.123, 1.3745, 0.0075], [0.1122, 1.3722, 0.175], [0.1208, 1.3746, -0.1861], [0.0439, 1.0824, 0.1797], [0.044, 1.0866, -0.1816], [0.0357, 0.8054, 0.1864], [0.0402, 0.8071, -0.1823], [0.0019, 0.8727, 0.0997], [-0.0003, 0.8675, -0.0963], [0.0955, 0.4394, 0.1015], [0.0895, 0.4408, -0.1021], [0.1924, 0.042, 0.1049], [0.1929, 0.0316, -0.0983], [0.3914, 0.0123, 0.1029], [0.4046, 0.0155, -0.1014], [-0.0064, 0.8675, 0.0039]], "angles": {"trunkLean": 14.32, "hipFlexR": 27.46, "kneeFlexR": 2.63, "ankleR": 108.52, "hipFlexL": 27.46, "kneeFlexL": 1.53, "ankleL": 112.18, "elbowR": 14.19, "kneeSep": 0.2}, "airborne": false}, {"f": 10, "t": 0.08403361344537816, "joints3d": [[0.2041, 1.5717, 0.0011], [0.1366, 1.3563, 0.0034], [0.1364, 1.3564, 0.1782], [0.1257, 1.3611, -0.1836], [0.0272, 1.0832, 0.1748], [0.0321, 1.0763, -0.175], [0.0239, 0.8002, 0.1803], [0.0242, 0.7957, -0.1758], [0.0018, 0.8595, 0.101], [0.0008, 0.8523, -0.1002], [0.0985, 0.4321, 0.0958], [0.1056, 0.4282, -0.1071], [0.223, 0.0159, 0.0962], [0.2174, 0.0255, -0.1095], [0.4181, -0.0012, 0.1041], [0.4233, 0.0036, -0.0996], [0.0116, 0.8541, -0.0022]], "angles": {"trunkLean": 13.99, "hipFlexR": 30.55, "kneeFlexR": 1.73, "ankleR": 111.54, "hipFlexL": 30.03, "kneeFlexL": 3.97, "ankleL": 111.65, "elbowR": 16.68, "kneeSep": 0.2}, "airborne": false}, {"f": 11, "t": 0.09243697478991597, "joints3d": [[0.213, 1.5484, 0.0026], [0.1511, 1.3349, 0.008], [0.1435, 1.3337, 0.1811], [0.1539, 1.3313, -0.1784], [0.0264, 1.0677, 0.1831], [0.0181, 1.0641, -0.1833], [0.004, 0.7884, 0.1737], [0.005, 0.7856, -0.1825], [0.0077, 0.8389, 0.0979], [0.0064, 0.8442, -0.0952], [0.1142, 0.416, 0.1025], [0.1055, 0.4167, -0.0983], [0.239, 0.0172, 0.1009], [0.2506, 0.0184, -0.102], [0.4573, -0.0147, 0.0981], [0.4527, -0.0136, -0.1046], [0.0059, 0.8398, -0.0]], "angles": {"trunkLean": 16.37, "hipFlexR": 31.27, "kneeFlexR": 6.97, "ankleR": 119.02, "hipFlexL": 31.49, "kneeFlexL": 3.34, "ankleL": 115.69, "elbowR": 24.27, "kneeSep": 0.2}, "airborne": false}, {"f": 12, "t": 0.10084033613445378, "joints3d": [[0.2281, 1.5263, -0.0022], [0.1678, 1.3181, -0.0069], [0.1639, 1.313, 0.1811], [0.1609, 1.3166, -0.177], [0.0105, 1.0616, 0.1854], [0.0108, 1.0494, -0.1798], [-0.0242, 0.7834, 0.1847], [-0.0285, 0.7807, -0.1827], [-0.0023, 0.8224, 0.0942], [0.0049, 0.8227, -0.1043], [0.1332, 0.405, 0.0977], [0.1247, 0.4065, -0.1042], [0.2749, 0.0097, 0.0907], [0.2731, 0.0143, -0.1005], [0.4809, -0.0197, 0.0935], [0.4845, -0.023, -0.094], [-0.0058, 0.8265, -0.003]], "angles": {"trunkLean": 19.45, "hipFlexR": 35.67, "kneeFlexR": 4.69, "ankleR": 120.73, "hipFlexL": 38.15, "kneeFlexL": 2.24, "ankleL": 117.82, "elbowR": 21.0, "kneeSep": 0.2}, "airborne": false}, {"f": 13, "t": 0.1092436974789916, "joints3d": [[0.2469, 1.4993, 0.0023], [0.1726, 1.2984, -0.0083], [0.1772, 1.2964, 0.1772], [0.1773, 1.293, -0.1837], [-0.003, 1.049, 0.1722], [-0.0059, 1.0511, -0.1764], [-0.0318, 0.7723, 0.1811], [-0.0402, 0.7757, -0.181], [-0.0017, 0.8035, 0.1011], [-0.002, 0.8132, -0.0944], [0.1378, 0.3876, 0.0954], [0.1348, 0.3895, -0.1038], [0.3017, 0.0043, 0.1053], [0.2991, 0.002, -0.0969], [0.5027, -0.0334, 0.1041], [0.5054, -0.0338, -0.1029], [0.0031, 0.8101, -0.0014]], "angles": {"trunkLean": 19.16, "hipFlexR": 38.38, "kneeFlexR": 5.52, "ankleR": 122.77, "hipFlexL": 39.71, "kneeFlexL": 5.07, "ankleL": 123.75, "elbowR": 30.13, "kneeSep": 0.2}, "airborne": false}, {"f": 14, "t": 0.11764705882352941, "joints3d": [[0.2698, 1.484, 0.0011], [0.1919, 1.2703, 0.0041], [0.1869, 1.2748, 0.1845], [0.1869, 1.2715, -0.1808], [-0.0087, 1.0466, 0.1766], [-0.0071, 1.0395, -0.1861], [-0.061, 0.7742, 0.1796], [-0.0594, 0.7679, -0.1758], [-0.0025, 0.7888, 0.0886], [0.0042, 0.7924, -0.1109], [0.1523, 0.3734, 0.0991], [0.1517, 0.3835, -0.1062], [0.3361, -0.0077, 0.0996], [0.3375, 0.0049, -0.103], [0.5362, -0.0386, 0.0976], [0.5415, -0.0421, -0.0975], [-0.0048, 0.7941, -0.0003]], "angles": {"trunkLean": 22.45, "hipFlexR": 43.04, "kneeFlexR": 6.31, "ankleR": 129.11, "hipFlexL": 42.93, "kneeFlexL": 5.46, "ankleL": 124.52, "elbowR": 29.17, "kneeSep": 0.21}, "airborne": false}, {"f": 15, "t": 0.12605042016806722, "joints3d": [[0.286, 1.4525, -0.009], [0.1987, 1.2499, 0.0044], [0.204, 1.2547, 0.1847], [0.2001, 1.2531, -0.186], [-0.0103, 1.0388, 0.183], [-0.0124, 1.0391, -0.183], [-0.0779, 0.7678, 0.1757], [-0.0777, 0.7681, -0.1866], [-0.0031, 0.7746, 0.0881], [-0.0046, 0.7824, -0.1031], [0.1639, 0.368, 0.1027], [0.1701, 0.3642, -0.0964], [0.3627, -0.007, 0.1007], [0.3656, -0.0066, -0.0945], [0.5639, -0.0495, 0.1005], [0.5672, -0.0512, -0.101], [0.0024, 0.7769, 0.0035]], "angles": {"trunkLean": 22.54, "hipFlexR": 47.59, "kneeFlexR": 5.16, "ankleR": 130.24, "hipFlexL": 45.67, "kneeFlexL": 6.01, "ankleL": 129.86, "elbowR": 31.28, "kneeSep": 0.2}, "airborne": false}, {"f": 16, "t": 0.13445378151260504, "joints3d": [[0.3041, 1.4291, -0.0033], [0.2113, 1.2287, 0.0014], [0.2178, 1.23, 0.182], [0.2182, 1.2269, -0.1817], [-0.0178, 1.0383, 0.1797], [-0.0158, 1.0465, -0.1686], [-0.09, 0.7688, 0.1827], [-0.0879, 0.7705, -0.1783], [-0.0027, 0.7561, 0.0961], [0.0027, 0.7576, -0.098], [0.1715, 0.3523, 0.102], [0.1707, 0.3585, -0.1004], [0.3828, -0.006, 0.0992], [0.3902, -0.0101, -0.098], [0.5986, -0.0573, 0.1048], [0.5909, -0.0526, -0.1035], [0.0005, 0.762, 0.0058]], "angles": {"trunkLean": 24.31, "hipFlexR": 47.6, "kneeFlexR": 7.97, "ankleR": 132.7, "hipFlexL": 48.36, "kneeFlexL": 7.29, "ankleL": 133.87, "elbowR": 37.99, "kneeSep": 0.2}, "airborne": false}, {"f": 17, "t": 0.14285714285714285, "joints3d": [[0.3224, 1.4108, -0.0007], [0.2273, 1.2031, -0.0005], [0.2282, 1.2109, 0.178], [0.2278, 1.2142, -0.1816], [-0.0168, 1.038, 0.1821], [-0.0146, 1.0365, -0.1778], [-0.1055, 0.7724, 0.1831], [-0.1136, 0.7726, -0.1833], [0.0025, 0.7436, 0.0993], [0.0044, 0.7404, -0.1013], [0.1852, 0.3423, 0.0947], [0.1942, 0.3433, -0.1046], [0.4132, -0.0144, 0.0959], [0.4171, -0.0131, -0.1027], [0.6178, -0.0651, 0.1027], [0.6189, -0.062, -0.1012], [-0.0002, 0.7479, 0.003]], "angles": {"trunkLean": 26.56, "hipFlexR": 52.02, "kneeFlexR": 6.51, "ankleR": 135.64, "hipFlexL": 51.56, "kneeFlexL": 8.14, "ankleL": 136.48, "elbowR": 33.24, "kneeSep": 0.2}, "airborne": false}, {"f": 18, "t": 0.15126050420168066, "joints3d": [[0.3449, 1.3862, -0.0017], [0.2451, 1.1834, 0.0026], [0.2353, 1.1886, 0.1835], [0.2387, 1.1869, -0.1831], [-0.0122, 1.0319, 0.1766], [-0.0164, 1.0374, -0.1734], [-0.1159, 0.771, 0.1828], [-0.1201, 0.7738, -0.1902], [-0.0001, 0.7318, 0.0952], [-0.0008, 0.7276, -0.1002], [0.1994, 0.3301, 0.1041], [0.1957, 0.3354, -0.1044], [0.4307, -0.0088, 0.0974], [0.4324, -0.0014, -0.0982], [0.6351, -0.0678, 0.0982], [0.6411, -0.0638, -0.1054], [-0.0025, 0.7263, -0.0035]], "angles": {"trunkLean": 28.45, "hipFlexR": 55.6, "kneeFlexR": 8.6, "ankleR": 141.65, "hipFlexL": 55.31, "kneeFlexL": 8.17, "ankleL": 140.4, "elbowR": 38.5, "kneeSep": 0.21}, "airborne": false}, {"f": 19, "t": 0.15966386554621848, "joints3d": [[0.3605, 1.3629, -0.0014], [0.2481, 1.1671, 0.0007], [0.2495, 1.1697, 0.177], [0.2509, 1.1668, -0.1795], [-0.014, 1.0298, 0.1852], [-0.0274, 1.042, -0.1815], [-0.1232, 0.772, 0.187], [-0.1218, 0.7767, -0.1662], [0.0012, 0.7107, 0.0933], [-0.0, 0.7152, -0.0982], [0.2149, 0.3241, 0.1069], [0.2055, 0.3248, -0.0964], [0.4602, -0.0134, 0.1011], [0.4598, -0.0076, -0.105], [0.6549, -0.0705, 0.093], [0.6635, -0.0668, -0.1018], [0.0036, 0.7144, 0.0038]], "angles": {"trunkLean": 28.38, "hipFlexR": 57.26, "kneeFlexR": 9.76, "ankleR": 143.57, "hipFlexL": 57.56, "kneeFlexL": 7.53, "ankleL": 142.34, "elbowR": 46.37, "kneeSep": 0.2}, "airborne": false}, {"f": 20, "t": 0.16806722689075632, "joints3d": [[0.3637, 1.3448, -0.0054], [0.2589, 1.1553, 0.0007], [0.2629, 1.1534, 0.1839], [0.2635, 1.1535, -0.1835], [-0.0155, 1.0384, 0.1782], [-0.0135, 1.0397, -0.1753], [-0.1382, 0.7826, 0.1848], [-0.127, 0.7835, -0.1837], [-0.0039, 0.7006, 0.1033], [0.0064, 0.7048, -0.1035], [0.221, 0.3162, 0.1104], [0.2213, 0.3201, -0.108], [0.477, -0.0082, 0.0986], [0.473, -0.0112, -0.0949], [0.6771, -0.0735, 0.0955], [0.6824, -0.0744, -0.1002], [0.0021, 0.7001, -0.0031]], "angles": {"trunkLean": 29.43, "hipFlexR": 59.02, "kneeFlexR": 8.38, "ankleR": 143.88, "hipFlexL": 60.76, "kneeFlexL": 8.35, "ankleL": 146.35, "elbowR": 43.89, "kneeSep": 0.22}, "airborne": false}, {"f": 21, "t": 0.17647058823529413, "joints3d": [[0.3775, 1.3183, 0.0017], [0.2653, 1.1336, -0.0053], [0.2707, 1.1328, 0.1763], [0.2703, 1.1359, -0.1738], [-0.0163, 1.0347, 0.1824], [-0.0151, 1.0335, -0.1681], [-0.1421, 0.7819, 0.1858], [-0.1355, 0.7909, -0.179], [-0.0012, 0.6844, 0.105], [-0.0012, 0.688, -0.1037], [0.2276, 0.313, 0.0979], [0.2308, 0.3163, -0.0905], [0.4937, -0.0087, 0.1027], [0.4945, -0.0084, -0.1015], [0.6939, -0.0761, 0.0997], [0.6997, -0.0706, -0.0926], [0.0042, 0.6964, 0.0016]], "angles": {"trunkLean": 30.85, "hipFlexR": 63.74, "kneeFlexR": 7.81, "ankleR": 145.73, "hipFlexL": 63.18, "kneeFlexL": 8.12, "ankleL": 148.17, "elbowR": 43.99, "kneeSep": 0.19}, "airborne": false}, {"f": 22, "t": 0.18487394957983194, "joints3d": [[0.4023, 1.3012, 0.0062], [0.2766, 1.1181, 0.0005], [0.2829, 1.1183, 0.1912], [0.274, 1.1216, -0.1758], [-0.0134, 1.0379, 0.1813], [-0.0118, 1.0388, -0.1834], [-0.1419, 0.7878, 0.1761], [-0.1431, 0.7905, -0.1819], [0.0015, 0.6832, 0.1048], [0.0032, 0.6799, -0.104], [0.2309, 0.3049, 0.0957], [0.2296, 0.3079, -0.1024], [0.5027, -0.0101, 0.1083], [0.497, -0.0102, -0.0982], [0.7058, -0.0762, 0.1044], [0.7108, -0.0801, -0.1049], [-0.0051, 0.6777, 0.0052]], "angles": {"trunkLean": 32.61, "hipFlexR": 63.9, "kneeFlexR": 8.73, "ankleR": 148.08, "hipFlexL": 64.38, "kneeFlexL": 9.99, "ankleL": 148.7, "elbowR": 46.0, "kneeSep": 0.2}, "airborne": false}, {"f": 23, "t": 0.19327731092436976, "joints3d": [[0.3986, 1.2961, -0.0046], [0.2856, 1.108, 0.0043], [0.2838, 1.1014, 0.18], [0.2736, 1.1029, -0.1794], [-0.0047, 1.0386, 0.1792], [-0.0122, 1.0405, -0.1732], [-0.1391, 0.7908, 0.186], [-0.1429, 0.7886, -0.1777], [0.0007, 0.6716, 0.0969], [-0.0024, 0.6729, -0.0967], [0.2344, 0.2949, 0.0945], [0.238, 0.2968, -0.0978], [0.5238, -0.0097, 0.1004], [0.5207, -0.0098, -0.0993], [0.7205, -0.0773, 0.1019], [0.7182, -0.0786, -0.0981], [0.0072, 0.6714, -0.0005]], "angles": {"trunkLean": 32.53, "hipFlexR": 66.52, "kneeFlexR": 10.09, "ankleR": 151.88, "hipFlexL": 65.43, "kneeFlexL": 11.77, "ankleL": 152.5, "elbowR": 50.3, "kneeSep": 0.19}, "airborne": false}, {"f": 24, "t": 0.20168067226890757, "joints3d": [[0.4028, 1.2863, -0.0031], [0.2888, 1.1008, -0.0071], [0.2821, 1.0973, 0.1788], [0.2858, 1.0963, -0.1807], [-0.011, 1.0372, 0.184], [-0.0072, 1.04, -0.1832], [-0.1461, 0.797, 0.1782], [-0.137, 0.7952, -0.178], [0.0057, 0.6649, 0.0968], [0.0002, 0.6624, -0.1042], [0.2406, 0.2973, 0.1016], [0.2402, 0.2992, -0.0967], [0.5352, -0.0111, 0.0964], [0.5286, -0.0096, -0.1016], [0.7276, -0.0795, 0.1052], [0.7333, -0.0797, -0.1006], [0.0046, 0.6695, 0.0017]], "angles": {"trunkLean": 33.4, "hipFlexR": 67.42, "kneeFlexR": 9.73, "ankleR": 151.93, "hipFlexL": 65.95, "kneeFlexL": 11.19, "ankleL": 153.08, "elbowR": 51.21, "kneeSep": 0.2}, "airborne": false}, {"f": 25, "t": 0.21008403361344538, "joints3d": [[0.4077, 1.2687, 0.0091], [0.2837, 1.0974, -0.0018], [0.2897, 1.0999, 0.1856], [0.292, 1.0951, -0.177], [0.0015, 1.0369, 0.1839], [-0.0057, 1.0374, -0.1777], [-0.1457, 0.7968, 0.1782], [-0.1381, 0.7977, -0.1862], [-0.0018, 0.6604, 0.0987], [0.0007, 0.6609, -0.098], [0.2441, 0.3025, 0.1022], [0.2428, 0.2957, -0.0999], [0.5358, -0.0041, 0.0963], [0.535, -0.0124, -0.1043], [0.7339, -0.0768, 0.1054], [0.7391, -0.0821, -0.095], [-0.001, 0.6626, 0.0017]], "angles": {"trunkLean": 33.22, "hipFlexR": 66.86, "kneeFlexR": 9.95, "ankleR": 152.18, "hipFlexL": 67.98, "kneeFlexL": 9.17, "ankleL": 153.53, "elbowR": 50.13, "kneeSep": 0.2}, "airborne": false}, {"f": 26, "t": 0.2184873949579832, "joints3d": [[0.4133, 1.2784, 0.0016], [0.2901, 1.0899, -0.0038], [0.2891, 1.0914, 0.1809], [0.2916, 1.0947, -0.1823], [-0.0071, 1.0441, 0.1781], [-0.006, 1.0369, -0.1817], [-0.1414, 0.7989, 0.1796], [-0.1385, 0.7936, -0.1791], [-0.0029, 0.6623, 0.1021], [-0.002, 0.6639, -0.0993], [0.2389, 0.2956, 0.0969], [0.2419, 0.2918, -0.092], [0.538, -0.0057, 0.0919], [0.5368, -0.0064, -0.1073], [0.7311, -0.0752, 0.0994], [0.7378, -0.0797, -0.0944], [0.0003, 0.6564, -0.0026]], "angles": {"trunkLean": 33.76, "hipFlexR": 68.26, "kneeFlexR": 11.83, "ankleR": 154.13, "hipFlexL": 68.44, "kneeFlexL": 11.39, "ankleL": 154.44, "elbowR": 50.44, "kneeSep": 0.19}, "airborne": false}, {"f": 27, "t": 0.226890756302521, "joints3d": [[0.4189, 1.273, -0.0074], [0.2975, 1.0947, 0.0089], [0.2847, 1.0955, 0.1829], [0.2911, 1.0944, -0.1767], [0.0052, 1.0345, 0.181], [0.0021, 1.0362, -0.1847], [-0.1381, 0.7884, 0.1849], [-0.1405, 0.7983, -0.1751], [0.0047, 0.6615, 0.1016], [0.0043, 0.6645, -0.1042], [0.2471, 0.2957, 0.099], [0.2463, 0.2962, -0.0974], [0.5361, -0.0082, 0.1056], [0.5375, -0.0096, -0.1029], [0.7339, -0.0676, 0.1008], [0.733, -0.0771, -0.1049], [-0.0001, 0.6611, -0.0039]], "angles": {"trunkLean": 34.49, "hipFlexR": 68.33, "kneeFlexR": 10.42, "ankleR": 152.65, "hipFlexL": 68.01, "kneeFlexL": 10.11, "ankleL": 150.19, "elbowR": 47.8, "kneeSep": 0.2}, "airborne": false}, {"f": 28, "t": 0.23529411764705882, "joints3d": [[0.4208, 1.2826, 0.0016], [0.2894, 1.0977, -0.0008], [0.2993, 1.102, 0.1865], [0.3014, 1.0979, -0.1796], [-0.0017, 1.0299, 0.1759], [0.0006, 1.0281, -0.1856], [-0.1191, 0.7748, 0.1757], [-0.1237, 0.7772, -0.1736], [0.0067, 0.6681, 0.1056], [0.007, 0.6703, -0.1047], [0.2409, 0.299, 0.0988], [0.244, 0.3023, -0.1005], [0.5344, -0.0099, 0.0877], [0.5344, -0.0033, -0.1035], [0.7324, -0.0679, 0.0988], [0.738, -0.0812, -0.1011], [0.0094, 0.6655, -0.0056]], "angles": {"trunkLean": 32.94, "hipFlexR": 66.86, "kneeFlexR": 10.8, "ankleR": 154.46, "hipFlexL": 66.48, "kneeFlexL": 11.15, "ankleL": 149.53, "elbowR": 50.69, "kneeSep": 0.2}, "airborne": false}, {"f": 29, "t": 0.24369747899159663, "joints3d": [[0.4211, 1.2962, -0.0073], [0.3053, 1.1084, -0.0005], [0.3034, 1.1112, 0.1801], [0.3023, 1.1104, -0.1808], [0.0204, 1.0059, 0.1759], [0.02, 1.0079, -0.1833], [-0.0909, 0.746, 0.1868], [-0.0835, 0.7459, -0.18], [0.0079, 0.6794, 0.1049], [0.0167, 0.6787, -0.0997], [0.2353, 0.3, 0.0942], [0.2448, 0.3033, -0.1003], [0.5239, -0.0018, 0.1], [0.5306, -0.0023, -0.1055], [0.7308, -0.0608, 0.0953], [0.7315, -0.0667, -0.0932], [0.0117, 0.6793, 0.0044]], "angles": {"trunkLean": 34.38, "hipFlexR": 65.63, "kneeFlexR": 11.82, "ankleR": 150.59, "hipFlexL": 66.49, "kneeFlexL": 12.97, "ankleL": 149.57, "elbowR": 48.5, "kneeSep": 0.19}, "airborne": false}, {"f": 30, "t": 0.25210084033613445, "joints3d": [[0.4314, 1.3112, 0.0085], [0.307, 1.1307, -0.0072], [0.3102, 1.1192, 0.1777], [0.314, 1.1222, -0.1783], [0.0496, 0.9915, 0.1802], [0.0426, 0.9824, -0.1852], [-0.0268, 0.7117, 0.1816], [-0.0248, 0.7132, -0.177], [0.0288, 0.6954, 0.0985], [0.0255, 0.6933, -0.0947], [0.2414, 0.3093, 0.0973], [0.2338, 0.3053, -0.0987], [0.527, 0.0007, 0.0988], [0.5149, -0.0013, -0.1033], [0.7226, -0.0505, 0.0945], [0.726, -0.0526, -0.0964], [0.0202, 0.6879, 0.0035]], "angles": {"trunkLean": 32.95, "hipFlexR": 61.34, "kneeFlexR": 14.29, "ankleR": 146.09, "hipFlexL": 62.09, "kneeFlexL": 13.95, "ankleL": 147.42, "elbowR": 48.78, "kneeSep": 0.2}, "airborne": false}, {"f": 31, "t": 0.2605042016806723, "joints3d": [[0.4342, 1.3328, -0.0042], [0.3195, 1.1431, -0.0002], [0.3181, 1.1438, 0.1766], [0.315, 1.1508, -0.1837], [0.0793, 0.9631, 0.1782], [0.0804, 0.9638, -0.1807], [0.0438, 0.6868, 0.1802], [0.0498, 0.6855, -0.1825], [0.0256, 0.7198, 0.1013], [0.0314, 0.7151, -0.0946], [0.2314, 0.3167, 0.1067], [0.2334, 0.3222, -0.1006], [0.5112, 0.0064, 0.096], [0.5134, 0.0079, -0.0918], [0.7214, -0.0366, 0.1012], [0.7192, -0.0363, -0.098], [0.0321, 0.7141, -0.0071]], "angles": {"trunkLean": 33.83, "hipFlexR": 61.51, "kneeFlexR": 14.62, "ankleR": 143.71, "hipFlexL": 62.25, "kneeFlexL": 15.15, "ankleL": 143.49, "elbowR": 45.18, "kneeSep": 0.21}, "airborne": false}, {"f": 32, "t": 0.2689075630252101, "joints3d": [[0.4524, 1.3557, -0.0012], [0.3332, 1.1618, 0.0067], [0.3245, 1.166, 0.1818], [0.3316, 1.1685, -0.1861], [0.1275, 0.9421, 0.1821], [0.1245, 0.9464, -0.1866], [0.1355, 0.6666, 0.179], [0.1396, 0.6634, -0.1761], [0.039, 0.736, 0.1031], [0.0416, 0.7317, -0.1005], [0.2258, 0.3331, 0.1032], [0.2199, 0.3311, -0.1006], [0.504, 0.0108, 0.1013], [0.5067, 0.0117, -0.0978], [0.7069, -0.0178, 0.0974], [0.7104, -0.0186, -0.1076], [0.0456, 0.7323, 0.0001]], "angles": {"trunkLean": 33.81, "hipFlexR": 58.86, "kneeFlexR": 17.93, "ankleR": 140.27, "hipFlexL": 60.08, "kneeFlexL": 15.93, "ankleL": 138.82, "elbowR": 46.1, "kneeSep": 0.2}, "airborne": false}, {"f": 33, "t": 0.2773109243697479, "joints3d": [[0.4562, 1.3772, -0.0019], [0.3389, 1.1914, 0.0031], [0.3375, 1.1896, 0.1853], [0.3478, 1.1966, -0.1769], [0.1896, 0.9279, 0.1841], [0.1958, 0.9271, -0.1768], [0.2535, 0.6609, 0.186], [0.2551, 0.6585, -0.1715], [0.0575, 0.7559, 0.0921], [0.0593, 0.7529, -0.1012], [0.2147, 0.3399, 0.1019], [0.2194, 0.3408, -0.1081], [0.493, 0.0232, 0.1037], [0.486, 0.0223, -0.1014], [0.702, -0.0027, 0.1054], [0.7061, 0.0024, -0.0943], [0.0557, 0.7555, -0.0085]], "angles": {"trunkLean": 33.03, "hipFlexR": 54.36, "kneeFlexR": 18.79, "ankleR": 135.1, "hipFlexL": 53.92, "kneeFlexL": 20.63, "ankleL": 138.37, "elbowR": 41.88, "kneeSep": 0.21}, "airborne": false}, {"f": 34, "t": 0.2857142857142857, "joints3d": [[0.4682, 1.401, 0.0035], [0.3525, 1.22, 0.0007], [0.3504, 1.2215, 0.1738], [0.3498, 1.2249, -0.1745], [0.2715, 0.9321, 0.1873], [0.2654, 0.9365, -0.183], [0.3864, 0.6772, 0.1776], [0.3878, 0.6759, -0.1815], [0.0712, 0.7802, 0.1037], [0.0746, 0.7729, -0.1044], [0.2134, 0.3627, 0.0954], [0.2105, 0.3607, -0.0989], [0.4791, 0.0359, 0.1], [0.4874, 0.0316, -0.0967], [0.6834, 0.0308, 0.099], [0.687, 0.0289, -0.0983], [0.0768, 0.7702, -0.0078]], "angles": {"trunkLean": 31.52, "hipFlexR": 51.22, "kneeFlexR": 21.83, "ankleR": 130.85, "hipFlexL": 52.54, "kneeFlexL": 20.37, "ankleL": 130.53, "elbowR": 41.51, "kneeSep": 0.19}, "airborne": false}, {"f": 35, "t": 0.29411764705882354, "joints3d": [[0.4777, 1.429, -0.0046], [0.3752, 1.2407, -0.0009], [0.3618, 1.2451, 0.1752], [0.3678, 1.2421, -0.173], [0.3549, 0.944, 0.181], [0.3465, 0.9483, -0.1755], [0.5202, 0.721, 0.1767], [0.5227, 0.7212, -0.1814], [0.091, 0.8041, 0.0985], [0.0851, 0.8012, -0.0953], [0.192, 0.3762, 0.0954], [0.2032, 0.373, -0.0968], [0.4606, 0.0455, 0.0987], [0.4598, 0.0485, -0.1016], [0.6708, 0.0618, 0.0942], [0.6796, 0.061, -0.1068], [0.0912, 0.8018, 0.0002]], "angles": {"trunkLean": 32.91, "hipFlexR": 49.58, "kneeFlexR": 22.92, "ankleR": 125.09, "hipFlexL": 47.41, "kneeFlexL": 25.82, "ankleL": 124.63, "elbowR": 41.95, "kneeSep": 0.19}, "airborne": true}, {"f": 36, "t": 0.3025210084033613, "joints3d": [[0.4871, 1.4674, 0.0043], [0.375, 1.2745, 0.0004], [0.3786, 1.2705, 0.177], [0.3812, 1.2725, -0.1817], [0.4391, 0.98, 0.1771], [0.4417, 0.9821, -0.1771], [0.6513, 0.7938, 0.177], [0.649, 0.7964, -0.1731], [0.1049, 0.8322, 0.1011], [0.1087, 0.83, -0.1015], [0.1915, 0.3975, 0.105], [0.1913, 0.4007, -0.0994], [0.4456, 0.0715, 0.0948], [0.4461, 0.067, -0.1023], [0.6558, 0.091, 0.0975], [0.6477, 0.0849, -0.095], [0.1089, 0.828, -0.0055]], "angles": {"trunkLean": 30.8, "hipFlexR": 43.09, "kneeFlexR": 26.48, "ankleR": 122.25, "hipFlexL": 43.67, "kneeFlexL": 26.73, "ankleL": 122.6, "elbowR": 36.37, "kneeSep": 0.2}, "airborne": true}, {"f": 37, "t": 0.31092436974789917, "joints3d": [[0.5114, 1.4925, 0.0016], [0.3917, 1.3009, 0.0045], [0.3943, 1.3031, 0.1772], [0.3941, 1.3003, -0.1741], [0.5337, 1.0402, 0.1857], [0.5327, 1.034, -0.1834], [0.7763, 0.8967, 0.1772], [0.7826, 0.9009, -0.1761], [0.1295, 0.8561, 0.0971], [0.1286, 0.8603, -0.1034], [0.1745, 0.4229, 0.0993], [0.1766, 0.4167, -0.0984], [0.4314, 0.0903, 0.0901], [0.4362, 0.0837, -0.0998], [0.637, 0.1214, 0.1004], [0.6324, 0.1232, -0.1059], [0.1296, 0.8586, 0.0006]], "angles": {"trunkLean": 30.65, "hipFlexR": 38.83, "kneeFlexR": 31.77, "ankleR": 116.55, "hipFlexL": 37.57, "kneeFlexL": 31.79, "ankleL": 118.96, "elbowR": 34.61, "kneeSep": 0.2}, "airborne": true}, {"f": 38, "t": 0.31932773109243695, "joints3d": [[0.5225, 1.528, -0.0028], [0.4138, 1.3304, -0.0079], [0.411, 1.332, 0.1819], [0.4092, 1.3304, -0.1842], [0.6116, 1.1052, 0.1738], [0.6035, 1.1088, -0.181], [0.8753, 1.0269, 0.1785], [0.8762, 1.0306, -0.1768], [0.1477, 0.8865, 0.095], [0.1499, 0.8834, -0.1062], [0.1694, 0.4443, 0.1014], [0.1682, 0.4446, -0.098], [0.4156, 0.1077, 0.1011], [0.408, 0.107, -0.1067], [0.6153, 0.1584, 0.0981], [0.6128, 0.1546, -0.1028], [0.1407, 0.88, -0.0064]], "angles": {"trunkLean": 31.23, "hipFlexR": 34.82, "kneeFlexR": 33.07, "ankleR": 112.27, "hipFlexL": 35.09, "kneeFlexL": 33.38, "ankleL": 111.94, "elbowR": 32.75, "kneeSep": 0.2}, "airborne": true}, {"f": 39, "t": 0.3277310924369748, "joints3d": [[0.5267, 1.5503, -0.0015], [0.4192, 1.3602, -0.0034], [0.4224, 1.3607, 0.183], [0.4281, 1.3592, -0.1778], [0.6743, 1.1911, 0.1828], [0.6647, 1.1926, -0.1795], [0.9413, 1.1753, 0.1831], [0.9519, 1.1747, -0.1818], [0.1653, 0.9123, 0.1057], [0.1643, 0.9163, -0.0991], [0.1488, 0.4704, 0.1027], [0.1548, 0.4779, -0.1067], [0.3974, 0.1246, 0.1118], [0.396, 0.127, -0.0974], [0.5957, 0.2006, 0.1072], [0.5908, 0.2, -0.0934], [0.1563, 0.9131, 0.0005]], "angles": {"trunkLean": 30.46, "hipFlexR": 30.02, "kneeFlexR": 35.81, "ankleR": 103.98, "hipFlexL": 29.88, "kneeFlexL": 37.88, "ankleL": 104.71, "elbowR": 31.58, "kneeSep": 0.21}, "airborne": true}, {"f": 40, "t": 0.33613445378151263, "joints3d": [[0.545, 1.5813, -0.0019], [0.4383, 1.3882, 0.0054], [0.4368, 1.3863, 0.1802], [0.4314, 1.3875, -0.1803], [0.7229, 1.2843, 0.1821], [0.7155, 1.2876, -0.1749], [0.9967, 1.3207, 0.1798], [0.9882, 1.324, -0.1761], [0.1697, 0.9401, 0.0941], [0.1788, 0.9392, -0.0996], [0.1402, 0.4933, 0.1057], [0.1423, 0.4956, -0.1014], [0.3734, 0.1521, 0.0943], [0.3758, 0.1521, -0.0951], [0.5755, 0.2301, 0.1046], [0.5757, 0.2338, -0.099], [0.1736, 0.9377, -0.0006]], "angles": {"trunkLean": 30.44, "hipFlexR": 27.53, "kneeFlexR": 38.92, "ankleR": 101.96, "hipFlexL": 28.21, "kneeFlexL": 38.25, "ankleL": 103.15, "elbowR": 27.01, "kneeSep": 0.21}, "airborne": true}, {"f": 41, "t": 0.3445378151260504, "joints3d": [[0.558, 1.6087, 0.0013], [0.4445, 1.4148, -0.0002], [0.4474, 1.4183, 0.179], [0.4483, 1.4169, -0.178], [0.7468, 1.3746, 0.1781], [0.7545, 1.3763, -0.1816], [1.0154, 1.4692, 0.1864], [1.0127, 1.4687, -0.1822], [0.1994, 0.9645, 0.1068], [0.2029, 0.9596, -0.1067], [0.1347, 0.5202, 0.1041], [0.1329, 0.5301, -0.0968], [0.3568, 0.1716, 0.1002], [0.3616, 0.1749, -0.0979], [0.5524, 0.2643, 0.0978], [0.5508, 0.2706, -0.0992], [0.183, 0.9615, 0.0009]], "angles": {"trunkLean": 29.98, "hipFlexR": 22.67, "kneeFlexR": 42.05, "ankleR": 95.95, "hipFlexL": 23.51, "kneeFlexL": 40.79, "ankleL": 97.15, "elbowR": 27.25, "kneeSep": 0.2}, "airborne": true}, {"f": 42, "t": 0.35294117647058826, "joints3d": [[0.5561, 1.628, 0.0027], [0.4669, 1.4367, -0.0002], [0.4635, 1.4387, 0.1811], [0.4677, 1.4364, -0.1773], [0.7598, 1.4591, 0.1761], [0.7648, 1.4596, -0.1799], [1.006, 1.5988, 0.1815], [1.0091, 1.6044, -0.1838], [0.2142, 0.9817, 0.0964], [0.2069, 0.9821, -0.096], [0.1205, 0.553, 0.0955], [0.1282, 0.5514, -0.1048], [0.3487, 0.2013, 0.096], [0.3568, 0.1945, -0.1037], [0.529, 0.2967, 0.1018], [0.533, 0.3019, -0.1014], [0.209, 0.9873, 0.0003]], "angles": {"trunkLean": 29.85, "hipFlexR": 21.38, "kneeFlexR": 43.01, "ankleR": 91.28, "hipFlexL": 19.73, "kneeFlexL": 45.31, "ankleL": 95.09, "elbowR": 26.19, "kneeSep": 0.2}, "airborne": true}, {"f": 43, "t": 0.36134453781512604, "joints3d": [[0.578, 1.6532, 0.0011], [0.4678, 1.4633, -0.0012], [0.4723, 1.4631, 0.1804], [0.4639, 1.4589, -0.1817], [0.7606, 1.5378, 0.1866], [0.7608, 1.5414, -0.1784], [0.9903, 1.7137, 0.1876], [0.9796, 1.7139, -0.1783], [0.2278, 1.0029, 0.0977], [0.218, 1.0052, -0.0936], [0.1163, 0.5747, 0.1027], [0.1079, 0.5737, -0.1028], [0.3393, 0.2264, 0.0978], [0.3386, 0.2187, -0.0973], [0.5117, 0.3317, 0.1062], [0.5128, 0.3292, -0.1051], [0.2132, 1.0035, 0.0076]], "angles": {"trunkLean": 28.99, "hipFlexR": 16.74, "kneeFlexR": 47.37, "ankleR": 90.6, "hipFlexL": 16.37, "kneeFlexL": 47.24, "ankleL": 91.18, "elbowR": 22.73, "kneeSep": 0.21}, "airborne": true}, {"f": 44, "t": 0.3697478991596639, "joints3d": [[0.587, 1.6715, 0.0047], [0.4832, 1.4794, 0.0031], [0.4787, 1.4802, 0.1823], [0.4789, 1.4811, -0.1796], [0.7551, 1.6006, 0.1764], [0.7592, 1.5993, -0.1798], [0.9373, 1.8039, 0.1785], [0.9473, 1.8026, -0.1824], [0.2264, 1.0204, 0.1003], [0.2325, 1.0241, -0.1027], [0.111, 0.5968, 0.0971], [0.1086, 0.596, -0.0974], [0.3298, 0.23, 0.1045], [0.3303, 0.243, -0.1001], [0.4968, 0.3613, 0.0918], [0.504, 0.3602, -0.0946], [0.2335, 1.0192, 0.0041]], "angles": {"trunkLean": 28.48, "hipFlexR": 17.54, "kneeFlexR": 48.28, "ankleR": 88.11, "hipFlexL": 17.67, "kneeFlexL": 46.08, "ankleL": 82.6, "elbowR": 24.36, "kneeSep": 0.19}, "airborne": true}, {"f": 45, "t": 0.37815126050420167, "joints3d": [[0.5983, 1.6898, -0.0], [0.4844, 1.4971, -0.001], [0.4905, 1.4958, 0.1776], [0.4859, 1.4932, -0.1796], [0.7377, 1.649, 0.1808], [0.7442, 1.6484, -0.1763], [0.9179, 1.8724, 0.1862], [0.9149, 1.8735, -0.1794], [0.2452, 1.033, 0.1037], [0.2374, 1.0406, -0.098], [0.0984, 0.6158, 0.099], [0.1064, 0.621, -0.1007], [0.3201, 0.2507, 0.1015], [0.3218, 0.2574, -0.0959], [0.489, 0.3813, 0.0957], [0.48, 0.3873, -0.1034], [0.2429, 1.0383, -0.0013]], "angles": {"trunkLean": 27.76, "hipFlexR": 15.03, "kneeFlexR": 47.99, "ankleR": 81.24, "hipFlexL": 14.29, "kneeFlexL": 50.66, "ankleL": 83.55, "elbowR": 21.86, "kneeSep": 0.2}, "airborne": true}, {"f": 46, "t": 0.3865546218487395, "joints3d": [[0.5948, 1.6923, 0.001], [0.4839, 1.4993, -0.0118], [0.4914, 1.5021, 0.186], [0.4954, 1.5049, -0.18], [0.7227, 1.6844, 0.1777], [0.7342, 1.6875, -0.1744], [0.8861, 1.9203, 0.1778], [0.8876, 1.9155, -0.1787], [0.2469, 1.0475, 0.0999], [0.2458, 1.0442, -0.1027], [0.1017, 0.6281, 0.1041], [0.0974, 0.6294, -0.0993], [0.3096, 0.2627, 0.101], [0.3108, 0.2685, -0.101], [0.4712, 0.4, 0.1071], [0.4813, 0.3977, -0.0976], [0.2379, 1.0462, -0.0075]], "angles": {"trunkLean": 28.5, "hipFlexR": 13.12, "kneeFlexR": 50.29, "ankleR": 83.44, "hipFlexL": 14.56, "kneeFlexL": 48.74, "ankleL": 79.28, "elbowR": 18.77, "kneeSep": 0.2}, "airborne": true}, {"f": 47, "t": 0.3949579831932773, "joints3d": [[0.5939, 1.704, 0.0039], [0.4954, 1.5059, -0.0003], [0.4948, 1.5106, 0.1778], [0.4912, 1.5056, -0.1823], [0.7324, 1.7003, 0.1787], [0.7219, 1.7009, -0.1812], [0.8706, 1.9391, 0.1769], [0.8655, 1.9396, -0.175], [0.2529, 1.0496, 0.0971], [0.2468, 1.0443, -0.0947], [0.1, 0.6332, 0.1017], [0.1003, 0.6354, -0.0943], [0.31, 0.274, 0.1033], [0.3076, 0.2713, -0.1004], [0.4671, 0.4118, 0.101], [0.4684, 0.4076, -0.0959], [0.2504, 1.0464, -0.0011]], "angles": {"trunkLean": 28.07, "hipFlexR": 13.35, "kneeFlexR": 49.37, "ankleR": 79.35, "hipFlexL": 12.73, "kneeFlexL": 50.47, "ankleL": 79.05, "elbowR": 18.75, "kneeSep": 0.2}, "airborne": true}, {"f": 48, "t": 0.40336134453781514, "joints3d": [[0.5917, 1.7043, 0.0071], [0.4973, 1.5143, -0.0006], [0.4953, 1.5137, 0.1835], [0.4962, 1.5061, -0.179], [0.7242, 1.7016, 0.1869], [0.7268, 1.6998, -0.1751], [0.8665, 1.9452, 0.1812], [0.8599, 1.9461, -0.1779], [0.2545, 1.0502, 0.0924], [0.2478, 1.0505, -0.101], [0.1034, 0.6311, 0.1066], [0.1023, 0.6453, -0.1012], [0.3087, 0.2717, 0.1007], [0.3087, 0.2702, -0.0971], [0.465, 0.4131, 0.0966], [0.4746, 0.4106, -0.1006], [0.2486, 1.0442, 0.0023]], "angles": {"trunkLean": 27.88, "hipFlexR": 13.7, "kneeFlexR": 48.58, "ankleR": 78.57, "hipFlexL": 11.31, "kneeFlexL": 49.63, "ankleL": 77.62, "elbowR": 21.62, "kneeSep": 0.21}, "airborne": true}, {"f": 49, "t": 0.4117647058823529, "joints3d": [[0.6086, 1.7069, -0.0025], [0.5068, 1.5154, 0.0092], [0.5052, 1.5123, 0.1813], [0.5009, 1.5107, -0.1802], [0.7316, 1.7035, 0.1851], [0.7274, 1.705, -0.1814], [0.8747, 1.948, 0.1854], [0.8716, 1.949, -0.1778], [0.2626, 1.0549, 0.099], [0.2606, 1.0507, -0.1009], [0.1081, 0.6363, 0.1003], [0.116, 0.6386, -0.0952], [0.3278, 0.2799, 0.0977], [0.3211, 0.2804, -0.1039], [0.4818, 0.4071, 0.0994], [0.4819, 0.4106, -0.1154], [0.2611, 1.0507, -0.0072]], "angles": {"trunkLean": 27.92, "hipFlexR": 15.19, "kneeFlexR": 49.17, "ankleR": 80.88, "hipFlexL": 12.28, "kneeFlexL": 51.91, "ankleL": 82.09, "elbowR": 18.82, "kneeSep": 0.2}, "airborne": true}, {"f": 50, "t": 0.42016806722689076, "joints3d": [[0.6246, 1.7158, 0.0001], [0.5225, 1.5194, -0.0025], [0.5267, 1.517, 0.1826], [0.5242, 1.5179, -0.1769], [0.7553, 1.7128, 0.1846], [0.7505, 1.718, -0.1755], [0.8926, 1.9547, 0.1835], [0.8856, 1.9564, -0.1876], [0.2799, 1.0597, 0.1031], [0.28, 1.0569, -0.1094], [0.1262, 0.6431, 0.0952], [0.1269, 0.643, -0.095], [0.3371, 0.2846, 0.1008], [0.3481, 0.2834, -0.0964], [0.5049, 0.4177, 0.0981], [0.5156, 0.422, -0.0997], [0.2846, 1.06, -0.0017]], "angles": {"trunkLean": 27.38, "hipFlexR": 15.31, "kneeFlexR": 51.93, "ankleR": 81.99, "hipFlexL": 14.59, "kneeFlexL": 50.75, "ankleL": 82.04, "elbowR": 19.18, "kneeSep": 0.19}, "airborne": true}, {"f": 51, "t": 0.42857142857142855, "joints3d": [[0.6467, 1.7252, -0.0028], [0.5462, 1.5272, -0.0067], [0.5519, 1.5286, 0.1861], [0.5598, 1.5295, -0.1851], [0.7696, 1.7275, 0.1826], [0.7768, 1.7251, -0.1801], [0.9101, 1.9708, 0.1842], [0.9176, 1.9648, -0.1784], [0.3095, 1.0625, 0.1026], [0.3013, 1.0711, -0.0985], [0.151, 0.6523, 0.1026], [0.1558, 0.6519, -0.1076], [0.3782, 0.2926, 0.1075], [0.3816, 0.2894, -0.0951], [0.5382, 0.4284, 0.0981], [0.5379, 0.4313, -0.0961], [0.3079, 1.0682, -0.0016]], "angles": {"trunkLean": 27.44, "hipFlexR": 12.67, "kneeFlexR": 51.13, "ankleR": 79.68, "hipFlexL": 13.19, "kneeFlexL": 53.41, "ankleL": 81.93, "elbowR": 17.55, "kneeSep": 0.21}, "airborne": true}, {"f": 52, "t": 0.4369747899159664, "joints3d": [[0.6873, 1.7337, 0.0017], [0.5772, 1.5385, 0.0006], [0.5788, 1.5373, 0.182], [0.5865, 1.5435, -0.1709], [0.8042, 1.7446, 0.184], [0.8055, 1.7448, -0.1839], [0.9523, 1.9804, 0.1769], [0.9461, 1.984, -0.1779], [0.3501, 1.0725, 0.0967], [0.3452, 1.0748, -0.1053], [0.1888, 0.6628, 0.1018], [0.1932, 0.6624, -0.088], [0.4149, 0.3131, 0.0985], [0.4179, 0.3106, -0.096], [0.5816, 0.4431, 0.1069], [0.5792, 0.4446, -0.1022], [0.3523, 1.0675, 0.0028]], "angles": {"trunkLean": 25.53, "hipFlexR": 15.17, "kneeFlexR": 52.9, "ankleR": 82.89, "hipFlexL": 10.8, "kneeFlexL": 54.39, "ankleL": 84.92, "elbowR": 17.37, "kneeSep": 0.19}, "airborne": true}, {"f": 53, "t": 0.44537815126050423, "joints3d": [[0.7201, 1.7468, 0.0041], [0.6158, 1.5539, -0.0008], [0.6241, 1.5493, 0.1878], [0.6232, 1.5478, -0.1827], [0.837, 1.76, 0.1747], [0.8413, 1.7575, -0.1839], [0.9738, 2.0, 0.1838], [0.9746, 2.0004, -0.1746], [0.3831, 1.0823, 0.098], [0.3926, 1.0869, -0.1116], [0.2222, 0.6736, 0.103], [0.2242, 0.6795, -0.1016], [0.4631, 0.3268, 0.1055], [0.4701, 0.333, -0.0982], [0.6265, 0.4581, 0.1004], [0.6298, 0.4594, -0.0979], [0.397, 1.0848, -0.0015]], "angles": {"trunkLean": 25.01, "hipFlexR": 13.73, "kneeFlexR": 57.82, "ankleR": 87.0, "hipFlexL": 11.06, "kneeFlexL": 56.27, "ankleL": 85.99, "elbowR": 17.5, "kneeSep": 0.2}, "airborne": true}, {"f": 54, "t": 0.453781512605042, "joints3d": [[0.764, 1.7611, 0.0027], [0.6685, 1.5614, -0.0033], [0.657, 1.5573, 0.1865], [0.6666, 1.5601, -0.1759], [0.8736, 1.7742, 0.1857], [0.8735, 1.777, -0.1775], [1.0145, 2.0206, 0.1836], [1.0118, 2.0197, -0.1809], [0.4398, 1.0985, 0.1038], [0.4318, 1.0961, -0.1028], [0.2689, 0.6862, 0.0965], [0.2769, 0.6859, -0.0929], [0.5135, 0.3527, 0.1005], [0.5122, 0.3488, -0.098], [0.6805, 0.4748, 0.1019], [0.6817, 0.4765, -0.1012], [0.4408, 1.0955, -0.0026]], "angles": {"trunkLean": 26.05, "hipFlexR": 13.6, "kneeFlexR": 55.64, "ankleR": 87.93, "hipFlexL": 13.2, "kneeFlexL": 58.79, "ankleL": 90.09, "elbowR": 13.98, "kneeSep": 0.19}, "airborne": true}, {"f": 55, "t": 0.46218487394957986, "joints3d": [[0.8043, 1.7784, 0.006], [0.713, 1.5777, -0.0051], [0.7089, 1.5757, 0.1764], [0.7109, 1.5808, -0.176], [0.9141, 1.7963, 0.1803], [0.9116, 1.7949, -0.1795], [1.0533, 2.0444, 0.1803], [1.0526, 2.0389, -0.1874], [0.489, 1.1061, 0.0982], [0.4954, 1.1078, -0.1007], [0.3159, 0.7038, 0.1017], [0.3252, 0.703, -0.0886], [0.5735, 0.3702, 0.0966], [0.5734, 0.3727, -0.0967], [0.7454, 0.4884, 0.0988], [0.7415, 0.4979, -0.102], [0.492, 1.1073, -0.0058]], "angles": {"trunkLean": 25.16, "hipFlexR": 12.21, "kneeFlexR": 59.78, "ankleR": 90.27, "hipFlexL": 10.94, "kneeFlexL": 60.97, "ankleL": 93.15, "elbowR": 13.16, "kneeSep": 0.19}, "airborne": true}, {"f": 56, "t": 0.47058823529411764, "joints3d": [[0.8498, 1.7914, 0.0012], [0.759, 1.5921, 0.0037], [0.7619, 1.5914, 0.1864], [0.7575, 1.5883, -0.1785], [0.9515, 1.8133, 0.1823], [0.96, 1.819, -0.1772], [1.1065, 2.0599, 0.1802], [1.0978, 2.0624, -0.1794], [0.5526, 1.1133, 0.1046], [0.5444, 1.1202, -0.1087], [0.369, 0.7154, 0.0918], [0.3633, 0.7218, -0.094], [0.627, 0.3912, 0.1058], [0.6333, 0.3947, -0.0986], [0.8004, 0.5197, 0.1029], [0.7995, 0.5157, -0.0972], [0.5522, 1.1215, -0.0064]], "angles": {"trunkLean": 23.75, "hipFlexR": 14.16, "kneeFlexR": 64.02, "ankleR": 93.48, "hipFlexL": 12.71, "kneeFlexL": 63.37, "ankleL": 91.94, "elbowR": 11.78, "kneeSep": 0.19}, "airborne": true}, {"f": 57, "t": 0.4789915966386555, "joints3d": [[0.8896, 1.8062, 0.0046], [0.8075, 1.6094, -0.004], [0.8068, 1.609, 0.1809], [0.8161, 1.612, -0.1811], [0.9954, 1.8395, 0.1823], [0.9946, 1.8397, -0.1826], [1.1404, 2.0785, 0.1843], [1.1394, 2.0785, -0.174], [0.5965, 1.1299, 0.0957], [0.6081, 1.1326, -0.0971], [0.4076, 0.7321, 0.0932], [0.4188, 0.7322, -0.0911], [0.6901, 0.414, 0.0987], [0.6825, 0.4116, -0.1012], [0.8704, 0.5341, 0.0885], [0.855, 0.538, -0.0908], [0.6001, 1.1325, -0.0018]], "angles": {"trunkLean": 23.51, "hipFlexR": 11.29, "kneeFlexR": 64.77, "ankleR": 93.13, "hipFlexL": 11.22, "kneeFlexL": 67.02, "ankleL": 97.9, "elbowR": 7.16, "kneeSep": 0.18}, "airborne": true}, {"f": 58, "t": 0.48739495798319327, "joints3d": [[0.9456, 1.8274, -0.0025], [0.854, 1.629, -0.0048], [0.8531, 1.6218, 0.1903], [0.8592, 1.6232, -0.1826], [1.0416, 1.8596, 0.1867], [1.0502, 1.8556, -0.1836], [1.186, 2.1007, 0.1868], [1.1877, 2.1043, -0.1807], [0.6545, 1.1423, 0.0976], [0.653, 1.1455, -0.1022], [0.4609, 0.7441, 0.0984], [0.469, 0.7501, -0.0912], [0.7357, 0.4356, 0.0977], [0.7441, 0.4353, -0.0971], [0.9188, 0.5548, 0.1054], [0.9141, 0.5531, -0.0985], [0.652, 1.143, -0.0024]], "angles": {"trunkLean": 22.57, "hipFlexR": 12.21, "kneeFlexR": 66.14, "ankleR": 96.43, "hipFlexL": 11.5, "kneeFlexL": 67.62, "ankleL": 98.62, "elbowR": 10.51, "kneeSep": 0.19}, "airborne": true}, {"f": 59, "t": 0.4957983193277311, "joints3d": [[0.9942, 1.839, -0.005], [0.8995, 1.6347, -0.0019], [0.9002, 1.6372, 0.182], [0.9066, 1.6346, -0.1769], [1.0751, 1.8787, 0.1923], [1.0823, 1.8797, -0.1757], [1.221, 2.12, 0.1841], [1.218, 2.1183, -0.1847], [0.7054, 1.154, 0.1035], [0.7062, 1.1538, -0.1029], [0.5058, 0.7683, 0.1041], [0.487, 0.7633, -0.1118], [0.8024, 0.4611, 0.0957], [0.8005, 0.462, -0.1033], [0.977, 0.5784, 0.0925], [0.9765, 0.575, -0.1063], [0.708, 1.158, 0.0014]], "angles": {"trunkLean": 21.89, "hipFlexR": 12.33, "kneeFlexR": 75.47, "ankleR": 103.41, "hipFlexL": 12.6, "kneeFlexL": 71.36, "ankleL": 100.11, "elbowR": 6.36, "kneeSep": 0.22}, "airborne": true}, {"f": 60, "t": 0.5042016806722689, "joints3d": [[1.0288, 1.8536, 0.0089], [0.9453, 1.6494, -0.0031], [0.9455, 1.6476, 0.1739], [0.9526, 1.65, -0.1783], [1.1155, 1.8908, 0.1775], [1.1159, 1.8965, -0.175], [1.2608, 2.1402, 0.1802], [1.2613, 2.1356, -0.1738], [0.7608, 1.1689, 0.1019], [0.7585, 1.1623, -0.106], [0.542, 0.7736, 0.0966], [0.5434, 0.7775, -0.0964], [0.8513, 0.4829, 0.1006], [0.8483, 0.4805, -0.0971], [1.0304, 0.5935, 0.1037], [1.0278, 0.5966, -0.0956], [0.7571, 1.1638, -0.0039]], "angles": {"trunkLean": 21.18, "hipFlexR": 14.86, "kneeFlexR": 74.96, "ankleR": 102.86, "hipFlexL": 14.54, "kneeFlexL": 75.75, "ankleL": 105.08, "elbowR": 2.25, "kneeSep": 0.19}, "airborne": true}, {"f": 61, "t": 0.5126050420168067, "joints3d": [[1.0667, 1.8679, -0.0041], [0.9843, 1.6612, -0.003], [0.9833, 1.6641, 0.1815], [0.9882, 1.6607, -0.1798], [1.1521, 1.913, 0.1814], [1.1413, 1.9121, -0.1806], [1.2893, 2.1524, 0.1879], [1.2846, 2.1559, -0.1803], [0.8046, 1.1714, 0.1057], [0.7937, 1.176, -0.096], [0.5884, 0.7871, 0.105], [0.5823, 0.7898, -0.0939], [0.8956, 0.5024, 0.0993], [0.8968, 0.5049, -0.096], [1.0723, 0.6146, 0.1003], [1.077, 0.6131, -0.0999], [0.7996, 1.1716, -0.0035]], "angles": {"trunkLean": 20.67, "hipFlexR": 12.65, "kneeFlexR": 76.52, "ankleR": 106.85, "hipFlexL": 14.98, "kneeFlexL": 76.54, "ankleL": 104.76, "elbowR": 0.92, "kneeSep": 0.2}, "airborne": true}, {"f": 62, "t": 0.5210084033613446, "joints3d": [[1.0948, 1.876, -0.0103], [1.0242, 1.6781, -0.002], [1.0261, 1.674, 0.1791], [1.0195, 1.6741, -0.1775], [1.1778, 1.9273, 0.1831], [1.1814, 1.9271, -0.1814], [1.3222, 2.1681, 0.1827], [1.3281, 2.1702, -0.1829], [0.8359, 1.1924, 0.1], [0.8366, 1.1831, -0.101], [0.6246, 0.8002, 0.1009], [0.6221, 0.803, -0.1039], [0.9378, 0.5198, 0.0988], [0.9312, 0.5166, -0.0915], [1.1214, 0.6255, 0.101], [1.1229, 0.6301, -0.094], [0.8373, 1.188, 0.0038]], "angles": {"trunkLean": 20.88, "hipFlexR": 13.37, "kneeFlexR": 76.64, "ankleR": 106.53, "hipFlexL": 13.05, "kneeFlexL": 76.48, "ankleL": 108.23, "elbowR": 1.57, "kneeSep": 0.2}, "airborne": true}, {"f": 63, "t": 0.5294117647058824, "joints3d": [[1.126, 1.8816, 0.004], [1.0464, 1.681, -0.008], [1.0431, 1.6832, 0.1755], [1.0442, 1.675, -0.1818], [1.2072, 1.9375, 0.1774], [1.2112, 1.9361, -0.1821], [1.3522, 2.176, 0.1837], [1.3428, 2.1792, -0.1812], [0.8783, 1.1966, 0.0969], [0.8706, 1.1952, -0.0989], [0.6424, 0.8136, 0.1014], [0.6544, 0.8077, -0.0965], [0.9628, 0.5314, 0.1022], [0.9649, 0.5309, -0.0966], [1.1472, 0.638, 0.1091], [1.1449, 0.6411, -0.0949], [0.8668, 1.1922, -0.0004]], "angles": {"trunkLean": 20.19, "hipFlexR": 13.81, "kneeFlexR": 77.44, "ankleR": 106.81, "hipFlexL": 16.57, "kneeFlexL": 80.26, "ankleL": 108.59, "elbowR": 4.18, "kneeSep": 0.2}, "airborne": true}, {"f": 64, "t": 0.5378151260504201, "joints3d": [[1.1412, 1.8956, -0.0033], [1.0637, 1.6862, 0.003], [1.0653, 1.6876, 0.1734], [1.063, 1.688, -0.1778], [1.2172, 1.9462, 0.1798], [1.2129, 1.9407, -0.1746], [1.362, 2.1856, 0.1723], [1.3701, 2.1874, -0.1713], [0.8925, 1.1965, 0.0985], [0.8857, 1.1958, -0.1046], [0.6752, 0.8144, 0.1041], [0.6736, 0.8163, -0.1048], [0.9918, 0.5438, 0.1052], [0.9884, 0.548, -0.0958], [1.1775, 0.649, 0.1036], [1.1669, 0.6465, -0.1005], [0.8899, 1.2, 0.0008]], "angles": {"trunkLean": 19.67, "hipFlexR": 14.82, "kneeFlexR": 78.76, "ankleR": 110.63, "hipFlexL": 14.15, "kneeFlexL": 79.11, "ankleL": 109.95, "elbowR": 1.83, "kneeSep": 0.21}, "airborne": true}, {"f": 65, "t": 0.5462184873949579, "joints3d": [[1.1502, 1.8943, -0.0028], [1.0918, 1.6933, 0.0049], [1.0755, 1.6865, 0.1786], [1.0824, 1.6905, -0.1792], [1.2305, 1.9448, 0.1762], [1.2228, 1.9505, -0.1835], [1.3626, 2.1941, 0.1775], [1.3675, 2.1956, -0.1774], [0.8976, 1.1994, 0.0948], [0.8991, 1.2035, -0.1009], [0.6763, 0.8196, 0.1063], [0.6848, 0.814, -0.1026], [1.0032, 0.5507, 0.0966], [0.9961, 0.5485, -0.0997], [1.1916, 0.6518, 0.105], [1.1822, 0.658, -0.0968], [0.8934, 1.2036, 0.0062]], "angles": {"trunkLean": 22.06, "hipFlexR": 13.32, "kneeFlexR": 78.36, "ankleR": 109.07, "hipFlexL": 11.91, "kneeFlexL": 80.83, "ankleL": 112.26, "elbowR": 3.01, "kneeSep": 0.21}, "airborne": true}, {"f": 66, "t": 0.5546218487394958, "joints3d": [[1.158, 1.8888, 0.0037], [1.0831, 1.6887, 0.0038], [1.0818, 1.6908, 0.1778], [1.079, 1.6901, -0.1851], [1.2278, 1.9487, 0.1781], [1.2336, 1.9465, -0.1798], [1.3704, 2.1893, 0.1785], [1.3691, 2.1921, -0.1753], [0.8984, 1.2026, 0.0979], [0.8969, 1.2005, -0.1027], [0.6821, 0.8195, 0.1039], [0.683, 0.8171, -0.1002], [1.0005, 0.553, 0.1004], [0.9989, 0.5468, -0.1032], [1.1931, 0.6528, 0.1004], [1.1813, 0.6563, -0.1078], [0.8975, 1.2037, -0.0008]], "angles": {"trunkLean": 20.95, "hipFlexR": 14.42, "kneeFlexR": 78.61, "ankleR": 108.47, "hipFlexL": 12.79, "kneeFlexL": 79.53, "ankleL": 112.68, "elbowR": 2.2, "kneeSep": 0.2}, "airborne": true}, {"f": 67, "t": 0.5630252100840336, "joints3d": [[1.1599, 1.8969, -0.0032], [1.0841, 1.6837, 0.0005], [1.0935, 1.6883, 0.1806], [1.0965, 1.6889, -0.1784], [1.2386, 1.9441, 0.1803], [1.2405, 1.9475, -0.1788], [1.4038, 2.182, 0.1779], [1.3947, 2.1837, -0.1789], [0.9048, 1.1953, 0.1018], [0.9083, 1.2024, -0.0979], [0.6984, 0.8126, 0.1026], [0.6944, 0.8084, -0.0989], [1.024, 0.5357, 0.0998], [1.0194, 0.5411, -0.1054], [1.1974, 0.6486, 0.0982], [1.2145, 0.6433, -0.1042], [0.9118, 1.1955, -0.0007]], "angles": {"trunkLean": 19.44, "hipFlexR": 13.62, "kneeFlexR": 79.06, "ankleR": 112.91, "hipFlexL": 13.61, "kneeFlexL": 77.96, "ankleL": 106.56, "elbowR": 4.03, "kneeSep": 0.2}, "airborne": true}, {"f": 68, "t": 0.5714285714285714, "joints3d": [[1.1926, 1.8851, 0.0041], [1.1089, 1.6857, 0.0035], [1.111, 1.6803, 0.1818], [1.1075, 1.6837, -0.1719], [1.2699, 1.9369, 0.1805], [1.2699, 1.9371, -0.1815], [1.4335, 2.1622, 0.1788], [1.4355, 2.1612, -0.1771], [0.9355, 1.1952, 0.0967], [0.937, 1.2022, -0.0977], [0.7387, 0.8002, 0.108], [0.732, 0.8012, -0.0967], [1.0592, 0.5216, 0.0971], [1.0531, 0.5284, -0.1038], [1.2333, 0.6299, 0.0951], [1.2372, 0.6305, -0.0971], [0.9303, 1.1967, -0.0021]], "angles": {"trunkLean": 20.07, "hipFlexR": 13.53, "kneeFlexR": 76.73, "ankleR": 110.59, "hipFlexL": 11.14, "kneeFlexL": 75.53, "ankleL": 107.13, "elbowR": 4.69, "kneeSep": 0.2}, "airborne": true}, {"f": 69, "t": 0.5798319327731093, "joints3d": [[1.1998, 1.8904, 0.0089], [1.121, 1.685, 0.0031], [1.1334, 1.6821, 0.1872], [1.1388, 1.6813, -0.1766], [1.3104, 1.9181, 0.186], [1.3065, 1.9215, -0.1778], [1.4989, 2.1328, 0.1707], [1.4952, 2.1308, -0.1891], [0.9522, 1.1923, 0.1011], [0.9676, 1.191, -0.102], [0.784, 0.7857, 0.0925], [0.7837, 0.7854, -0.1039], [1.0955, 0.5116, 0.1077], [1.0988, 0.5113, -0.0999], [1.2871, 0.6115, 0.1003], [1.2817, 0.6124, -0.0971], [0.9619, 1.1917, 0.0005]], "angles": {"trunkLean": 17.88, "hipFlexR": 13.29, "kneeFlexR": 73.37, "ankleR": 110.05, "hipFlexL": 12.3, "kneeFlexL": 71.19, "ankleL": 111.01, "elbowR": 7.41, "kneeSep": 0.2}, "airborne": true}, {"f": 70, "t": 0.5882352941176471, "joints3d": [[1.2355, 1.8899, 0.0034], [1.1599, 1.6839, 0.0083], [1.1608, 1.677, 0.1804], [1.1588, 1.6741, -0.1779], [1.3521, 1.9031, 0.1816], [1.3598, 1.8959, -0.1795], [1.5708, 2.0987, 0.1788], [1.5635, 2.0945, -0.1794], [0.9919, 1.1816, 0.1], [0.9887, 1.1855, -0.0978], [0.8476, 0.7705, 0.0932], [0.85, 0.7674, -0.0947], [1.165, 0.4885, 0.0992], [1.1558, 0.493, -0.1038], [1.342, 0.5865, 0.1074], [1.3391, 0.5895, -0.1011], [0.9911, 1.1876, -0.0008]], "angles": {"trunkLean": 18.81, "hipFlexR": 11.8, "kneeFlexR": 66.47, "ankleR": 110.31, "hipFlexL": 10.75, "kneeFlexL": 67.74, "ankleL": 109.42, "elbowR": 3.56, "kneeSep": 0.19}, "airborne": true}, {"f": 71, "t": 0.5966386554621849, "joints3d": [[1.2579, 1.8854, -0.0008], [1.1952, 1.6756, 0.0024], [1.1964, 1.6745, 0.179], [1.1983, 1.6706, -0.1818], [1.411, 1.8829, 0.1836], [1.4163, 1.8788, -0.1825], [1.6409, 2.0449, 0.1752], [1.6423, 2.0453, -0.1826], [1.0346, 1.1796, 0.1036], [1.0228, 1.1804, -0.102], [0.9207, 0.7512, 0.1048], [0.9178, 0.7555, -0.099], [1.2272, 0.4718, 0.1016], [1.2288, 0.4711, -0.0979], [1.4023, 0.5659, 0.0982], [1.4183, 0.5723, -0.0903], [1.0303, 1.1828, -0.0042]], "angles": {"trunkLean": 18.51, "hipFlexR": 12.79, "kneeFlexR": 61.44, "ankleR": 109.45, "hipFlexL": 11.25, "kneeFlexL": 62.54, "ankleL": 109.4, "elbowR": 7.3, "kneeSep": 0.2}, "airborne": true}, {"f": 72, "t": 0.6050420168067226, "joints3d": [[1.3045, 1.88, -0.0003], [1.2392, 1.6707, 0.0025], [1.2359, 1.6649, 0.1863], [1.2265, 1.6691, -0.1756], [1.475, 1.8565, 0.1794], [1.4649, 1.8554, -0.1775], [1.7184, 1.9831, 0.1758], [1.7206, 1.9833, -0.1869], [1.0682, 1.1795, 0.0936], [1.0802, 1.1715, -0.0945], [1.0034, 0.7322, 0.097], [1.0041, 0.736, -0.1021], [1.3041, 0.4493, 0.0981], [1.3047, 0.4475, -0.1009], [1.4922, 0.5515, 0.1036], [1.492, 0.5391, -0.0952], [1.0765, 1.1715, -0.0019]], "angles": {"trunkLean": 18.06, "hipFlexR": 12.24, "kneeFlexR": 56.1, "ankleR": 110.11, "hipFlexL": 14.46, "kneeFlexL": 54.99, "ankleL": 108.23, "elbowR": 11.53, "kneeSep": 0.2}, "airborne": true}, {"f": 73, "t": 0.6134453781512605, "joints3d": [[1.3454, 1.8722, 0.0029], [1.2798, 1.6662, 0.0014], [1.271, 1.6611, 0.1821], [1.2746, 1.6599, -0.1867], [1.5207, 1.8234, 0.1751], [1.5287, 1.8183, -0.1783], [1.7964, 1.9141, 0.1825], [1.7963, 1.9161, -0.1774], [1.1184, 1.1724, 0.1008], [1.1108, 1.1685, -0.1002], [1.09, 0.7344, 0.098], [1.1, 0.7251, -0.1035], [1.3925, 0.4363, 0.1025], [1.3848, 0.434, -0.101], [1.5753, 0.5297, 0.109], [1.5793, 0.5272, -0.1079], [1.1173, 1.1643, 0.006]], "angles": {"trunkLean": 17.95, "hipFlexR": 20.2, "kneeFlexR": 45.77, "ankleR": 108.75, "hipFlexL": 18.17, "kneeFlexL": 49.14, "ankleL": 108.37, "elbowR": 11.95, "kneeSep": 0.2}, "airborne": true}, {"f": 74, "t": 0.6218487394957983, "joints3d": [[1.3827, 1.8731, -0.0], [1.3165, 1.6591, 0.0041], [1.321, 1.6624, 0.1803], [1.3167, 1.658, -0.1928], [1.5879, 1.7859, 0.1778], [1.5952, 1.7856, -0.1827], [1.8682, 1.8364, 0.1771], [1.8677, 1.8393, -0.1833], [1.1711, 1.165, 0.0991], [1.1689, 1.1593, -0.0951], [1.191, 0.7213, 0.1028], [1.1918, 0.7188, -0.0944], [1.478, 0.4183, 0.0955], [1.4828, 0.4219, -0.0988], [1.6792, 0.5095, 0.0995], [1.6754, 0.5104, -0.0987], [1.1658, 1.1599, -0.0079]], "angles": {"trunkLean": 16.85, "hipFlexR": 22.16, "kneeFlexR": 41.45, "ankleR": 109.74, "hipFlexL": 21.33, "kneeFlexL": 40.9, "ankleL": 109.04, "elbowR": 13.61, "kneeSep": 0.2}, "airborne": true}, {"f": 75, "t": 0.6302521008403361, "joints3d": [[1.4203, 1.8639, 0.0045], [1.3657, 1.6544, -0.0004], [1.3669, 1.6524, 0.1758], [1.3643, 1.6535, -0.1802], [1.6551, 1.7488, 0.1733], [1.6471, 1.7445, -0.1848], [1.9331, 1.7522, 0.1767], [1.9266, 1.7506, -0.1797], [1.2202, 1.1545, 0.1042], [1.2225, 1.1546, -0.0993], [1.2901, 0.7198, 0.1044], [1.2941, 0.7173, -0.101], [1.5736, 0.4101, 0.1012], [1.5713, 0.4084, -0.0992], [1.7659, 0.504, 0.103], [1.7696, 0.5097, -0.1012], [1.2185, 1.1609, -0.001]], "angles": {"trunkLean": 16.61, "hipFlexR": 27.26, "kneeFlexR": 32.61, "ankleR": 104.84, "hipFlexL": 27.63, "kneeFlexL": 33.34, "ankleL": 106.44, "elbowR": 16.7, "kneeSep": 0.21}, "airborne": true}, {"f": 76, "t": 0.6386554621848739, "joints3d": [[1.469, 1.8566, -0.0112], [1.416, 1.6484, -0.009], [1.4076, 1.651, 0.1946], [1.4101, 1.6456, -0.1816], [1.7094, 1.7155, 0.1762], [1.7089, 1.7113, -0.18], [1.985, 1.667, 0.1824], [1.9818, 1.6646, -0.1819], [1.2773, 1.1452, 0.1043], [1.2788, 1.1387, -0.0997], [1.3823, 0.7221, 0.0963], [1.393, 0.7216, -0.0974], [1.674, 0.4091, 0.1048], [1.6685, 0.4135, -0.1019], [1.8575, 0.4965, 0.1028], [1.8615, 0.499, -0.1113], [1.2704, 1.1445, 0.0013]], "angles": {"trunkLean": 16.15, "hipFlexR": 31.86, "kneeFlexR": 26.51, "ankleR": 107.92, "hipFlexL": 32.03, "kneeFlexL": 29.13, "ankleL": 107.5, "elbowR": 22.12, "kneeSep": 0.19}, "airborne": true}, {"f": 77, "t": 0.6470588235294118, "joints3d": [[1.5164, 1.8512, -0.0023], [1.4553, 1.643, -0.0016], [1.4609, 1.643, 0.1781], [1.4605, 1.6381, -0.1793], [1.7532, 1.6695, 0.1803], [1.7644, 1.6724, -0.1883], [2.029, 1.5783, 0.1711], [2.0149, 1.5857, -0.1789], [1.3209, 1.1433, 0.1016], [1.3248, 1.137, -0.0961], [1.4875, 0.729, 0.0981], [1.4864, 0.7292, -0.0953], [1.7642, 0.4169, 0.1003], [1.7658, 0.4172, -0.1069], [1.9516, 0.4937, 0.1045], [1.9533, 0.4935, -0.1009], [1.3178, 1.1356, 0.0036]], "angles": {"trunkLean": 15.17, "hipFlexR": 37.35, "kneeFlexR": 20.3, "ankleR": 109.64, "hipFlexL": 38.55, "kneeFlexL": 19.67, "ankleL": 109.28, "elbowR": 25.8, "kneeSep": 0.19}, "airborne": true}, {"f": 78, "t": 0.6554621848739496, "joints3d": [[1.5612, 1.845, 0.0056], [1.5063, 1.639, -0.0063], [1.5001, 1.6343, 0.1754], [1.5046, 1.6366, -0.1714], [1.8057, 1.6275, 0.1809], [1.8115, 1.6318, -0.1767], [2.0466, 1.4992, 0.1764], [2.0498, 1.502, -0.1799], [1.3744, 1.1309, 0.1022], [1.3783, 1.1367, -0.1044], [1.579, 0.743, 0.1005], [1.5805, 0.7354, -0.1], [1.8404, 0.4198, 0.1011], [1.847, 0.4228, -0.0924], [2.0386, 0.5004, 0.0977], [2.0318, 0.5041, -0.0976], [1.3759, 1.1312, -0.0053]], "angles": {"trunkLean": 14.4, "hipFlexR": 42.33, "kneeFlexR": 13.71, "ankleR": 106.66, "hipFlexL": 43.71, "kneeFlexL": 11.16, "ankleL": 106.83, "elbowR": 27.68, "kneeSep": 0.2}, "airborne": true}, {"f": 79, "t": 0.6638655462184874, "joints3d": [[1.6003, 1.8431, 0.0029], [1.5471, 1.6317, -0.0094], [1.547, 1.6307, 0.1734], [1.5447, 1.633, -0.182], [1.8434, 1.5918, 0.1804], [1.8439, 1.5956, -0.1794], [2.0727, 1.4265, 0.1768], [2.0703, 1.4243, -0.1846], [1.4215, 1.1285, 0.1001], [1.4216, 1.1234, -0.101], [1.6678, 0.7525, 0.0934], [1.6615, 0.757, -0.0985], [1.9222, 0.4334, 0.0934], [1.9246, 0.4306, -0.1002], [2.1214, 0.5085, 0.0962], [2.1223, 0.5118, -0.1005], [1.4195, 1.1246, -0.0061]], "angles": {"trunkLean": 14.13, "hipFlexR": 47.95, "kneeFlexR": 5.68, "ankleR": 106.54, "hipFlexL": 48.62, "kneeFlexL": 5.4, "ankleL": 107.9, "elbowR": 30.03, "kneeSep": 0.19}, "airborne": true}, {"f": 80, "t": 0.6722689075630253, "joints3d": [[1.636, 1.8374, 0.0025], [1.5812, 1.6249, -0.0003], [1.5914, 1.6237, 0.1728], [1.5874, 1.6243, -0.1796], [1.8823, 1.5572, 0.177], [1.8761, 1.556, -0.1851], [2.0725, 1.3622, 0.1814], [2.0811, 1.3595, -0.1842], [1.4629, 1.119, 0.0971], [1.4696, 1.117, -0.1], [1.7406, 0.7774, 0.1039], [1.7439, 0.7706, -0.1027], [1.9966, 0.449, 0.1025], [1.9953, 0.4446, -0.1063], [2.1966, 0.5212, 0.1045], [2.188, 0.5185, -0.0942], [1.4668, 1.1137, -0.0029]], "angles": {"trunkLean": 12.62, "hipFlexR": 51.52, "kneeFlexR": 0.75, "ankleR": 106.6, "hipFlexL": 52.83, "kneeFlexL": 1.59, "ankleL": 108.09, "elbowR": 30.5, "kneeSep": 0.21}, "airborne": true}, {"f": 81, "t": 0.680672268907563, "joints3d": [[1.673, 1.8367, 0.0023], [1.6239, 1.6261, 0.0044], [1.618, 1.6198, 0.1841], [1.6243, 1.6204, -0.1731], [1.9144, 1.5264, 0.1826], [1.9072, 1.5266, -0.1793], [2.0835, 1.3083, 0.1813], [2.0826, 1.306, -0.1797], [1.5046, 1.1195, 0.0973], [1.5035, 1.1138, -0.1005], [1.8069, 0.7972, 0.0956], [1.81, 0.7944, -0.1036], [2.0657, 0.4584, 0.0988], [2.0534, 0.4595, -0.1046], [2.2517, 0.5364, 0.0971], [2.2547, 0.5378, -0.0979], [1.5076, 1.1102, 0.005]], "angles": {"trunkLean": 12.7, "hipFlexR": 57.67, "kneeFlexR": 7.81, "ankleR": 104.74, "hipFlexL": 57.05, "kneeFlexL": 5.83, "ankleL": 104.62, "elbowR": 33.18, "kneeSep": 0.2}, "airborne": true}, {"f": 82, "t": 0.6890756302521008, "joints3d": [[1.7031, 1.8292, 0.0044], [1.648, 1.6199, 0.0023], [1.6583, 1.6178, 0.1862], [1.6561, 1.6186, -0.1768], [1.9279, 1.5063, 0.1836], [1.93, 1.4993, -0.1819], [2.0727, 1.2613, 0.1838], [2.0767, 1.266, -0.1843], [1.5416, 1.1073, 0.1085], [1.5369, 1.1141, -0.104], [1.8611, 0.8096, 0.1059], [1.8598, 0.8066, -0.0955], [2.1092, 0.4723, 0.0988], [2.1114, 0.4704, -0.0993], [2.3038, 0.5472, 0.0983], [2.3075, 0.5482, -0.0983], [1.529, 1.1055, 0.0008]], "angles": {"trunkLean": 13.03, "hipFlexR": 59.75, "kneeFlexR": 9.72, "ankleR": 105.17, "hipFlexL": 59.52, "kneeFlexL": 10.7, "ankleL": 105.29, "elbowR": 34.3, "kneeSep": 0.2}, "airborne": true}, {"f": 83, "t": 0.6974789915966386, "joints3d": [[1.7268, 1.8256, 0.0087], [1.6819, 1.6102, -0.0026], [1.68, 1.6123, 0.1754], [1.6858, 1.6113, -0.177], [1.9483, 1.4816, 0.1767], [1.9549, 1.485, -0.1768], [2.0719, 1.2321, 0.179], [2.0694, 1.2289, -0.1863], [1.5628, 1.102, 0.1062], [1.5659, 1.1099, -0.1078], [1.9066, 0.8272, 0.1008], [1.9058, 0.8272, -0.0998], [2.1501, 0.4868, 0.0996], [2.1536, 0.4854, -0.1079], [2.3505, 0.5617, 0.0965], [2.3453, 0.5614, -0.0934], [1.564, 1.1024, -0.0018]], "angles": {"trunkLean": 13.07, "hipFlexR": 64.12, "kneeFlexR": 14.47, "ankleR": 104.2, "hipFlexL": 65.29, "kneeFlexL": 15.8, "ankleL": 105.08, "elbowR": 40.81, "kneeSep": 0.2}, "airborne": true}, {"f": 84, "t": 0.7058823529411765, "joints3d": [[1.7454, 1.821, 0.0047], [1.6917, 1.6108, 0.0007], [1.6905, 1.6076, 0.1741], [1.6944, 1.6063, -0.1818], [1.9535, 1.467, 0.1703], [1.9594, 1.4651, -0.179], [2.0654, 1.2108, 0.1829], [2.0695, 1.2126, -0.1813], [1.5882, 1.1038, 0.0965], [1.5858, 1.1063, -0.1018], [1.9379, 0.8422, 0.0966], [1.9433, 0.8412, -0.0949], [2.1843, 0.4994, 0.1018], [2.1837, 0.4914, -0.0992], [2.3742, 0.5699, 0.0984], [2.3803, 0.5662, -0.1017], [1.5864, 1.1031, -0.0089]], "angles": {"trunkLean": 11.76, "hipFlexR": 65.99, "kneeFlexR": 19.0, "ankleR": 103.67, "hipFlexL": 65.19, "kneeFlexL": 17.51, "ankleL": 105.33, "elbowR": 38.4, "kneeSep": 0.19}, "airborne": true}, {"f": 85, "t": 0.7142857142857143, "joints3d": [[1.7511, 1.8225, -0.0071], [1.703, 1.6103, -0.0009], [1.708, 1.6065, 0.1732], [1.6986, 1.6151, -0.1691], [1.9734, 1.4643, 0.1764], [1.9735, 1.4639, -0.1757], [2.0674, 1.1969, 0.1709], [2.0629, 1.1984, -0.1714], [1.5907, 1.1022, 0.1006], [1.6015, 1.1044, -0.0934], [1.9514, 0.8495, 0.095], [1.9569, 0.8444, -0.0919], [2.1996, 0.504, 0.1012], [2.1961, 0.501, -0.0999], [2.3938, 0.5739, 0.1026], [2.3894, 0.5781, -0.1029], [1.5978, 1.0994, 0.0046]], "angles": {"trunkLean": 11.65, "hipFlexR": 65.61, "kneeFlexR": 19.0, "ankleR": 103.13, "hipFlexL": 68.04, "kneeFlexL": 19.36, "ankleL": 105.9, "elbowR": 42.63, "kneeSep": 0.19}, "airborne": true}, {"f": 86, "t": 0.7226890756302521, "joints3d": [[1.7561, 1.8189, -0.0059], [1.7075, 1.6099, 0.0046], [1.7154, 1.6083, 0.1864], [1.7159, 1.6087, -0.1872], [1.9705, 1.4566, 0.1804], [1.9643, 1.4572, -0.1821], [2.0657, 1.1959, 0.1766], [2.0667, 1.1954, -0.1811], [1.6035, 1.1021, 0.1023], [1.6044, 1.0978, -0.1024], [1.9643, 0.851, 0.0955], [1.9568, 0.844, -0.0978], [2.2033, 0.5042, 0.0972], [2.204, 0.5, -0.1064], [2.4008, 0.5704, 0.1013], [2.3985, 0.5751, -0.1007], [1.6025, 1.0923, 0.0047]], "angles": {"trunkLean": 11.47, "hipFlexR": 66.28, "kneeFlexR": 18.62, "ankleR": 104.55, "hipFlexL": 67.34, "kneeFlexL": 20.62, "ankleL": 106.04, "elbowR": 37.26, "kneeSep": 0.19}, "airborne": true}, {"f": 87, "t": 0.7310924369747899, "joints3d": [[1.7606, 1.8184, 0.0004], [1.713, 1.5992, -0.0017], [1.7191, 1.6071, 0.1828], [1.7206, 1.6039, -0.1791], [1.9731, 1.4509, 0.1789], [1.9723, 1.4479, -0.1833], [2.0641, 1.1876, 0.1817], [2.0641, 1.1825, -0.1761], [1.5947, 1.0996, 0.0988], [1.6089, 1.0936, -0.1045], [1.9652, 0.846, 0.0975], [1.9631, 0.8406, -0.1068], [2.2131, 0.5023, 0.0989], [2.2067, 0.5018, -0.1083], [2.4036, 0.5672, 0.0938], [2.407, 0.5641, -0.106], [1.609, 1.0992, -0.007]], "angles": {"trunkLean": 11.76, "hipFlexR": 66.52, "kneeFlexR": 18.75, "ankleR": 108.44, "hipFlexL": 69.38, "kneeFlexL": 19.81, "ankleL": 106.98, "elbowR": 39.19, "kneeSep": 0.2}, "airborne": true}, {"f": 88, "t": 0.7394957983193278, "joints3d": [[1.79, 1.8097, 0.0082], [1.733, 1.5938, 0.0084], [1.7344, 1.5941, 0.1808], [1.7309, 1.591, -0.1811], [1.9833, 1.434, 0.1792], [1.9865, 1.4298, -0.1837], [2.0749, 1.1675, 0.1789], [2.077, 1.1688, -0.1821], [1.6144, 1.0849, 0.0972], [1.6089, 1.0834, -0.1058], [1.976, 0.8292, 0.0963], [1.9758, 0.833, -0.0897], [2.224, 0.4895, 0.1035], [2.2234, 0.495, -0.092], [2.423, 0.562, 0.0989], [2.4182, 0.562, -0.0938], [1.6127, 1.0843, 0.0044]], "angles": {"trunkLean": 13.29, "hipFlexR": 70.33, "kneeFlexR": 19.61, "ankleR": 107.25, "hipFlexL": 68.2, "kneeFlexL": 18.63, "ankleL": 106.09, "elbowR": 38.65, "kneeSep": 0.19}, "airborne": true}, {"f": 89, "t": 0.7478991596638656, "joints3d": [[1.8075, 1.7924, -0.0114], [1.7555, 1.5711, -0.0041], [1.753, 1.576, 0.1787], [1.756, 1.5776, -0.18], [1.9917, 1.402, 0.1817], [1.9978, 1.4035, -0.1804], [2.0865, 1.1427, 0.1741], [2.0858, 1.1387, -0.1832], [1.6306, 1.0714, 0.1042], [1.6325, 1.0676, -0.0981], [1.9871, 0.8201, 0.1071], [1.9889, 0.8251, -0.104], [2.2366, 0.4824, 0.1024], [2.2419, 0.4888, -0.0977], [2.4371, 0.5518, 0.1077], [2.4392, 0.5518, -0.107], [1.624, 1.0746, -0.0027]], "angles": {"trunkLean": 14.84, "hipFlexR": 69.69, "kneeFlexR": 18.88, "ankleR": 109.18, "hipFlexL": 69.24, "kneeFlexL": 18.39, "ankleL": 107.34, "elbowR": 35.87, "kneeSep": 0.21}, "airborne": true}, {"f": 90, "t": 0.7563025210084033, "joints3d": [[1.8432, 1.7676, 0.005], [1.7821, 1.5508, -0.0089], [1.7816, 1.5505, 0.1842], [1.7847, 1.5583, -0.1777], [2.0134, 1.3722, 0.1854], [2.0195, 1.3736, -0.1794], [2.1006, 1.1029, 0.1798], [2.0974, 1.1053, -0.1806], [1.6515, 1.0531, 0.0988], [1.6437, 1.0534, -0.0973], [1.9993, 0.7994, 0.0952], [2.0043, 0.8003, -0.0972], [2.2722, 0.4737, 0.1046], [2.2699, 0.4711, -0.1023], [2.4717, 0.5294, 0.0904], [2.4674, 0.5317, -0.0947], [1.647, 1.0532, 0.0055]], "angles": {"trunkLean": 15.27, "hipFlexR": 70.78, "kneeFlexR": 16.05, "ankleR": 111.79, "hipFlexL": 69.18, "kneeFlexL": 14.04, "ankleL": 114.2, "elbowR": 35.62, "kneeSep": 0.19}, "airborne": true}, {"f": 91, "t": 0.7647058823529411, "joints3d": [[1.8803, 1.7416, -0.0047], [1.8106, 1.5296, 0.0043], [1.8132, 1.5354, 0.1815], [1.8173, 1.5359, -0.1861], [2.0347, 1.3295, 0.1801], [2.0362, 1.3288, -0.179], [2.1096, 1.0565, 0.1858], [2.11, 1.0623, -0.1904], [1.6631, 1.0311, 0.095], [1.6662, 1.0344, -0.0967], [2.0317, 0.7823, 0.0976], [2.0285, 0.7846, -0.095], [2.3012, 0.4533, 0.0947], [2.3, 0.4629, -0.0945], [2.498, 0.514, 0.097], [2.5013, 0.5168, -0.0937], [1.6732, 1.0301, -0.0015]], "angles": {"trunkLean": 15.39, "hipFlexR": 72.07, "kneeFlexR": 15.25, "ankleR": 115.17, "hipFlexL": 72.67, "kneeFlexL": 16.67, "ankleL": 112.17, "elbowR": 31.32, "kneeSep": 0.19}, "airborne": true}, {"f": 92, "t": 0.773109243697479, "joints3d": [[1.9229, 1.7133, -0.0005], [1.8512, 1.5001, 0.0098], [1.8562, 1.5018, 0.179], [1.8521, 1.5017, -0.1791], [2.0614, 1.2835, 0.1795], [2.0639, 1.2858, -0.1753], [2.1267, 1.0187, 0.1899], [2.1266, 1.0167, -0.1807], [1.6936, 1.0031, 0.095], [1.6926, 1.0018, -0.0988], [2.0516, 0.758, 0.0992], [2.0576, 0.7589, -0.0977], [2.3366, 0.4408, 0.0993], [2.3389, 0.4404, -0.1018], [2.5397, 0.493, 0.0986], [2.5321, 0.4915, -0.0946], [1.6907, 1.0066, 0.0013]], "angles": {"trunkLean": 18.04, "hipFlexR": 74.39, "kneeFlexR": 14.92, "ankleR": 116.59, "hipFlexL": 73.33, "kneeFlexL": 13.67, "ankleL": 117.53, "elbowR": 31.39, "kneeSep": 0.2}, "airborne": true}, {"f": 93, "t": 0.7815126050420168, "joints3d": [[1.9644, 1.6793, 0.0008], [1.891, 1.4725, 0.0018], [1.8958, 1.4754, 0.179], [1.8947, 1.4737, -0.1779], [2.0863, 1.2315, 0.1866], [2.0795, 1.2375, -0.1727], [2.1435, 0.9623, 0.1838], [2.1506, 0.9626, -0.1879], [1.7174, 0.9788, 0.0982], [1.7218, 0.9778, -0.1034], [2.086, 0.729, 0.0997], [2.0875, 0.725, -0.1036], [2.3703, 0.4267, 0.0988], [2.3667, 0.4279, -0.0997], [2.5784, 0.4674, 0.1019], [2.5736, 0.4708, -0.1017], [1.7249, 0.9796, 0.0011]], "angles": {"trunkLean": 18.62, "hipFlexR": 74.54, "kneeFlexR": 12.14, "ankleR": 121.5, "hipFlexL": 75.46, "kneeFlexL": 12.64, "ankleL": 122.17, "elbowR": 23.88, "kneeSep": 0.2}, "airborne": true}, {"f": 94, "t": 0.7899159663865546, "joints3d": [[2.0265, 1.6439, 0.0053], [1.933, 1.434, -0.0053], [1.9375, 1.4407, 0.1851], [1.9394, 1.4347, -0.1816], [2.1006, 1.1833, 0.1771], [2.1139, 1.1864, -0.1766], [2.1562, 0.9084, 0.1852], [2.1538, 0.9072, -0.1841], [1.7539, 0.9585, 0.0973], [1.7544, 0.953, -0.1038], [2.1107, 0.7066, 0.0993], [2.1102, 0.6982, -0.1002], [2.4097, 0.408, 0.1117], [2.4114, 0.4028, -0.1004], [2.6209, 0.452, 0.0972], [2.6126, 0.4491, -0.0972], [1.748, 0.9521, -0.0025]], "angles": {"trunkLean": 21.0, "hipFlexR": 75.13, "kneeFlexR": 8.85, "ankleR": 122.59, "hipFlexL": 75.66, "kneeFlexL": 9.84, "ankleL": 123.03, "elbowR": 27.08, "kneeSep": 0.2}, "airborne": true}, {"f": 95, "t": 0.7983193277310925, "joints3d": [[2.0786, 1.6005, -0.0018], [1.9844, 1.3953, -0.0019], [1.9888, 1.4027, 0.1794], [1.9869, 1.4034, -0.1827], [2.1266, 1.1354, 0.188], [2.1223, 1.1369, -0.1838], [2.1651, 0.8554, 0.1834], [2.1647, 0.8513, -0.1798], [1.7792, 0.9246, 0.0982], [1.7818, 0.9241, -0.1009], [2.1412, 0.6729, 0.0983], [2.1461, 0.6795, -0.1001], [2.4536, 0.3901, 0.1016], [2.451, 0.3899, -0.1036], [2.6521, 0.4241, 0.1023], [2.6597, 0.4232, -0.1058], [1.7799, 0.921, -0.0073]], "angles": {"trunkLean": 23.33, "hipFlexR": 79.6, "kneeFlexR": 9.66, "ankleR": 127.41, "hipFlexL": 78.95, "kneeFlexL": 7.35, "ankleL": 128.13, "elbowR": 18.52, "kneeSep": 0.2}, "airborne": true}, {"f": 96, "t": 0.8067226890756303, "joints3d": [[2.1272, 1.5642, 0.0018], [2.0281, 1.3606, 0.0038], [2.0374, 1.365, 0.1759], [2.0376, 1.3599, -0.1782], [2.1448, 1.0817, 0.1787], [2.1493, 1.0837, -0.1854], [2.1762, 0.8078, 0.1806], [2.1743, 0.8059, -0.1837], [1.8076, 0.893, 0.0961], [1.8178, 0.8911, -0.1021], [2.1765, 0.6404, 0.1023], [2.1742, 0.6413, -0.0952], [2.5025, 0.3742, 0.0972], [2.4968, 0.373, -0.0939], [2.7075, 0.4, 0.105], [2.7028, 0.3962, -0.0994], [1.816, 0.8918, -0.0056]], "angles": {"trunkLean": 24.36, "hipFlexR": 79.52, "kneeFlexR": 4.78, "ankleR": 133.8, "hipFlexL": 80.85, "kneeFlexL": 5.06, "ankleL": 133.51, "elbowR": 16.96, "kneeSep": 0.2}, "airborne": true}, {"f": 97, "t": 0.8151260504201681, "joints3d": [[2.1784, 1.5174, -0.0007], [2.0822, 1.3242, 0.0008], [2.0775, 1.324, 0.1818], [2.0807, 1.3218, -0.1789], [2.1697, 1.0416, 0.1852], [2.1608, 1.0344, -0.1739], [2.1845, 0.7608, 0.1827], [2.1828, 0.7575, -0.1791], [1.8418, 0.8624, 0.1034], [1.8453, 0.8602, -0.1036], [2.2108, 0.6101, 0.1029], [2.2131, 0.6102, -0.1036], [2.5352, 0.354, 0.1004], [2.5391, 0.3565, -0.0913], [2.7458, 0.3763, 0.0912], [2.7507, 0.3734, -0.0906], [1.8424, 0.86, -0.0044]], "angles": {"trunkLean": 27.33, "hipFlexR": 82.98, "kneeFlexR": 4.06, "ankleR": 137.52, "hipFlexL": 83.28, "kneeFlexL": 3.94, "ankleL": 135.63, "elbowR": 11.22, "kneeSep": 0.21}, "airborne": true}, {"f": 98, "t": 0.8235294117647058, "joints3d": [[2.2347, 1.4799, 0.0078], [2.1265, 1.2834, -0.0038], [2.1305, 1.2862, 0.1801], [2.1276, 1.2866, -0.1721], [2.1817, 0.9879, 0.1813], [2.1819, 0.9963, -0.1817], [2.189, 0.7117, 0.1817], [2.1913, 0.7142, -0.1748], [1.8729, 0.8313, 0.1015], [1.8737, 0.8336, -0.1019], [2.2358, 0.5841, 0.0958], [2.2447, 0.5832, -0.0973], [2.5743, 0.3277, 0.1011], [2.5754, 0.3342, -0.1031], [2.7851, 0.3525, 0.0984], [2.7921, 0.3475, -0.0971], [1.8743, 0.8346, -0.002]], "angles": {"trunkLean": 29.33, "hipFlexR": 85.51, "kneeFlexR": 3.27, "ankleR": 139.44, "hipFlexL": 85.28, "kneeFlexL": 3.23, "ankleL": 136.13, "elbowR": 9.28, "kneeSep": 0.19}, "airborne": true}, {"f": 99, "t": 0.8319327731092437, "joints3d": [[2.2906, 1.4366, 0.0008], [2.1694, 1.2467, -0.0022], [2.174, 1.2486, 0.1747], [2.1733, 1.2475, -0.1765], [2.203, 0.9499, 0.1764], [2.199, 0.9481, -0.1815], [2.1994, 0.6622, 0.1753], [2.1959, 0.6674, -0.1806], [1.9074, 0.8, 0.0964], [1.9167, 0.8002, -0.0998], [2.2703, 0.5453, 0.1012], [2.2713, 0.554, -0.0971], [2.614, 0.3153, 0.1041], [2.6213, 0.3195, -0.1016], [2.8288, 0.3234, 0.0976], [2.8288, 0.3251, -0.1014], [1.913, 0.8001, -0.0104]], "angles": {"trunkLean": 29.87, "hipFlexR": 84.9, "kneeFlexR": 1.36, "ankleR": 144.63, "hipFlexL": 85.3, "kneeFlexL": 1.29, "ankleL": 143.99, "elbowR": 5.65, "kneeSep": 0.2}, "airborne": true}, {"f": 100, "t": 0.8403361344537815, "joints3d": [[2.3398, 1.3916, -0.0044], [2.216, 1.2092, -0.0017], [2.2144, 1.212, 0.1819], [2.2124, 1.2052, -0.1773], [2.2158, 0.9087, 0.1823], [2.2211, 0.9106, -0.1758], [2.2088, 0.6301, 0.1751], [2.2135, 0.6316, -0.1773], [1.9329, 0.7684, 0.1054], [1.94, 0.7641, -0.1044], [2.302, 0.525, 0.0961], [2.3027, 0.5271, -0.1023], [2.6513, 0.3075, 0.1023], [2.6543, 0.3042, -0.1022], [2.8617, 0.3034, 0.0995], [2.8686, 0.3037, -0.0993], [1.9317, 0.7723, -0.0023]], "angles": {"trunkLean": 33.05, "hipFlexR": 88.72, "kneeFlexR": 0.83, "ankleR": 147.75, "hipFlexL": 89.56, "kneeFlexL": 2.55, "ankleL": 149.17, "elbowR": 3.31, "kneeSep": 0.2}, "airborne": true}, {"f": 101, "t": 0.8487394957983193, "joints3d": [[2.3836, 1.3575, 0.003], [2.257, 1.1807, -0.003], [2.2601, 1.175, 0.1838], [2.2544, 1.1767, -0.1736], [2.2336, 0.8756, 0.181], [2.2365, 0.8792, -0.18], [2.2131, 0.5985, 0.176], [2.2092, 0.5952, -0.1797], [1.9659, 0.7444, 0.0851], [1.9594, 0.7429, -0.0986], [2.3256, 0.5033, 0.1001], [2.3214, 0.4994, -0.1015], [2.6916, 0.2895, 0.0991], [2.6881, 0.2936, -0.1027], [2.8981, 0.2909, 0.0992], [2.8989, 0.2819, -0.1025], [1.9589, 0.7463, 0.0067]], "angles": {"trunkLean": 34.47, "hipFlexR": 90.21, "kneeFlexR": 4.63, "ankleR": 153.87, "hipFlexL": 89.55, "kneeFlexL": 4.13, "ankleL": 149.32, "elbowR": 2.42, "kneeSep": 0.2}, "airborne": true}, {"f": 102, "t": 0.8571428571428571, "joints3d": [[2.422, 1.3254, 0.0064], [2.295, 1.1393, 0.0029], [2.2953, 1.1382, 0.1793], [2.2899, 1.1456, -0.1788], [2.2448, 0.8495, 0.1833], [2.2453, 0.8445, -0.1834], [2.217, 0.5676, 0.1818], [2.2271, 0.5697, -0.1816], [1.9864, 0.7202, 0.0988], [1.9859, 0.725, -0.1016], [2.3464, 0.4766, 0.0949], [2.3575, 0.4744, -0.1081], [2.7231, 0.2762, 0.0991], [2.7229, 0.2737, -0.105], [2.9295, 0.2676, 0.1039], [2.9301, 0.2676, -0.1063], [1.983, 0.7255, 0.0001]], "angles": {"trunkLean": 37.02, "hipFlexR": 92.51, "kneeFlexR": 5.37, "ankleR": 152.9, "hipFlexL": 92.34, "kneeFlexL": 6.17, "ankleL": 154.37, "elbowR": 4.8, "kneeSep": 0.2}, "airborne": true}, {"f": 103, "t": 0.865546218487395, "joints3d": [[2.4522, 1.2867, -0.0066], [2.3207, 1.1165, 0.0012], [2.3207, 1.119, 0.1832], [2.3242, 1.1127, -0.1778], [2.2568, 0.8292, 0.1827], [2.2512, 0.8159, -0.1819], [2.2252, 0.5472, 0.1777], [2.224, 0.5427, -0.1744], [2.0101, 0.7013, 0.1004], [2.0072, 0.7025, -0.1014], [2.3719, 0.4578, 0.0918], [2.3694, 0.4538, -0.0993], [2.7458, 0.2636, 0.1024], [2.7488, 0.2669, -0.1042], [2.9577, 0.2539, 0.1028], [2.9564, 0.2493, -0.0952], [2.0047, 0.6992, 0.0027]], "angles": {"trunkLean": 37.14, "hipFlexR": 92.66, "kneeFlexR": 8.3, "ankleR": 158.4, "hipFlexL": 93.02, "kneeFlexL": 6.98, "ankleL": 155.14, "elbowR": 8.46, "kneeSep": 0.19}, "airborne": true}, {"f": 104, "t": 0.8739495798319328, "joints3d": [[2.4826, 1.2651, -0.0009], [2.3528, 1.092, -0.0022], [2.3529, 1.0967, 0.1856], [2.3433, 1.0924, -0.1823], [2.2703, 0.8048, 0.1766], [2.2711, 0.8023, -0.1813], [2.2223, 0.5265, 0.1817], [2.2327, 0.5276, -0.1805], [2.0259, 0.6837, 0.1034], [2.0257, 0.6852, -0.0999], [2.3898, 0.4387, 0.1023], [2.394, 0.4358, -0.1017], [2.7641, 0.2608, 0.1], [2.7687, 0.2585, -0.1066], [2.9781, 0.2399, 0.0972], [2.9835, 0.2365, -0.1001], [2.025, 0.6847, -0.0002]], "angles": {"trunkLean": 38.83, "hipFlexR": 94.57, "kneeFlexR": 8.79, "ankleR": 160.38, "hipFlexL": 94.67, "kneeFlexL": 8.53, "ankleL": 160.15, "elbowR": 6.02, "kneeSep": 0.2}, "airborne": true}, {"f": 105, "t": 0.8823529411764706, "joints3d": [[2.5098, 1.2456, -0.0017], [2.3596, 1.077, -0.0009], [2.3695, 1.0711, 0.1819], [2.3678, 1.0728, -0.182], [2.2788, 0.7891, 0.1809], [2.2778, 0.7887, -0.1803], [2.2299, 0.5175, 0.1756], [2.2269, 0.5135, -0.1756], [2.0389, 0.6681, 0.0944], [2.036, 0.6672, -0.0998], [2.4014, 0.4239, 0.1032], [2.3985, 0.4215, -0.0996], [2.7851, 0.2501, 0.1073], [2.7862, 0.2458, -0.1076], [2.9867, 0.2248, 0.1051], [2.9925, 0.2278, -0.1033], [2.0343, 0.6682, -0.0011]], "angles": {"trunkLean": 38.51, "hipFlexR": 94.1, "kneeFlexR": 9.81, "ankleR": 160.48, "hipFlexL": 93.86, "kneeFlexL": 9.62, "ankleL": 162.74, "elbowR": 7.13, "kneeSep": 0.2}, "airborne": true}, {"f": 106, "t": 0.8907563025210085, "joints3d": [[2.5205, 1.2337, 0.0047], [2.3731, 1.0684, 0.0005], [2.38, 1.0644, 0.179], [2.3738, 1.0635, -0.1846], [2.2785, 0.7826, 0.1874], [2.2791, 0.7805, -0.1802], [2.2357, 0.5052, 0.1748], [2.232, 0.5094, -0.1859], [2.0463, 0.6678, 0.1066], [2.0408, 0.6608, -0.0994], [2.4127, 0.4164, 0.1002], [2.4084, 0.4145, -0.1102], [2.7969, 0.25, 0.0985], [2.7915, 0.2408, -0.1007], [3.0046, 0.2241, 0.0962], [3.0012, 0.2231, -0.1158], [2.0526, 0.6575, 0.0038]], "angles": {"trunkLean": 37.96, "hipFlexR": 95.01, "kneeFlexR": 9.81, "ankleR": 159.72, "hipFlexL": 94.82, "kneeFlexL": 11.05, "ankleL": 163.69, "elbowR": 8.88, "kneeSep": 0.21}, "airborne": true}, {"f": 107, "t": 0.8991596638655462, "joints3d": [[2.5254, 1.2299, -0.0002], [2.3792, 1.0598, -0.0028], [2.388, 1.0559, 0.1784], [2.3909, 1.0587, -0.1831], [2.2811, 0.7732, 0.1841], [2.2829, 0.7742, -0.1777], [2.223, 0.5004, 0.1781], [2.229, 0.4983, -0.1857], [2.0513, 0.6611, 0.1005], [2.0485, 0.6636, -0.0979], [2.4113, 0.4083, 0.0913], [2.4094, 0.4163, -0.0942], [2.7976, 0.2476, 0.094], [2.7983, 0.2474, -0.0973], [3.0053, 0.2202, 0.1034], [3.0094, 0.2215, -0.1026], [2.0556, 0.6588, 0.0022]], "angles": {"trunkLean": 38.91, "hipFlexR": 95.43, "kneeFlexR": 10.98, "ankleR": 163.49, "hipFlexL": 94.51, "kneeFlexL": 12.59, "ankleL": 164.77, "elbowR": 10.09, "kneeSep": 0.19}, "airborne": true}, {"f": 108, "t": 0.907563025210084, "joints3d": [[2.5301, 1.2351, 0.0007], [2.3922, 1.0677, 0.0021], [2.3826, 1.0639, 0.1847], [2.3849, 1.0598, -0.1837], [2.2865, 0.7815, 0.1837], [2.2868, 0.7819, -0.1786], [2.2376, 0.5084, 0.1864], [2.2341, 0.5058, -0.1828], [2.0528, 0.6638, 0.0969], [2.048, 0.6646, -0.113], [2.4114, 0.4168, 0.0942], [2.414, 0.4121, -0.104], [2.797, 0.2352, 0.0953], [2.7946, 0.236, -0.0959], [3.0067, 0.2166, 0.1057], [3.0051, 0.2157, -0.0961], [2.0566, 0.6652, -0.0025]], "angles": {"trunkLean": 39.82, "hipFlexR": 96.0, "kneeFlexR": 9.77, "ankleR": 160.65, "hipFlexL": 95.46, "kneeFlexL": 9.35, "ankleL": 159.68, "elbowR": 8.83, "kneeSep": 0.2}, "airborne": true}, {"f": 109, "t": 0.9159663865546218, "joints3d": [[2.512, 1.2507, -0.0006], [2.3756, 1.0776, -0.0013], [2.3806, 1.076, 0.1861], [2.3772, 1.0767, -0.1832], [2.2877, 0.7921, 0.1794], [2.2813, 0.7974, -0.179], [2.2457, 0.5208, 0.1779], [2.2372, 0.5165, -0.1786], [2.0491, 0.6724, 0.0949], [2.0504, 0.6714, -0.0979], [2.4086, 0.4119, 0.099], [2.4121, 0.4092, -0.1033], [2.7793, 0.2196, 0.0917], [2.7796, 0.2235, -0.0975], [2.9864, 0.198, 0.1006], [2.9929, 0.1987, -0.097], [2.0531, 0.6763, 0.0011]], "angles": {"trunkLean": 38.79, "hipFlexR": 92.57, "kneeFlexR": 9.25, "ankleR": 159.81, "hipFlexL": 92.79, "kneeFlexL": 8.65, "ankleL": 158.27, "elbowR": 10.05, "kneeSep": 0.2}, "airborne": true}, {"f": 110, "t": 0.9243697478991597, "joints3d": [[2.5104, 1.2777, 0.0021], [2.3684, 1.1035, -0.0011], [2.3726, 1.1037, 0.1899], [2.3689, 1.1034, -0.1733], [2.2898, 0.8162, 0.1767], [2.2835, 0.8172, -0.1761], [2.2536, 0.5391, 0.1832], [2.2484, 0.5369, -0.1804], [2.0503, 0.6867, 0.0972], [2.0568, 0.6839, -0.0978], [2.3935, 0.4146, 0.0875], [2.4026, 0.4096, -0.1008], [2.7626, 0.1964, 0.0973], [2.7603, 0.1973, -0.1014], [2.9667, 0.1731, 0.0982], [2.9652, 0.1732, -0.0984], [2.0551, 0.687, -0.0006]], "angles": {"trunkLean": 36.95, "hipFlexR": 88.14, "kneeFlexR": 7.74, "ankleR": 156.0, "hipFlexL": 89.19, "kneeFlexL": 8.23, "ankleL": 155.9, "elbowR": 9.48, "kneeSep": 0.19}, "airborne": true}, {"f": 111, "t": 0.9327731092436975, "joints3d": [[2.4824, 1.3155, 0.0051], [2.3552, 1.1396, -0.0068], [2.3565, 1.1273, 0.1832], [2.3618, 1.1343, -0.1759], [2.2911, 0.8416, 0.1777], [2.2883, 0.8425, -0.1831], [2.2677, 0.559, 0.1778], [2.2687, 0.558, -0.1781], [2.0653, 0.7114, 0.1039], [2.0662, 0.7133, -0.1027], [2.3859, 0.4061, 0.0986], [2.3895, 0.4003, -0.0965], [2.7209, 0.1621, 0.1057], [2.7267, 0.1599, -0.11], [2.9341, 0.1446, 0.0961], [2.9392, 0.1467, -0.1002], [2.0691, 0.6997, -0.0086]], "angles": {"trunkLean": 33.04, "hipFlexR": 80.38, "kneeFlexR": 8.99, "ankleR": 147.76, "hipFlexL": 80.86, "kneeFlexL": 7.71, "ankleL": 148.43, "elbowR": 10.47, "kneeSep": 0.2}, "airborne": true}, {"f": 112, "t": 0.9411764705882353, "joints3d": [[2.4643, 1.3512, -0.0036], [2.3476, 1.1664, -0.0051], [2.3502, 1.1678, 0.1812], [2.3475, 1.1729, -0.1828], [2.2864, 0.8744, 0.1805], [2.2925, 0.8691, -0.1813], [2.2785, 0.5927, 0.1707], [2.277, 0.5943, -0.1824], [2.0644, 0.7314, 0.0971], [2.0635, 0.7351, -0.096], [2.3786, 0.4078, 0.1041], [2.3702, 0.4104, -0.0995], [2.6865, 0.129, 0.096], [2.6789, 0.1298, -0.0971], [2.8952, 0.1183, 0.1004], [2.8918, 0.1144, -0.1043], [2.0653, 0.729, -0.0042]], "angles": {"trunkLean": 32.84, "hipFlexR": 76.87, "kneeFlexR": 4.43, "ankleR": 141.81, "hipFlexL": 77.29, "kneeFlexL": 4.19, "ankleL": 140.71, "elbowR": 7.05, "kneeSep": 0.2}, "airborne": true}, {"f": 113, "t": 0.9495798319327731, "joints3d": [[2.4484, 1.3928, 0.0015], [2.3372, 1.2031, -0.0036], [2.3333, 1.2041, 0.1797], [2.3344, 1.2074, -0.1892], [2.2958, 0.9077, 0.1809], [2.2924, 0.9047, -0.1771], [2.2918, 0.6251, 0.1757], [2.3017, 0.6313, -0.1791], [2.0707, 0.7585, 0.1013], [2.0723, 0.7536, -0.1055], [2.3397, 0.4064, 0.0987], [2.347, 0.4087, -0.1036], [2.6297, 0.1024, 0.1013], [2.6356, 0.103, -0.0996], [2.8505, 0.0905, 0.0952], [2.8458, 0.0888, -0.0985], [2.0741, 0.757, 0.0036]], "angles": {"trunkLean": 30.54, "hipFlexR": 69.5, "kneeFlexR": 4.82, "ankleR": 137.22, "hipFlexL": 68.84, "kneeFlexL": 6.31, "ankleL": 136.7, "elbowR": 10.21, "kneeSep": 0.2}, "airborne": true}, {"f": 114, "t": 0.957983193277311, "joints3d": [[2.4258, 1.4295, 0.0071], [2.3188, 1.2382, -0.0006], [2.3263, 1.2408, 0.1777], [2.3198, 1.2396, -0.1785], [2.2943, 0.936, 0.1763], [2.3043, 0.9402, -0.1813], [2.3138, 0.6595, 0.1827], [2.3136, 0.6574, -0.1836], [2.0768, 0.7772, 0.1029], [2.081, 0.7771, -0.109], [2.3206, 0.4099, 0.1075], [2.3267, 0.412, -0.101], [2.5803, 0.0775, 0.1028], [2.5826, 0.0736, -0.1003], [2.7899, 0.0655, 0.0975], [2.7891, 0.0685, -0.1033], [2.0815, 0.7742, -0.0011]], "angles": {"trunkLean": 27.09, "hipFlexR": 62.13, "kneeFlexR": 3.3, "ankleR": 128.5, "hipFlexL": 61.74, "kneeFlexL": 4.59, "ankleL": 131.28, "elbowR": 4.85, "kneeSep": 0.21}, "airborne": true}, {"f": 115, "t": 0.9663865546218487, "joints3d": [[2.4018, 1.4687, -0.0085], [2.3075, 1.2747, 0.0047], [2.3107, 1.2747, 0.1847], [2.3078, 1.2744, -0.1697], [2.3019, 0.9661, 0.1771], [2.2978, 0.9716, -0.1802], [2.3217, 0.6944, 0.1819], [2.3232, 0.693, -0.182], [2.088, 0.7992, 0.1021], [2.0871, 0.8001, -0.0991], [2.3057, 0.4149, 0.0993], [2.3093, 0.4145, -0.0954], [2.5311, 0.0591, 0.1029], [2.5213, 0.0649, -0.0989], [2.7399, 0.0544, 0.0984], [2.7402, 0.0504, -0.1006], [2.0855, 0.7962, -0.0012]], "angles": {"trunkLean": 24.9, "hipFlexR": 55.74, "kneeFlexR": 1.6, "ankleR": 125.02, "hipFlexL": 55.08, "kneeFlexL": 2.95, "ankleL": 123.62, "elbowR": 7.28, "kneeSep": 0.19}, "airborne": false}, {"f": 116, "t": 0.9747899159663865, "joints3d": [[2.381, 1.4998, -0.0043], [2.2992, 1.299, -0.0009], [2.297, 1.2994, 0.1841], [2.298, 1.2964, -0.1804], [2.3031, 0.9966, 0.1883], [2.3031, 0.9904, -0.1786], [2.3336, 0.7213, 0.1721], [2.3312, 0.7194, -0.1807], [2.0926, 0.8214, 0.1054], [2.0941, 0.8175, -0.1096], [2.2909, 0.4297, 0.0993], [2.2797, 0.4279, -0.0942], [2.4747, 0.0468, 0.0993], [2.4769, 0.0528, -0.0893], [2.6897, 0.0493, 0.1032], [2.6901, 0.0511, -0.0971], [2.0929, 0.8201, -0.0003]], "angles": {"trunkLean": 23.31, "hipFlexR": 50.17, "kneeFlexR": 2.65, "ankleR": 118.14, "hipFlexL": 51.41, "kneeFlexL": 1.45, "ankleL": 114.97, "elbowR": 5.03, "kneeSep": 0.19}, "airborne": false}, {"f": 117, "t": 0.9831932773109243, "joints3d": [[2.3675, 1.5243, -0.0015], [2.2869, 1.3207, -0.0013], [2.2887, 1.322, 0.1779], [2.2901, 1.3184, -0.1792], [2.3026, 1.0245, 0.1821], [2.3006, 1.0197, -0.1828], [2.3482, 0.7486, 0.1795], [2.3458, 0.7468, -0.1792], [2.0949, 0.8314, 0.1025], [2.0941, 0.8357, -0.0977], [2.2665, 0.4266, 0.1047], [2.2625, 0.4267, -0.1039], [2.4341, 0.0518, 0.1036], [2.4305, 0.0443, -0.0951], [2.6497, 0.0479, 0.106], [2.6498, 0.0437, -0.1007], [2.0944, 0.8377, 0.0056]], "angles": {"trunkLean": 21.74, "hipFlexR": 44.83, "kneeFlexR": 2.41, "ankleR": 113.83, "hipFlexL": 45.42, "kneeFlexL": 1.2, "ankleL": 115.13, "elbowR": 7.53, "kneeSep": 0.21}, "airborne": false}, {"f": 118, "t": 0.9915966386554622, "joints3d": [[2.3548, 1.5411, -0.0072], [2.2813, 1.33, 0.0067], [2.2785, 1.3363, 0.1771], [2.277, 1.3348, -0.1833], [2.3001, 1.0381, 0.18], [2.3038, 1.0378, -0.1766], [2.3546, 0.7549, 0.1806], [2.3486, 0.7592, -0.1838], [2.0944, 0.849, 0.1005], [2.1044, 0.8437, -0.1039], [2.2615, 0.4389, 0.108], [2.2541, 0.4329, -0.1016], [2.4035, 0.0371, 0.1022], [2.3959, 0.0417, -0.0937], [2.6133, 0.0448, 0.1073], [2.6159, 0.0411, -0.1019], [2.0992, 0.8462, -0.0013]], "angles": {"trunkLean": 20.64, "hipFlexR": 41.59, "kneeFlexR": 0.79, "ankleR": 110.02, "hipFlexL": 44.13, "kneeFlexL": 3.22, "ankleL": 107.34, "elbowR": 4.84, "kneeSep": 0.21}, "airborne": false}, {"f": 119, "t": 1.0, "joints3d": [[2.3564, 1.5427, -0.0019], [2.2741, 1.341, 0.0029], [2.2689, 1.3372, 0.1818], [2.2751, 1.3352, -0.1846], [2.298, 1.0379, 0.1761], [2.296, 1.0362, -0.1732], [2.3526, 0.7631, 0.1798], [2.346, 0.7638, -0.1852], [2.0989, 0.8475, 0.1038], [2.101, 0.8498, -0.1016], [2.2534, 0.4375, 0.0989], [2.2434, 0.4339, -0.1063], [2.3953, 0.0456, 0.0995], [2.3979, 0.0417, -0.1087], [2.6032, 0.0475, 0.1069], [2.6003, 0.0416, -0.1052], [2.0987, 0.8514, -0.0037]], "angles": {"trunkLean": 19.72, "hipFlexR": 39.52, "kneeFlexR": 2.62, "ankleR": 111.52, "hipFlexL": 41.59, "kneeFlexL": 1.04, "ankleL": 109.37, "elbowR": 7.92, "kneeSep": 0.21}, "airborne": false}], "layout": "mocap17", "source": "pipeline", "units": "m", "phases": [{"frame": 0, "name": "Stance", "cat": "approach"}, {"frame": 26, "name": "Countermovement", "cat": "loading"}, {"frame": 35, "name": "Takeoff", "cat": "propulsion"}, {"frame": 66, "name": "Peak", "cat": "flight"}, {"frame": 115, "name": "Landing", "cat": "landing"}], "keyframes": [{"frame": 0, "name": "Stance", "cat": "approach"}, {"frame": 26, "name": "Countermovement", "cat": "loading"}, {"frame": 35, "name": "Takeoff", "cat": "propulsion"}, {"frame": 66, "name": "Peak", "cat": "flight"}, {"frame": 115, "name": "Landing", "cat": "landing"}], "metrics": [{"label": "Takeoff angle", "value": 60.93, "unit": "\u00b0", "caveat": false}, {"label": "Jump height", "value": 40.19, "unit": "cm", "caveat": false}, {"label": "Flight time", "value": 1333.33, "unit": "ms", "caveat": false}, {"label": "Distance", "value": 1.99, "unit": "m", "caveat": false}, {"label": "Countermovement depth", "value": 29.23, "unit": "cm", "caveat": false}, {"label": "Peak knee flex", "value": 21.83, "unit": "\u00b0", "caveat": false}, {"label": "Knee sep min", "value": 18.84, "unit": "cm", "caveat": true}], "schema_version": "1.0", "keypoints": ["head", "neck", "shoulderL", "shoulderR", "elbowL", "elbowR", "wristL", "wristR", "hipL", "hipR", "kneeL", "kneeR", "ankleL", "ankleR", "toeL", "toeR", "pelvis"], "edges": [["pelvis", "neck"], ["neck", "head"], ["neck", "shoulderL"], ["neck", "shoulderR"], ["shoulderL", "elbowL"], ["elbowL", "wristL"], ["shoulderR", "elbowR"], ["elbowR", "wristR"], ["pelvis", "hipL"], ["hipL", "kneeL"], ["kneeL", "ankleL"], ["ankleL", "toeL"], ["pelvis", "hipR"], ["hipR", "kneeR"], ["kneeR", "ankleR"], ["ankleR", "toeR"]]};</script>
+
+<script>
+/* Movement Keyframe Studio — analysis engine (pure, browser + node).
+ *
+ * Kinematics only. A 2D sagittal/frontal stick athlete is driven by authored
+ * segment-angle keyposes per movement; joints come from forward kinematics, and
+ * every reported metric is computed FROM the joints (never the authoring angles)
+ * so what you see on screen equals what is measured — the same contract the real
+ * multi-camera pipeline uses. Procedural demo takes stand in until triangulated
+ * keypoints from the P1 pipeline are wired in.
+ */
+(function (global) {
+  "use strict";
+
+  // Segment lengths (metres) for a ~1.75 m athlete.
+  var SEG = { trunk: 0.52, head: 0.22, thigh: 0.44, shank: 0.42, foot: 0.21, uparm: 0.30, forearm: 0.28 };
+  var GROUND_TOE = 0.06; // toe below this height (m) = ground contact
+
+  var D2R = Math.PI / 180;
+
+  // Neutral standing pose. All angles in degrees.
+  // Leg/arm angles measured from the downward vertical, +ve = forward (+x).
+  // trunk/head measured from the upward vertical, +ve = forward lean.
+  function neutral() {
+    return {
+      px: 0, ph: 0.90, trunk: 4, head: 3,
+      thighR: 3, shankR: 3, footR: 90, thighL: -3, shankL: -3, footL: 90,
+      uaR: 8, faR: 12, uaL: -8, faL: -12
+    };
+  }
+
+  function lerp(a, b, u) { return a + (b - a) * u; }
+  function smooth(u) { return u * u * (3 - 2 * u); }
+
+  // Interpolate a pose from authored keyposes (each {t, ...fields}) over neutral.
+  function poseFromKeys(keys, t) {
+    var p = neutral();
+    if (!keys.length) return p;
+    if (t <= keys[0].t) return merge(p, keys[0]);
+    if (t >= keys[keys.length - 1].t) return merge(p, keys[keys.length - 1]);
+    var i = 0;
+    while (i < keys.length - 1 && t > keys[i + 1].t) i++;
+    var a = keys[i], b = keys[i + 1];
+    var u = smooth((t - a.t) / Math.max(1e-6, b.t - a.t));
+    var out = merge(p, a);
+    for (var k in b) {
+      if (k === "t") continue;
+      var av = a[k] != null ? a[k] : p[k];
+      out[k] = lerp(av, b[k], u);
+    }
+    return out;
+  }
+  function merge(base, k) {
+    var o = {}; for (var f in base) o[f] = base[f];
+    for (var g in k) { if (g !== "t") o[g] = k[g]; }
+    return o;
+  }
+
+  // Forward kinematics: pose -> world joints (metres, y-up).
+  function fk(p) {
+    var px = p.px, ph = p.ph;
+    var pelvis = [px, ph];
+    var tr = p.trunk * D2R, hd = p.head * D2R;
+    var neck = [px + SEG.trunk * Math.sin(tr), ph + SEG.trunk * Math.cos(tr)];
+    var head = [neck[0] + SEG.head * Math.sin(hd), neck[1] + SEG.head * Math.cos(hd)];
+    function leg(th, sh, ft) {
+      var thr = th * D2R, shr = sh * D2R, ftr = ft * D2R;
+      var knee = [px + SEG.thigh * Math.sin(thr), ph - SEG.thigh * Math.cos(thr)];
+      var ankle = [knee[0] + SEG.shank * Math.sin(shr), knee[1] - SEG.shank * Math.cos(shr)];
+      var toe = [ankle[0] + SEG.foot * Math.sin(ftr), ankle[1] - SEG.foot * Math.cos(ftr)];
+      return { knee: knee, ankle: ankle, toe: toe };
+    }
+    function arm(ua, fa) {
+      var uar = ua * D2R, far = fa * D2R;
+      var elbow = [neck[0] + SEG.uparm * Math.sin(uar), neck[1] - SEG.uparm * Math.cos(uar)];
+      var wrist = [elbow[0] + SEG.forearm * Math.sin(far), elbow[1] - SEG.forearm * Math.cos(far)];
+      return { elbow: elbow, wrist: wrist };
+    }
+    var R = leg(p.thighR, p.shankR, p.footR), L = leg(p.thighL, p.shankL, p.footL);
+    var aR = arm(p.uaR, p.faR), aL = arm(p.uaL, p.faL);
+    return {
+      pelvis: pelvis, neck: neck, head: head,
+      hipR: pelvis, kneeR: R.knee, ankleR: R.ankle, toeR: R.toe,
+      hipL: pelvis, kneeL: L.knee, ankleL: L.ankle, toeL: L.toe,
+      shoulderR: neck, elbowR: aR.elbow, wristR: aR.wrist,
+      shoulderL: neck, elbowL: aL.elbow, wristL: aL.wrist
+    };
+  }
+
+  function interior(A, B, C) { // interior angle at B, degrees
+    var b1x = A[0] - B[0], b1y = A[1] - B[1], b2x = C[0] - B[0], b2y = C[1] - B[1];
+    var d = (b1x * b2x + b1y * b2y) /
+      (Math.hypot(b1x, b1y) * Math.hypot(b2x, b2y) + 1e-9);
+    d = Math.max(-1, Math.min(1, d));
+    return Math.acos(d) / D2R;
+  }
+
+  function jointAngles(j) {
+    var lean = Math.atan2(j.neck[0] - j.pelvis[0], j.neck[1] - j.pelvis[1]) / D2R;
+    return {
+      trunkLean: lean,
+      hipFlexR: 180 - interior(j.neck, j.pelvis, j.kneeR),
+      kneeFlexR: 180 - interior(j.hipR, j.kneeR, j.ankleR),
+      ankleR: interior(j.kneeR, j.ankleR, j.toeR),
+      hipFlexL: 180 - interior(j.neck, j.pelvis, j.kneeL),
+      kneeFlexL: 180 - interior(j.hipL, j.kneeL, j.ankleL),
+      ankleL: interior(j.kneeL, j.ankleL, j.toeL),
+      elbowR: 180 - interior(j.shoulderR, j.elbowR, j.wristR),
+      kneeSep: (j.kneeR[0] - j.kneeL[0])
+    };
+  }
+
+  // ---- Movement library --------------------------------------------------
+  // cat colours: approach, loading, propulsion, flight, landing, plant, release
+  var MOVEMENTS = {
+    approach_jump: {
+      name: "Approach Jump", view: "sagittal", fps: 60, frames: 120,
+      blurb: "Run-up to a max vertical — penultimate to final plant to takeoff.",
+      phases: [
+        { id: "approach", name: "Approach", cat: "approach", t: 0.00 },
+        { id: "pen", name: "Penultimate", cat: "plant", t: 0.30 },
+        { id: "plant", name: "Final plant", cat: "loading", t: 0.48 },
+        { id: "takeoff", name: "Takeoff", cat: "propulsion", t: 0.60 },
+        { id: "flight", name: "Flight", cat: "flight", t: 0.66 },
+        { id: "landing", name: "Landing", cat: "landing", t: 0.92 }
+      ],
+      keys: [
+        { t: 0.00, px: -1.6, ph: 0.90, trunk: 12, thighR: 24, shankR: -6, thighL: -20, shankL: 34, uaR: -30, faR: -20, uaL: 30, faL: 20 },
+        { t: 0.30, px: -0.9, ph: 0.86, trunk: 16, thighR: -18, shankR: 40, footR: 78, thighL: 22, shankL: -8, uaR: 40, uaL: -30 },
+        { t: 0.48, px: -0.35, ph: 0.72, trunk: 22, thighR: 20, shankR: 34, footR: 74, thighL: 18, shankL: 30, footL: 74, uaR: -60, faR: -30, uaL: -60, faL: -30 },
+        { t: 0.60, px: -0.1, ph: 1.02, trunk: 8, thighR: 6, shankR: 4, footR: 118, thighL: 4, shankL: 4, footL: 118, uaR: 150, faR: 165, uaL: 150, faL: 165 },
+        { t: 0.66, px: 0.0, ph: 1.30, trunk: 4, thighR: 20, shankR: -30, thighL: 18, shankL: -28, footR: 120, footL: 120, uaR: 160, uaL: 160 },
+        { t: 0.80, px: 0.05, ph: 1.34, trunk: 2, thighR: 24, shankR: -26, thighL: 22, shankL: -24, uaR: 120, uaL: 120 },
+        { t: 0.92, px: 0.1, ph: 0.70, trunk: 26, thighR: 34, shankR: 40, footR: 78, thighL: 30, shankL: 38, footL: 78, uaR: -20, uaL: -20 },
+        { t: 1.00, px: 0.12, ph: 0.82, trunk: 14, thighR: 12, shankR: 12, thighL: -12, shankL: 12 }
+      ],
+      metrics: ["approach_speed", "flight_time", "jump_height", "takeoff_angle", "plant_knee"]
+    },
+
+    throwing: {
+      name: "Throwing", view: "sagittal", fps: 120, frames: 120,
+      blurb: "Stride, cock, accelerate, release — dominant-arm sequencing.",
+      phases: [
+        { id: "windup", name: "Wind-up", cat: "loading", t: 0.00 },
+        { id: "stride", name: "Stride", cat: "approach", t: 0.28 },
+        { id: "plant", name: "Front plant", cat: "plant", t: 0.46 },
+        { id: "cock", name: "Max cock", cat: "loading", t: 0.56 },
+        { id: "release", name: "Release", cat: "release", t: 0.72 },
+        { id: "follow", name: "Follow-through", cat: "landing", t: 0.9 }
+      ],
+      keys: [
+        { t: 0.00, px: -0.2, ph: 0.92, trunk: -8, thighR: -6, thighL: 8, uaR: -20, faR: -60, uaL: -40, faL: -80 },
+        { t: 0.28, px: -0.05, ph: 0.90, trunk: -6, thighR: -14, shankR: 20, thighL: 26, shankL: -10, footL: 100, uaR: -70, faR: -60, uaL: 20 },
+        { t: 0.46, px: 0.05, ph: 0.88, trunk: 2, thighR: -8, shankR: 8, thighL: 20, shankL: 6, footL: 96, uaR: -120, faR: -80, uaL: 60 },
+        { t: 0.56, px: 0.08, ph: 0.9, trunk: 10, thighL: 12, shankL: 2, uaR: -150, faR: -120, uaL: 90 },
+        { t: 0.72, px: 0.12, ph: 0.9, trunk: 24, thighR: 10, thighL: 8, uaR: 60, faR: 40, uaL: 120 },
+        { t: 0.86, px: 0.15, ph: 0.86, trunk: 40, thighR: 20, shankR: 30, thighL: 6, uaR: 120, faR: 100, uaL: 140 },
+        { t: 1.00, px: 0.18, ph: 0.84, trunk: 46, thighR: 30, shankR: 40, footR: 80, uaR: 140, faR: 120 }
+      ],
+      metrics: ["front_plant_knee", "trunk_at_release", "elbow_at_release", "release_height", "release_speed"]
+    },
+
+    acceleration: {
+      name: "Acceleration", view: "sagittal", fps: 120, frames: 132,
+      blurb: "First strides out of a stance — drive, recover, touchdown, repeat.",
+      phases: [
+        { id: "s1c", name: "Drive R", cat: "propulsion", t: 0.02 },
+        { id: "s1a", name: "Flight", cat: "flight", t: 0.18 },
+        { id: "s2c", name: "Touchdown L", cat: "plant", t: 0.30 },
+        { id: "s2a", name: "Flight", cat: "flight", t: 0.46 },
+        { id: "s3c", name: "Touchdown R", cat: "plant", t: 0.58 },
+        { id: "s3a", name: "Flight", cat: "flight", t: 0.74 },
+        { id: "s4c", name: "Touchdown L", cat: "plant", t: 0.86 }
+      ],
+      keys: runKeys(),
+      metrics: ["contact_time", "flight_time", "avg_speed", "trunk_lean", "touchdown_knee"]
+    },
+
+    broad_jump: {
+      name: "Broad Jump", view: "sagittal", fps: 60, frames: 120,
+      blurb: "Standing horizontal jump — countermovement, drive, reach, stick.",
+      phases: [
+        { id: "stance", name: "Stance", cat: "approach", t: 0.00 },
+        { id: "cm", name: "Countermovement", cat: "loading", t: 0.28 },
+        { id: "takeoff", name: "Takeoff", cat: "propulsion", t: 0.44 },
+        { id: "flight", name: "Flight", cat: "flight", t: 0.52 },
+        { id: "reach", name: "Reach", cat: "flight", t: 0.72 },
+        { id: "landing", name: "Landing", cat: "landing", t: 0.9 }
+      ],
+      keys: [
+        { t: 0.00, px: 0, ph: 0.90, trunk: 6, uaR: 8, uaL: -8 },
+        { t: 0.20, px: 0, ph: 0.86, trunk: 18, thighR: 16, shankR: 24, footR: 76, thighL: 16, shankL: 24, footL: 76, uaR: -50, faR: -20, uaL: -50, faL: -20 },
+        { t: 0.28, px: 0.02, ph: 0.66, trunk: 34, thighR: 34, shankR: 44, footR: 70, thighL: 34, shankL: 44, footL: 70, uaR: -80, faR: -30, uaL: -80, faL: -30 },
+        { t: 0.44, px: 0.2, ph: 1.00, trunk: 30, thighR: -20, shankR: 30, footR: 130, thighL: -20, shankL: 30, footL: 130, uaR: 120, faR: 150, uaL: 120, faL: 150 },
+        { t: 0.52, px: 0.5, ph: 1.16, trunk: 22, thighR: -40, shankR: 60, thighL: -40, shankL: 60, uaR: 150, uaL: 150 },
+        { t: 0.72, px: 1.3, ph: 1.12, trunk: 10, thighR: 60, shankR: 30, footR: 110, thighL: 60, shankL: 30, footL: 110, uaR: 40, faR: 20, uaL: 40, faL: 20 },
+        { t: 0.90, px: 2.0, ph: 0.64, trunk: 40, thighR: 56, shankR: 66, footR: 84, thighL: 56, shankL: 66, footL: 84, uaR: -30, uaL: -30 },
+        { t: 1.00, px: 2.05, ph: 0.82, trunk: 20, thighR: 20, shankR: 20, thighL: 20, shankL: 20 }
+      ],
+      metrics: ["cm_depth", "distance", "takeoff_angle", "flight_time", "landing_knee"]
+    },
+
+    lateral_jump: {
+      name: "Lateral Jump", view: "frontal", fps: 60, frames: 110,
+      blurb: "Skater bound — load the outside leg, drive across, stick single-leg.",
+      phases: [
+        { id: "load", name: "Load (R)", cat: "loading", t: 0.10 },
+        { id: "drive", name: "Drive", cat: "propulsion", t: 0.34 },
+        { id: "flight", name: "Flight", cat: "flight", t: 0.5 },
+        { id: "land", name: "Land (L)", cat: "landing", t: 0.82 }
+      ],
+      keys: [
+        { t: 0.00, px: 0.0, ph: 0.90, trunk: 0, thighR: 6, thighL: -6, uaR: 20, uaL: -20 },
+        { t: 0.10, px: 0.1, ph: 0.70, trunk: 8, thighR: 30, shankR: -34, footR: 70, thighL: 8, shankL: -12, uaR: 50, uaL: -30 },
+        { t: 0.34, px: 0.2, ph: 0.94, trunk: 6, thighR: -6, shankR: 8, thighL: -20, shankL: 20, uaR: -30, uaL: 40 },
+        { t: 0.50, px: 0.5, ph: 1.02, trunk: 2, thighR: -18, shankR: 26, thighL: -30, shankL: 34, uaR: -20, uaL: 30 },
+        { t: 0.82, px: 0.85, ph: 0.68, trunk: 6, thighL: 30, shankL: -34, footL: 70, thighR: 10, shankR: -10, uaL: 50, uaR: -30 },
+        { t: 1.00, px: 0.9, ph: 0.86, trunk: 2, thighL: 8, shankL: -6, thighR: -6 }
+      ],
+      metrics: ["load_depth", "lateral_distance", "flight_time", "land_knee", "knee_valgus"]
+    },
+
+    l_hop: {
+      name: "L-Hop", view: "sagittal", fps: 60, frames: 150,
+      blurb: "Single-leg L pattern — forward hops then a lateral redirect.",
+      phases: [
+        { id: "h1", name: "Hop 1", cat: "propulsion", t: 0.08 },
+        { id: "c1", name: "Contact 1", cat: "plant", t: 0.24 },
+        { id: "h2", name: "Hop 2", cat: "propulsion", t: 0.40 },
+        { id: "c2", name: "Contact 2", cat: "plant", t: 0.56 },
+        { id: "turn", name: "Redirect", cat: "loading", t: 0.70 },
+        { id: "c3", name: "Contact 3", cat: "landing", t: 0.88 }
+      ],
+      keys: hopKeys(3, 0.55),
+      metrics: ["contact_time", "flight_time", "hop_distance", "contact_knee", "reactive_index"]
+    },
+
+    pent_hop: {
+      name: "Pent Hop", view: "sagittal", fps: 60, frames: 170,
+      blurb: "Five reactive hops — track contact time and stiffness hop to hop.",
+      phases: [
+        { id: "c1", name: "Contact 1", cat: "plant", t: 0.12 },
+        { id: "c2", name: "Contact 2", cat: "plant", t: 0.30 },
+        { id: "c3", name: "Contact 3", cat: "plant", t: 0.48 },
+        { id: "c4", name: "Contact 4", cat: "plant", t: 0.66 },
+        { id: "c5", name: "Contact 5", cat: "landing", t: 0.84 }
+      ],
+      keys: hopKeys(5, 0.4),
+      metrics: ["contact_time", "flight_time", "hop_distance", "contact_knee", "reactive_index"]
+    },
+
+    cod: {
+      name: "Change of Direction", view: "frontal", fps: 120, frames: 130,
+      blurb: "Decelerate, plant, redirect — the injury-risk window on the cut.",
+      phases: [
+        { id: "approach", name: "Approach", cat: "approach", t: 0.00 },
+        { id: "pen", name: "Penultimate", cat: "plant", t: 0.30 },
+        { id: "plant", name: "Cut plant", cat: "loading", t: 0.50 },
+        { id: "push", name: "Redirect", cat: "propulsion", t: 0.64 },
+        { id: "exit", name: "Re-accelerate", cat: "flight", t: 0.82 }
+      ],
+      keys: [
+        { t: 0.00, px: -1.4, ph: 0.90, trunk: 10, thighR: 20, shankR: -6, thighL: -18, shankL: 30, uaR: -20, uaL: 20 },
+        { t: 0.30, px: -0.7, ph: 0.84, trunk: 6, thighR: -20, shankR: 34, footR: 80, thighL: 22, shankL: -6, uaR: 30, uaL: -20 },
+        { t: 0.50, px: -0.2, ph: 0.70, trunk: -14, thighR: 30, shankR: 30, footR: 76, thighL: 12, shankL: 24, footL: 78, uaR: -30, uaL: 40 },
+        { t: 0.64, px: 0.0, ph: 0.80, trunk: -18, thighR: 14, shankR: 16, thighL: -10, shankL: 20, uaR: -20, uaL: 50 },
+        { t: 0.82, px: 0.5, ph: 0.88, trunk: -20, thighR: -18, shankR: 30, thighL: 22, shankL: -6, uaR: 40, uaL: -30 },
+        { t: 1.00, px: 1.1, ph: 0.88, trunk: -16, thighR: 22, shankR: -6, thighL: -18, shankL: 28 }
+      ],
+      metrics: ["approach_speed", "plant_knee", "plant_trunk", "knee_valgus", "contact_time"]
+    }
+  };
+
+  // cyclic sprint keyposes (alternating legs, forward progression, bob).
+  function runKeys() {
+    var keys = [], n = 8, dist = 3.2;
+    for (var i = 0; i <= n; i++) {
+      var t = i / n, ph = t; // fraction
+      var stanceR = (i % 2 === 0);
+      var bob = 0.90 + 0.05 * Math.sin(t * n * Math.PI); // vertical oscillation
+      keys.push({
+        t: ph,
+        px: -1.6 + dist * (t * t * 0.6 + t * 0.4), // accelerating progression
+        ph: stanceR ? bob - 0.04 : bob + 0.02,
+        trunk: 34 - 16 * t, // rise from deep lean
+        thighR: stanceR ? -16 : 42, shankR: stanceR ? 18 : -30, footR: stanceR ? 84 : 118,
+        thighL: stanceR ? 42 : -16, shankL: stanceR ? -30 : 18, footL: stanceR ? 118 : 84,
+        uaR: stanceR ? 70 : -50, faR: stanceR ? 90 : 100,
+        uaL: stanceR ? -50 : 70, faL: stanceR ? 100 : 90
+      });
+    }
+    return keys;
+  }
+
+  // repeated hops: n contacts, stride length s (m). Single-leg (right) reactive.
+  function hopKeys(n, s) {
+    var keys = [], steps = n * 2 + 1;
+    for (var i = 0; i <= steps; i++) {
+      var t = i / steps;
+      var contact = (i % 2 === 1);
+      keys.push({
+        t: t,
+        px: s * (i * 0.5),
+        ph: contact ? 0.74 : 1.0,
+        trunk: contact ? 14 : 6,
+        thighR: contact ? 30 : -30, shankR: contact ? 34 : 46, footR: contact ? 74 : 130,
+        thighL: contact ? 18 : 24, shankL: contact ? 26 : -40, footL: contact ? 120 : 120,
+        uaR: contact ? 40 : 120, uaL: contact ? -30 : 120
+      });
+    }
+    return keys;
+  }
+
+  // ---- Take generation + metrics ----------------------------------------
+  function generateTake(id) {
+    var m = MOVEMENTS[id];
+    var N = m.frames, frames = [];
+    for (var f = 0; f < N; f++) {
+      var t = f / (N - 1);
+      var pose = poseFromKeys(m.keys, t);
+      var joints = fk(pose);
+      frames.push({ f: f, t: t, pose: pose, joints: joints, angles: jointAngles(joints), airborne: airborne(joints) });
+    }
+    var events = m.phases.map(function (p) {
+      return { id: p.id, name: p.name, cat: p.cat, frame: Math.round(p.t * (N - 1)) };
+    });
+    return { id: id, name: m.name, view: m.view, fps: m.fps, frames: frames, phases: m.phases, events: events, metricKeys: m.metrics };
+  }
+
+  function airborne(j) { return j.toeR[1] > GROUND_TOE && j.toeL[1] > GROUND_TOE; }
+
+  function metricValue(key, take) {
+    var fr = take.frames, fps = take.fps, N = fr.length;
+    function comV(i) { // COM (pelvis) velocity m/s
+      var a = fr[Math.max(0, i - 1)].joints.pelvis, b = fr[Math.min(N - 1, i + 1)].joints.pelvis;
+      var dt = (Math.min(N - 1, i + 1) - Math.max(0, i - 1)) / fps;
+      return [(b[0] - a[0]) / dt, (b[1] - a[1]) / dt];
+    }
+    function firstTakeoff() { for (var i = 1; i < N; i++) if (fr[i].airborne && !fr[i - 1].airborne) return i; return -1; }
+    function firstLandingAfter(k) { for (var i = k + 1; i < N; i++) if (!fr[i].airborne && fr[i - 1].airborne) return i; return -1; }
+    function peakCOM() { var m = -1, mi = 0; for (var i = 0; i < N; i++) if (fr[i].joints.pelvis[1] > m) { m = fr[i].joints.pelvis[1]; mi = i; } return { h: m, i: mi }; }
+    function contactFrames() { var c = 0; for (var i = 0; i < N; i++) if (!fr[i].airborne) c++; return c; }
+    function airFrames() { var c = 0; for (var i = 0; i < N; i++) if (fr[i].airborne) c++; return c; }
+    function minPelvis() { var m = 9, mi = 0; for (var i = 0; i < N; i++) if (fr[i].joints.pelvis[1] < m) { m = fr[i].joints.pelvis[1]; mi = i; } return { h: m, i: mi }; }
+
+    var to, la, pk;
+    switch (key) {
+      case "approach_speed": {
+        to = firstTakeoff(); var i = to > 8 ? to - 6 : Math.floor(N * 0.3);
+        return { label: "Approach speed", val: Math.abs(comV(i)[0]), unit: "m/s", fmt: 1 };
+      }
+      case "avg_speed": {
+        var d = fr[N - 1].joints.pelvis[0] - fr[0].joints.pelvis[0];
+        return { label: "Avg speed", val: d / (N / fps), unit: "m/s", fmt: 1 };
+      }
+      case "flight_time": {
+        to = firstTakeoff(); la = firstLandingAfter(to);
+        var t = (to >= 0 && la > to) ? (la - to) / fps : airFrames() / fps;
+        return { label: "Flight time", val: t * 1000, unit: "ms", fmt: 0 };
+      }
+      case "contact_time": {
+        return { label: "Contact time", val: (contactFrames() / Math.max(1, countContacts(fr))) / fps * 1000, unit: "ms", fmt: 0 };
+      }
+      case "jump_height": {
+        to = firstTakeoff(); pk = peakCOM();
+        var base = to >= 0 ? fr[to].joints.pelvis[1] : fr[0].joints.pelvis[1];
+        return { label: "Jump height", val: Math.max(0, pk.h - base) * 100, unit: "cm", fmt: 0 };
+      }
+      case "takeoff_angle": {
+        to = firstTakeoff(); if (to < 0) to = Math.floor(N * 0.5);
+        var v = comV(to); return { label: "Takeoff angle", val: Math.atan2(v[1], Math.abs(v[0]) + 1e-3) / D2R, unit: "°", fmt: 0 };
+      }
+      case "distance": {
+        to = firstTakeoff(); la = firstLandingAfter(to);
+        var a = to >= 0 ? fr[to].joints.pelvis[0] : fr[0].joints.pelvis[0];
+        var b = la > 0 ? fr[la].joints.pelvis[0] : fr[N - 1].joints.pelvis[0];
+        return { label: "Distance", val: (b - a), unit: "m", fmt: 2 };
+      }
+      case "lateral_distance": {
+        return { label: "Lateral distance", val: fr[N - 1].joints.pelvis[0] - fr[0].joints.pelvis[0], unit: "m", fmt: 2 };
+      }
+      case "hop_distance": {
+        return { label: "Mean hop", val: (fr[N - 1].joints.pelvis[0] - fr[0].joints.pelvis[0]) / Math.max(1, countContacts(fr)), unit: "m", fmt: 2 };
+      }
+      case "cm_depth": case "load_depth": {
+        pk = minPelvis(); return { label: "Countermovement depth", val: (fr[0].joints.pelvis[1] - pk.h) * 100, unit: "cm", fmt: 0 };
+      }
+      case "reactive_index": {
+        var ct = contactFrames() / Math.max(1, countContacts(fr)) / fps;
+        var ft = airFrames() / Math.max(1, countContacts(fr)) / fps;
+        return { label: "Reactive index", val: ft / Math.max(0.02, ct), unit: "", fmt: 2 };
+      }
+      case "plant_knee": case "landing_knee": case "land_knee": case "contact_knee": case "touchdown_knee": case "front_plant_knee": {
+        var mk = maxAt(fr, function (x) { return !x.airborne; }, function (x) { return x.angles.kneeFlexR; });
+        return { label: "Peak knee flex", val: mk, unit: "°", fmt: 0 };
+      }
+      case "plant_trunk": case "trunk_lean": {
+        var mt = extreme(fr, function (x) { return x.angles.trunkLean; });
+        return { label: "Peak trunk lean", val: mt, unit: "°", fmt: 0 };
+      }
+      case "trunk_at_release": {
+        var ri = releaseFrame(fr); return { label: "Trunk @ release", val: fr[ri].angles.trunkLean, unit: "°", fmt: 0 };
+      }
+      case "elbow_at_release": {
+        var ri2 = releaseFrame(fr); return { label: "Elbow @ release", val: fr[ri2].angles.elbowR, unit: "°", fmt: 0 };
+      }
+      case "release_height": {
+        var ri3 = releaseFrame(fr); return { label: "Release height", val: fr[ri3].joints.wristR[1] * 100, unit: "cm", fmt: 0 };
+      }
+      case "release_speed": {
+        var ri4 = releaseFrame(fr);
+        var a2 = fr[Math.max(0, ri4 - 1)].joints.wristR, b2 = fr[Math.min(N - 1, ri4 + 1)].joints.wristR;
+        var dt2 = 2 / fps; return { label: "Hand speed", val: Math.hypot(b2[0] - a2[0], b2[1] - a2[1]) / dt2, unit: "m/s", fmt: 1 };
+      }
+      case "knee_valgus": {
+        var mv = maxAt(fr, function (x) { return !x.airborne; }, function (x) { return -x.angles.kneeSep; });
+        return { label: "Knee sep (valgus proxy)", val: mv * 100, unit: "cm", fmt: 1, caveat: true };
+      }
+    }
+    return { label: key, val: 0, unit: "", fmt: 0 };
+  }
+
+  function countContacts(fr) { var c = 0; for (var i = 1; i < fr.length; i++) if (!fr[i].airborne && fr[i - 1].airborne) c++; return Math.max(1, c); }
+  function maxAt(fr, filter, val) { var m = -1e9; for (var i = 0; i < fr.length; i++) if (filter(fr[i])) m = Math.max(m, val(fr[i])); return m === -1e9 ? 0 : m; }
+  function extreme(fr, val) { var m = 0; for (var i = 0; i < fr.length; i++) if (Math.abs(val(fr[i])) > Math.abs(m)) m = val(fr[i]); return m; }
+  function releaseFrame(fr) { // fastest forward hand
+    var best = 0, bi = Math.floor(fr.length * 0.7);
+    for (var i = 1; i < fr.length - 1; i++) {
+      var v = fr[i + 1].joints.wristR[0] - fr[i - 1].joints.wristR[0];
+      if (v > best) { best = v; bi = i; }
+    }
+    return bi;
+  }
+
+  function metrics(take) { return take.metricKeys.map(function (k) { return metricValue(k, take); }); }
+
+  var API = { SEG: SEG, MOVEMENTS: MOVEMENTS, generateTake: generateTake, jointAngles: jointAngles, fk: fk, metrics: metrics, metricValue: metricValue, GROUND_TOE: GROUND_TOE };
+  if (typeof module !== "undefined" && module.exports) module.exports = API;
+  global.MKS = API;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* Movement Keyframe Studio — UI layer (browser only). Depends on window.MKS. */
+(function () {
+  "use strict";
+  var MKS = window.MKS;
+
+  var CAT = {
+    approach: "--c-approach", loading: "--c-loading", propulsion: "--c-prop",
+    flight: "--c-flight", landing: "--c-landing", plant: "--c-plant", release: "--c-release"
+  };
+  function catColor(cat) {
+    return getComputedStyle(document.documentElement).getPropertyValue(CAT[cat] || "--c-approach").trim() || "#9aa7b4";
+  }
+  function token(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  var state = {
+    id: "approach_jump", take: null, frame: 0, playing: false, speed: 1,
+    keyframes: [], selected: 0, lastTs: 0, acc: 0
+  };
+
+  var el = {};
+  function $(id) { return document.getElementById(id); }
+
+  function load(id) {
+    state.id = id;
+    if (id === "captured" && window.CAPTURED) state.take = capturedTake(window.CAPTURED);
+    else if (id === "imported") { if (!state.importedTake) return; state.take = state.importedTake; }
+    else state.take = MKS.generateTake(id);
+    state.frame = 0;
+    if (state.take.imported) {
+      state.keyframes = Object.keys(state.take.dig).map(Number).sort(function (a, b) { return a - b; })
+        .map(function (f) { return { frame: f, name: "Pose", cat: "loading" }; });
+    } else {
+      state.keyframes = state.take.events.map(function (e) { return { frame: e.frame, name: e.name, cat: e.cat }; });
+    }
+    state.selected = 0;
+    document.querySelectorAll(".mv-item").forEach(function (n) { n.classList.toggle("active", n.dataset.id === id); });
+    $("mvTitle").textContent = state.take.name;
+    $("mvBlurb").textContent = state.take.blurb || (MKS.MOVEMENTS[id] && MKS.MOVEMENTS[id].blurb) || "";
+    $("viewTag").textContent = state.take.view + " · " + state.take.fps + " fps" + (state.take.captured ? " · captured" : "");
+    buildMetrics();
+    buildKeyList();
+    resize();
+    render();
+  }
+
+  // Build a studio take from a real captured Take JSON (3D -> sagittal projection).
+  function capturedTake(cap) {
+    var names = cap.keypoints, N = cap.frames.length;
+    var frames = cap.frames.map(function (fr) {
+      var j = {};
+      for (var i = 0; i < names.length; i++) j[names[i]] = [fr.joints3d[i][0], fr.joints3d[i][1]]; // drop Z -> sagittal
+      j.shoulderR = j.neck; j.shoulderL = j.neck; // studio arms hang from neck
+      return { f: fr.f, t: fr.t, joints: j, angles: fr.angles, airborne: fr.airborne };
+    });
+    return {
+      id: "captured", name: cap.movement.replace(/_/g, " ") + " · captured", view: "sagittal",
+      fps: cap.fps, captured: true,
+      blurb: "Real reconstruction: 4 cameras → triangulation → movement engine (source: " + cap.source + ").",
+      frames: frames,
+      phases: cap.phases.map(function (p) { return { id: p.name, name: p.name, cat: p.cat, t: p.frame / (N - 1) }; }),
+      events: cap.phases.map(function (p) { return { id: p.name, name: p.name, cat: p.cat, frame: p.frame }; }),
+      metricKeys: [],
+      precomputed: cap.metrics.map(function (m) {
+        return { label: m.label, val: m.value, unit: m.unit, caveat: m.caveat, fmt: (m.unit === "ms" || m.unit === "°") ? 0 : 2 };
+      })
+    };
+  }
+
+  // ---------- viewport rendering ----------
+  function worldToScreen(w, cam, ctx) {
+    return [cam.cx + (w[0] - cam.px) * cam.s, cam.groundY - w[1] * cam.s];
+  }
+  function camera(ctx) {
+    var W = ctx.canvas.width / cam_dpr, H = ctx.canvas.height / cam_dpr;
+    var fr = state.take.frames[state.frame];
+    var s = H * 0.34; // px per metre (~2 m tall visible)
+    return { cx: W * 0.5, px: fr.joints.pelvis[0], s: s, groundY: H * 0.86, W: W, H: H };
+  }
+  var cam_dpr = 1;
+
+  function render() {
+    if (state.take && state.take.imported) { renderImported(); return; }
+    var c = el.view, ctx = c.getContext("2d");
+    cam_dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = c.clientWidth, H = c.clientHeight;
+    if (c.width !== W * cam_dpr) { c.width = W * cam_dpr; c.height = H * cam_dpr; }
+    ctx.setTransform(cam_dpr, 0, 0, cam_dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    var cam = camera(ctx);
+    var fr = state.take.frames[state.frame];
+
+    drawGround(ctx, cam);
+    drawTrace(ctx, cam);
+    drawSkeleton(ctx, cam, fr);
+    drawArcs(ctx, cam, fr);
+    drawHUD(ctx, cam, fr);
+    updateAngles(fr);
+  }
+
+  function drawGround(ctx, cam) {
+    ctx.strokeStyle = token("--line"); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, cam.groundY); ctx.lineTo(cam.W, cam.groundY); ctx.stroke();
+    // metre ticks
+    ctx.fillStyle = token("--ink-faint"); ctx.font = "10px " + token("--mono");
+    var startM = Math.floor(cam.px - cam.W / (2 * cam.s)) - 1;
+    var endM = startM + Math.ceil(cam.W / cam.s) + 2;
+    for (var m = startM; m <= endM; m += 0.5) {
+      var sx = cam.cx + (m - cam.px) * cam.s;
+      if (sx < -20 || sx > cam.W + 20) continue;
+      var major = Math.abs(m - Math.round(m)) < 0.01;
+      ctx.strokeStyle = token("--line");
+      ctx.beginPath(); ctx.moveTo(sx, cam.groundY); ctx.lineTo(sx, cam.groundY + (major ? 8 : 4)); ctx.stroke();
+      if (major) ctx.fillText(m.toFixed(0) + "m", sx + 3, cam.groundY + 16);
+    }
+  }
+
+  function drawTrace(ctx, cam) {
+    ctx.lineWidth = 1.5;
+    for (var i = 1; i <= state.frame; i++) {
+      var a = worldToScreen(state.take.frames[i - 1].joints.pelvis, cam);
+      var b = worldToScreen(state.take.frames[i].joints.pelvis, cam);
+      var al = Math.max(0.05, 1 - (state.frame - i) / 40);
+      ctx.strokeStyle = withAlpha(token("--accent"), al * 0.55);
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    }
+  }
+
+  var BONES_R = [["pelvis", "kneeR"], ["kneeR", "ankleR"], ["ankleR", "toeR"], ["neck", "elbowR"], ["elbowR", "wristR"]];
+  var BONES_L = [["pelvis", "kneeL"], ["kneeL", "ankleL"], ["ankleL", "toeL"], ["neck", "elbowL"], ["elbowL", "wristL"]];
+  var BONES_C = [["pelvis", "neck"], ["neck", "head"]];
+
+  function drawSkeleton(ctx, cam, fr) {
+    var j = fr.joints;
+    function bone(a, b, color, w) {
+      var pa = worldToScreen(j[a], cam), pb = worldToScreen(j[b], cam);
+      ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.lineTo(pb[0], pb[1]); ctx.stroke();
+    }
+    BONES_L.forEach(function (b) { bone(b[0], b[1], withAlpha(token("--ink-dim"), 0.5), 5); });
+    BONES_C.forEach(function (b) { bone(b[0], b[1], token("--ink"), 7); });
+    BONES_R.forEach(function (b) { bone(b[0], b[1], token("--ink"), 6); });
+    // head
+    var h = worldToScreen(j.head, cam);
+    ctx.fillStyle = token("--ink"); ctx.beginPath(); ctx.arc(h[0], h[1], 11, 0, 7); ctx.fill();
+    // joints
+    ["kneeR", "ankleR", "kneeL", "ankleL", "pelvis", "neck", "elbowR", "wristR"].forEach(function (k) {
+      var p = worldToScreen(j[k], cam);
+      ctx.fillStyle = token("--panel"); ctx.strokeStyle = token("--ink-dim"); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(p[0], p[1], 3.5, 0, 7); ctx.fill(); ctx.stroke();
+    });
+    // contact indicator
+    if (!fr.airborne) {
+      var t = worldToScreen([Math.min(j.toeR[0], j.toeL[0]), 0], cam);
+      ctx.fillStyle = withAlpha(catColor("plant"), 0.9);
+      ctx.beginPath(); ctx.arc(t[0], cam.groundY, 4, 0, 7); ctx.fill();
+    }
+  }
+
+  function drawArcs(ctx, cam, fr) {
+    var j = fr.joints, a = fr.angles;
+    arc(ctx, cam, j.kneeR, "K " + Math.round(a.kneeFlexR) + "°", token("--accent"));
+    arc(ctx, cam, j.hipR, "H " + Math.round(a.hipFlexR) + "°", token("--ink-dim"));
+  }
+  function arc(ctx, cam, jw, label, color) {
+    var p = worldToScreen(jw, cam);
+    ctx.strokeStyle = color; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(p[0], p[1], 14, -0.5, 1.8); ctx.stroke();
+    ctx.fillStyle = color; ctx.font = "11px " + token("--mono");
+    ctx.fillText(label, p[0] + 16, p[1] - 6);
+  }
+
+  function drawHUD(ctx, cam, fr) {
+    var ph = currentPhase();
+    ctx.font = "600 12px " + token("--mono");
+    var pad = 12;
+    // phase pill
+    var label = ph ? ph.name : "—";
+    ctx.fillStyle = withAlpha(catColor(ph ? ph.cat : "approach"), 0.16);
+    ctx.strokeStyle = catColor(ph ? ph.cat : "approach"); ctx.lineWidth = 1;
+    var tw = ctx.measureText(label).width + 20;
+    roundRect(ctx, pad, pad, tw, 22, 5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = catColor(ph ? ph.cat : "approach");
+    ctx.fillText(label, pad + 10, pad + 15);
+    // frame/time
+    ctx.fillStyle = token("--ink-faint"); ctx.textAlign = "right";
+    var ms = (state.frame / state.take.fps * 1000).toFixed(0);
+    ctx.fillText("f " + state.frame + " / " + (state.take.frames.length - 1) + "   ·   " + ms + " ms", cam.W - pad, pad + 15);
+    ctx.textAlign = "left";
+  }
+
+  function currentPhase() {
+    var ph = state.take.phases, N = state.take.frames.length;
+    var cur = null;
+    for (var i = 0; i < ph.length; i++) { if (state.frame >= Math.round(ph[i].t * (N - 1))) cur = ph[i]; }
+    return cur;
+  }
+
+  // ---------- timeline ----------
+  function drawTimeline() {
+    var c = el.timeline, ctx = c.getContext("2d");
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = c.clientWidth, H = c.clientHeight;
+    if (c.width !== W * dpr) { c.width = W * dpr; c.height = H * dpr; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    var N = state.take.frames.length, ph = state.take.phases;
+    var bandY = 8, bandH = 20;
+    // phase bands
+    for (var i = 0; i < ph.length; i++) {
+      var x0 = ph[i].t * (W - 1);
+      var x1 = (i < ph.length - 1 ? ph[i + 1].t : 1) * (W - 1);
+      ctx.fillStyle = withAlpha(catColor(ph[i].cat), 0.28);
+      ctx.fillRect(x0, bandY, Math.max(1, x1 - x0), bandH);
+      ctx.fillStyle = withAlpha(catColor(ph[i].cat), 0.9);
+      ctx.fillRect(x0, bandY, 2, bandH);
+    }
+    // baseline
+    var trackY = bandY + bandH + 14;
+    ctx.strokeStyle = token("--line"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, trackY); ctx.lineTo(W, trackY); ctx.stroke();
+    // keyframe markers
+    state.keyframes.forEach(function (k, idx) {
+      var x = (k.frame / (N - 1)) * (W - 1);
+      var sel = idx === state.selected;
+      ctx.strokeStyle = sel ? token("--accent") : catColor(k.cat);
+      ctx.lineWidth = sel ? 2 : 1.5;
+      ctx.beginPath(); ctx.moveTo(x, bandY); ctx.lineTo(x, trackY); ctx.stroke();
+      ctx.fillStyle = sel ? token("--accent") : catColor(k.cat);
+      ctx.beginPath(); ctx.moveTo(x, trackY - 6); ctx.lineTo(x - 5, trackY + 4); ctx.lineTo(x + 5, trackY + 4); ctx.closePath(); ctx.fill();
+    });
+    // playhead
+    var px = (state.frame / (N - 1)) * (W - 1);
+    ctx.strokeStyle = token("--ink"); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
+    ctx.fillStyle = token("--ink");
+    ctx.beginPath(); ctx.arc(px, 4, 3, 0, 7); ctx.fill();
+  }
+
+  function timelineFrameFromX(clientX) {
+    var r = el.timeline.getBoundingClientRect();
+    var u = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    return Math.round(u * (state.take.frames.length - 1));
+  }
+
+  // ---------- panels ----------
+  function updateAngles(fr) { updateAnglesPanel(fr.angles, fr.airborne ? "airborne" : "ground"); }
+  function updateAnglesPanel(a, contact) {
+    setVal("aTrunk", a.trunkLean, "°", 0);
+    setVal("aHip", a.hipFlexR, "°", 0);
+    setVal("aKnee", a.kneeFlexR, "°", 0);
+    setVal("aAnkle", a.ankleR, "°", 0);
+    setVal("aElbow", a.elbowR, "°", 0);
+    setVal("aSep", a.kneeSep * 100, "cm", 1);
+    var n = $("aContact");
+    if (contact === null) { n.textContent = "video"; n.className = "chip"; }
+    else { n.textContent = contact; n.className = "chip " + (contact === "airborne" ? "air" : "grd"); }
+  }
+  function setVal(id, v, unit, dp) { var n = $(id); if (n) n.textContent = (v >= 0 && unit === "°" ? "" : "") + v.toFixed(dp) + unit; }
+
+  function buildMetrics() {
+    var box = $("metrics"); box.innerHTML = "";
+    var list = state.take.imported ? impMetrics() : (state.take.precomputed || MKS.metrics(state.take));
+    list.forEach(function (m) {
+      var d = document.createElement("div"); d.className = "metric";
+      var v = m.val.toFixed(m.fmt) + (m.unit ? " " + m.unit : "");
+      d.innerHTML = '<span class="mlab">' + m.label + (m.caveat ? ' <span class="warn-dot" title="Transverse-plane / rotation metrics are the industry-wide accuracy ceiling — treat as a proxy.">⚠</span>' : '') + '</span><span class="mval">' + v + '</span>';
+      box.appendChild(d);
+    });
+  }
+
+  function buildKeyList() {
+    var box = $("keyList"); box.innerHTML = "";
+    state.keyframes.forEach(function (k, idx) {
+      var ang = state.take.imported ? anglesImported(k.frame) : state.take.frames[k.frame].angles;
+      var row = document.createElement("button"); row.className = "kf" + (idx === state.selected ? " sel" : "");
+      row.innerHTML =
+        '<span class="kf-dot" style="background:' + catColor(k.cat) + '"></span>' +
+        '<span class="kf-name">' + k.name + '</span>' +
+        '<span class="kf-meta">f' + k.frame + ' · K' + Math.round(ang.kneeFlexR) + '° · T' + Math.round(ang.trunkLean) + '°</span>';
+      row.addEventListener("click", function () { state.selected = idx; state.frame = k.frame; syncScrub(); refresh(); });
+      box.appendChild(row);
+    });
+  }
+
+  function exportJSON() {
+    if (state.take.imported) { return impExport(); }
+    var out = {
+      movement: state.id, name: state.take.name, view: state.take.view, fps: state.take.fps,
+      frames: state.take.frames.length,
+      keyframes: state.keyframes.map(function (k) {
+        var fr = state.take.frames[k.frame];
+        return {
+          frame: k.frame, name: k.name, phase: k.cat, timeMs: +(k.frame / state.take.fps * 1000).toFixed(1),
+          angles: Object.keys(fr.angles).reduce(function (o, key) { o[key] = +fr.angles[key].toFixed(2); return o; }, {}),
+          airborne: fr.airborne
+        };
+      }),
+      metrics: (state.take.precomputed || MKS.metrics(state.take)).map(function (m) { return { label: m.label, value: +m.val.toFixed(m.fmt), unit: m.unit }; })
+    };
+    var text = JSON.stringify(out, null, 2);
+    $("exportArea").value = text;
+    $("exportArea").style.display = "block";
+    $("exportArea").select();
+    try { navigator.clipboard.writeText(text); flash("Keyframes copied to clipboard"); }
+    catch (e) { flash("Keyframes ready — select & copy"); }
+  }
+  function flash(msg) { var f = $("toast"); f.textContent = msg; f.classList.add("show"); setTimeout(function () { f.classList.remove("show"); }, 1800); }
+
+  // ---------- playback ----------
+  function tick(ts) {
+    if (state.take && state.take.imported) {
+      if (state.playing && state.video) {
+        state.frame = Math.min(state.take.frames.length - 1, Math.max(0, Math.round(state.video.currentTime * state.take.fps)));
+        if (state.video.ended) setPlaying(false);
+        syncScrub();
+      }
+      refresh(); requestAnimationFrame(tick); return;
+    }
+    if (state.playing) {
+      if (!state.lastTs) state.lastTs = ts;
+      var dt = (ts - state.lastTs) / 1000; state.lastTs = ts;
+      state.acc += dt * state.take.fps * state.speed;
+      if (state.acc >= 1) {
+        state.frame += Math.floor(state.acc); state.acc %= 1;
+        if (state.frame >= state.take.frames.length - 1) { state.frame = state.take.frames.length - 1; setPlaying(false); }
+        syncScrub();
+      }
+    } else { state.lastTs = 0; }
+    refresh();
+    requestAnimationFrame(tick);
+  }
+  function refresh() { render(); drawTimeline(); buildKeyList(); }
+  function setPlaying(p) {
+    state.playing = p;
+    if (state.take && state.take.imported && state.video) {
+      if (p) { if (state.video.ended) state.video.currentTime = 0; var pr = state.video.play(); if (pr && pr.catch) pr.catch(function () { }); }
+      else state.video.pause();
+    } else if (p && state.frame >= state.take.frames.length - 1) { state.frame = 0; }
+    $("playBtn").textContent = p ? "❚❚" : "▶";
+    $("playBtn").setAttribute("aria-label", p ? "Pause" : "Play");
+    state.lastTs = 0;
+  }
+  function syncScrub() { el.scrub.value = state.frame; }
+
+  function resize() { render(); drawTimeline(); }
+
+  function withAlpha(hex, a) {
+    hex = hex.trim();
+    if (hex[0] !== "#") return hex;
+    var n = parseInt(hex.slice(1), 16), r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  // ========== imported video (upload + digitize) ==========
+  var STAND_N = {
+    head: [.50, .12], neck: [.50, .21], pelvis: [.50, .52],
+    hipR: [.475, .52], hipL: [.525, .52], kneeR: [.47, .72], kneeL: [.53, .72],
+    ankleR: [.465, .92], ankleL: [.535, .92], toeR: [.50, .955], toeL: [.575, .955],
+    elbowR: [.55, .37], wristR: [.585, .50], elbowL: [.45, .37], wristL: [.415, .50]
+  };
+  var DRAG_JOINTS = Object.keys(STAND_N);
+  var IMP_BONES = [["pelvis", "neck"], ["neck", "head"], ["neck", "elbowR"], ["elbowR", "wristR"],
+    ["neck", "elbowL"], ["elbowL", "wristL"], ["pelvis", "hipR"], ["hipR", "kneeR"], ["kneeR", "ankleR"],
+    ["ankleR", "toeR"], ["pelvis", "hipL"], ["hipL", "kneeL"], ["kneeL", "ankleL"], ["ankleL", "toeL"]];
+
+  function cloneN(o) { var r = {}; DRAG_JOINTS.forEach(function (k) { r[k] = [o[k][0], o[k][1]]; }); return r; }
+  function interpImported(f) {
+    var dig = state.take.dig, keys = Object.keys(dig).map(Number).sort(function (a, b) { return a - b; });
+    if (!keys.length) return cloneN(STAND_N);
+    if (f <= keys[0]) return cloneN(dig[keys[0]]);
+    if (f >= keys[keys.length - 1]) return cloneN(dig[keys[keys.length - 1]]);
+    var i = 0; while (i < keys.length - 1 && f > keys[i + 1]) i++;
+    var a = dig[keys[i]], b = dig[keys[i + 1]], u = (f - keys[i]) / (keys[i + 1] - keys[i]), out = {};
+    DRAG_JOINTS.forEach(function (k) { out[k] = [a[k][0] + (b[k][0] - a[k][0]) * u, a[k][1] + (b[k][1] - a[k][1]) * u]; });
+    return out;
+  }
+  function toWorldN(jn) { // -> joints (y-up pixel-ish) for angle math
+    var vW = state.take.videoW, vH = state.take.videoH, J = {};
+    DRAG_JOINTS.forEach(function (k) { J[k] = [jn[k][0] * vW, (1 - jn[k][1]) * vH]; });
+    J.shoulderR = J.neck; J.shoulderL = J.neck; return J;
+  }
+  function anglesImported(f) { return MKS.jointAngles(toWorldN(interpImported(f))); }
+  function impLayout(W, H) { var vW = state.take.videoW, vH = state.take.videoH, sc = Math.min(W / vW, H / vH); return { ox: (W - vW * sc) / 2, oy: (H - vH * sc) / 2, dW: vW * sc, dH: vH * sc }; }
+
+  function renderImported() {
+    var c = el.view, ctx = c.getContext("2d"); cam_dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = c.clientWidth, H = c.clientHeight; if (c.width !== W * cam_dpr) { c.width = W * cam_dpr; c.height = H * cam_dpr; }
+    ctx.setTransform(cam_dpr, 0, 0, cam_dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    var L = impLayout(W, H); state._impL = L;
+    if (state.video && state.video.readyState >= 2) { try { ctx.drawImage(state.video, L.ox, L.oy, L.dW, L.dH); } catch (e) { } }
+    else { ctx.fillStyle = token("--panel-2"); ctx.fillRect(L.ox, L.oy, L.dW, L.dH); }
+    ctx.fillStyle = "rgba(0,0,0,0.14)"; ctx.fillRect(L.ox, L.oy, L.dW, L.dH);
+    var jn = interpImported(state.frame);
+    function S(n) { return [L.ox + jn[n][0] * L.dW, L.oy + jn[n][1] * L.dH]; }
+    ctx.strokeStyle = token("--accent"); ctx.lineWidth = 3; ctx.lineCap = "round";
+    IMP_BONES.forEach(function (b) { var a = S(b[0]), z = S(b[1]); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(z[0], z[1]); ctx.stroke(); });
+    DRAG_JOINTS.forEach(function (k) {
+      var p = S(k), on = k === state.impDrag;
+      ctx.fillStyle = on ? token("--accent") : token("--panel"); ctx.strokeStyle = token("--accent"); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(p[0], p[1], on ? 7 : 5, 0, 7); ctx.fill(); ctx.stroke();
+    });
+    var a2 = anglesImported(state.frame), kp = S("kneeR");
+    ctx.strokeStyle = token("--accent"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(kp[0], kp[1], 16, -0.5, 1.8); ctx.stroke();
+    ctx.fillStyle = token("--accent"); ctx.font = "11px " + token("--mono"); ctx.fillText("K " + Math.round(a2.kneeFlexR) + "°", kp[0] + 18, kp[1] - 6);
+    ctx.font = "600 12px " + token("--mono"); ctx.fillStyle = token("--ink-faint"); ctx.textAlign = "right";
+    ctx.fillText("f " + state.frame + " / " + (state.take.frames.length - 1) + "  ·  " + (state.frame / state.take.fps * 1000).toFixed(0) + " ms", W - 12, 22); ctx.textAlign = "left";
+    if (!Object.keys(state.take.dig).length) {
+      ctx.fillStyle = token("--ink-dim"); ctx.font = "12px " + token("--sans");
+      ctx.fillText("Drag the joints onto the athlete, then “+ keyframe” to capture this pose.", L.ox + 12, L.oy + 24);
+    }
+    updateAnglesPanel(a2, null);
+  }
+  function impPickJoint(sx, sy) {
+    var L = state._impL; if (!L) return null; var jn = interpImported(state.frame), best = null, bd = 16;
+    DRAG_JOINTS.forEach(function (k) { var d = Math.hypot(L.ox + jn[k][0] * L.dW - sx, L.oy + jn[k][1] * L.dH - sy); if (d < bd) { bd = d; best = k; } });
+    return best;
+  }
+  function impEnsureKey(f) {
+    if (!state.take.dig[f]) {
+      state.take.dig[f] = cloneN(interpImported(f));
+      if (!state.keyframes.some(function (k) { return k.frame === f; })) {
+        state.keyframes.push({ frame: f, name: "Pose", cat: "loading" });
+        state.keyframes.sort(function (a, b) { return a.frame - b.frame; });
+      }
+    }
+  }
+  function impMetrics() {
+    var ks = state.keyframes.map(function (k) { return k.frame; });
+    if (!ks.length) return [{ label: "Add keyframes to read angles", val: 0, fmt: 0, unit: "" }];
+    var kf = ks.map(function (f) { return anglesImported(f); });
+    var kn = kf.map(function (a) { return a.kneeFlexR; }), tr = kf.map(function (a) { return a.trunkLean; });
+    return [
+      { label: "Keyframes", val: ks.length, fmt: 0, unit: "" },
+      { label: "Peak knee flex", val: Math.max.apply(null, kn), fmt: 0, unit: "°" },
+      { label: "Trunk lean range", val: Math.max.apply(null, tr) - Math.min.apply(null, tr), fmt: 0, unit: "°" }
+    ];
+  }
+  function impExport() {
+    var out = {
+      movement: "imported", name: state.take.name, view: "video", fps: state.take.fps,
+      layout: "video2d_norm", keypoints: DRAG_JOINTS, videoW: state.take.videoW, videoH: state.take.videoH,
+      keyframes: state.keyframes.map(function (k) {
+        var a = anglesImported(k.frame);
+        return {
+          frame: k.frame, name: k.name, timeMs: +(k.frame / state.take.fps * 1000).toFixed(1),
+          joints_norm: state.take.dig[k.frame] || interpImported(k.frame),
+          angles: Object.keys(a).reduce(function (o, key) { o[key] = +a[key].toFixed(2); return o; }, {})
+        };
+      })
+    };
+    var text = JSON.stringify(out, null, 2);
+    $("exportArea").value = text; $("exportArea").style.display = "block"; $("exportArea").select();
+    try { navigator.clipboard.writeText(text); flash("Digitized keyframes copied"); } catch (e) { flash("Keyframes ready — select & copy"); }
+  }
+  function impSeek(f) { if (state.take && state.take.imported && state.video) { try { state.video.currentTime = f / state.take.fps; } catch (e) { } } }
+  function ensureImportedMenu() {
+    if ($("mvImported")) return;
+    var b = document.createElement("button"); b.className = "mv-item captured"; b.id = "mvImported"; b.dataset.id = "imported";
+    b.innerHTML = '<span class="mv-name">▤ Imported video</span><span class="mv-sub">2D</span>';
+    b.addEventListener("click", function () { if (state.importedTake) { setPlaying(false); load("imported"); } else $("videoFile").click(); });
+    var list = $("mvList"); list.insertBefore(b, list.firstChild);
+  }
+  function importVideo(file) {
+    if (!file) return;
+    if (state._url) { try { URL.revokeObjectURL(state._url); } catch (e) { } }
+    var url = URL.createObjectURL(file); state._url = url;
+    var v = document.createElement("video"); v.muted = true; v.playsInline = true; v.preload = "auto"; v.style.display = "none";
+    document.body.appendChild(v);
+    v.addEventListener("loadedmetadata", function () {
+      if (state.video && state.video !== v) { try { document.body.removeChild(state.video); } catch (e) { } }
+      state.video = v;
+      var fps = 30, N = Math.max(2, Math.round((v.duration || 4) * fps));
+      var take = {
+        id: "imported", name: (file.name || "Imported video"), view: "video", fps: fps, imported: true,
+        videoW: v.videoWidth || 1280, videoH: v.videoHeight || 720, dig: {}, frames: [], phases: [], events: [],
+        metricKeys: [], precomputed: null,
+        blurb: "Uploaded clip · drag the skeleton onto the athlete, capture keyframes, read angles."
+      };
+      for (var i = 0; i < N; i++) take.frames.push({ f: i });
+      state.importedTake = take; ensureImportedMenu(); setPlaying(false); load("imported");
+      flash("Video imported — drag the skeleton to the athlete");
+    });
+    v.addEventListener("error", function () { flash("Could not load that video file"); });
+    v.src = url;
+  }
+
+  // ---------- wire up ----------
+  function init() {
+    el.view = $("view"); el.timeline = $("timeline"); el.scrub = $("scrub");
+    // captured (real pipeline) take, if embedded
+    if (window.CAPTURED) {
+      var cb = document.createElement("button"); cb.className = "mv-item captured"; cb.dataset.id = "captured";
+      cb.innerHTML = '<span class="mv-name">◉ Captured take</span><span class="mv-sub">real 3D</span>';
+      cb.addEventListener("click", function () { setPlaying(false); load("captured"); });
+      $("mvList").appendChild(cb);
+    }
+    // movement list
+    Object.keys(MKS.MOVEMENTS).forEach(function (id) {
+      var m = MKS.MOVEMENTS[id];
+      var b = document.createElement("button"); b.className = "mv-item"; b.dataset.id = id;
+      b.innerHTML = '<span class="mv-name">' + m.name + '</span><span class="mv-sub">' + m.view + '</span>';
+      b.addEventListener("click", function () { setPlaying(false); load(id); });
+      $("mvList").appendChild(b);
+    });
+    // controls
+    $("playBtn").addEventListener("click", function () { setPlaying(!state.playing); });
+    $("restartBtn").addEventListener("click", function () { setPlaying(false); state.frame = 0; impSeek(0); syncScrub(); refresh(); });
+    $("stepB").addEventListener("click", function () { setPlaying(false); state.frame = Math.max(0, state.frame - 1); impSeek(state.frame); syncScrub(); refresh(); });
+    $("stepF").addEventListener("click", function () { setPlaying(false); state.frame = Math.min(state.take.frames.length - 1, state.frame + 1); impSeek(state.frame); syncScrub(); refresh(); });
+    $("speed").addEventListener("input", function (e) { state.speed = parseFloat(e.target.value); $("speedVal").textContent = state.speed.toFixed(2) + "×"; if (state.video) state.video.playbackRate = state.speed; });
+    el.scrub.addEventListener("input", function (e) { setPlaying(false); state.frame = parseInt(e.target.value, 10); impSeek(state.frame); refresh(); });
+    $("addKf").addEventListener("click", function () {
+      if (state.take.imported) {
+        impEnsureKey(state.frame);
+        state.selected = state.keyframes.findIndex(function (k) { return k.frame === state.frame; });
+        refresh(); flash("Pose captured at f" + state.frame); return;
+      }
+      state.keyframes.push({ frame: state.frame, name: "Keyframe", cat: (currentPhase() || {}).cat || "approach" });
+      state.keyframes.sort(function (a, b) { return a.frame - b.frame; });
+      state.selected = state.keyframes.findIndex(function (k) { return k.frame === state.frame; });
+      refresh(); flash("Keyframe added at f" + state.frame);
+    });
+    $("delKf").addEventListener("click", function () {
+      if (state.keyframes.length && state.selected >= 0) {
+        var k = state.keyframes[state.selected];
+        if (state.take.imported && k) delete state.take.dig[k.frame];
+        state.keyframes.splice(state.selected, 1); state.selected = Math.max(0, state.selected - 1); refresh();
+      }
+    });
+    // video import
+    $("importVideoBtn").addEventListener("click", function () { $("videoFile").click(); });
+    $("videoFile").addEventListener("change", function (e) { if (e.target.files && e.target.files[0]) importVideo(e.target.files[0]); e.target.value = ""; });
+    el.view.addEventListener("dragover", function (e) { e.preventDefault(); });
+    el.view.addEventListener("drop", function (e) {
+      e.preventDefault(); var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f && f.type.indexOf("video") === 0) importVideo(f); else if (f) flash("Drop a video file");
+    });
+    // viewport skeleton drag (imported only)
+    el.view.addEventListener("pointerdown", function (e) {
+      if (!(state.take && state.take.imported)) return;
+      var r = el.view.getBoundingClientRect(), j = impPickJoint(e.clientX - r.left, e.clientY - r.top);
+      if (j) { setPlaying(false); impEnsureKey(state.frame); state.impDrag = j; el.view.setPointerCapture(e.pointerId); refresh(); }
+    });
+    el.view.addEventListener("pointermove", function (e) {
+      if (!state.impDrag) return; var r = el.view.getBoundingClientRect(), L = state._impL; if (!L) return;
+      var nx = (e.clientX - r.left - L.ox) / L.dW, ny = (e.clientY - r.top - L.oy) / L.dH;
+      nx = Math.max(0, Math.min(1, nx)); ny = Math.max(0, Math.min(1, ny));
+      if (state.take.dig[state.frame]) state.take.dig[state.frame][state.impDrag] = [nx, ny];
+      refresh();
+    });
+    el.view.addEventListener("pointerup", function () { state.impDrag = null; });
+    $("renameKf").addEventListener("input", function (e) { if (state.keyframes[state.selected]) { state.keyframes[state.selected].name = e.target.value; refresh(); } });
+    $("exportBtn").addEventListener("click", exportJSON);
+
+    // timeline drag
+    var dragging = false;
+    function pickNearest(frame) {
+      var best = -1, bd = 6;
+      state.keyframes.forEach(function (k, i) { var d = Math.abs(k.frame - frame); if (d < bd) { bd = d; best = i; } });
+      return best;
+    }
+    el.timeline.addEventListener("pointerdown", function (e) {
+      el.timeline.setPointerCapture(e.pointerId);
+      var frame = timelineFrameFromX(e.clientX);
+      var near = pickNearest(frame);
+      if (near >= 0) { state.selected = near; dragging = true; $("renameKf").value = state.keyframes[near].name; }
+      state.frame = frame; setPlaying(false); impSeek(frame); syncScrub(); refresh();
+    });
+    el.timeline.addEventListener("pointermove", function (e) {
+      var frame = timelineFrameFromX(e.clientX);
+      if (dragging && state.keyframes[state.selected]) {
+        var old = state.keyframes[state.selected].frame;
+        state.keyframes[state.selected].frame = frame;
+        if (state.take.imported && state.take.dig[old]) { state.take.dig[frame] = state.take.dig[old]; if (frame !== old) delete state.take.dig[old]; }
+      }
+      state.frame = frame; impSeek(frame); syncScrub(); refresh();
+    });
+    el.timeline.addEventListener("pointerup", function () { dragging = false; state.keyframes.sort(function (a, b) { return a.frame - b.frame; }); refresh(); });
+
+    window.addEventListener("resize", resize);
+    document.addEventListener("keydown", function (e) {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.code === "Space") { e.preventDefault(); setPlaying(!state.playing); }
+      else if (e.code === "ArrowLeft") { setPlaying(false); state.frame = Math.max(0, state.frame - 1); impSeek(state.frame); syncScrub(); refresh(); }
+      else if (e.code === "ArrowRight") { setPlaying(false); state.frame = Math.min(state.take.frames.length - 1, state.frame + 1); impSeek(state.frame); syncScrub(); refresh(); }
+    });
+
+    load(state.id);
+    el.scrub.max = state.take.frames.length - 1;
+    requestAnimationFrame(tick);
+  }
+
+  // scrub max needs update per movement
+  var _load = load;
+  load = function (id) { _load(id); el.scrub.max = state.take.frames.length - 1; el.scrub.value = 0; $("renameKf").value = ""; };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+
+</script>
