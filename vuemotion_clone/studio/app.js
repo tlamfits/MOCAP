@@ -22,9 +22,16 @@
 
   function load(id) {
     state.id = id;
-    state.take = (id === "captured" && window.CAPTURED) ? capturedTake(window.CAPTURED) : MKS.generateTake(id);
+    if (id === "captured" && window.CAPTURED) state.take = capturedTake(window.CAPTURED);
+    else if (id === "imported") { if (!state.importedTake) return; state.take = state.importedTake; }
+    else state.take = MKS.generateTake(id);
     state.frame = 0;
-    state.keyframes = state.take.events.map(function (e) { return { frame: e.frame, name: e.name, cat: e.cat }; });
+    if (state.take.imported) {
+      state.keyframes = Object.keys(state.take.dig).map(Number).sort(function (a, b) { return a - b; })
+        .map(function (f) { return { frame: f, name: "Pose", cat: "loading" }; });
+    } else {
+      state.keyframes = state.take.events.map(function (e) { return { frame: e.frame, name: e.name, cat: e.cat }; });
+    }
     state.selected = 0;
     document.querySelectorAll(".mv-item").forEach(function (n) { n.classList.toggle("active", n.dataset.id === id); });
     $("mvTitle").textContent = state.take.name;
@@ -72,6 +79,7 @@
   var cam_dpr = 1;
 
   function render() {
+    if (state.take && state.take.imported) { renderImported(); return; }
     var c = el.view, ctx = c.getContext("2d");
     cam_dpr = Math.min(2, window.devicePixelRatio || 1);
     var W = c.clientWidth, H = c.clientHeight;
@@ -235,22 +243,23 @@
   }
 
   // ---------- panels ----------
-  function updateAngles(fr) {
-    var a = fr.angles;
+  function updateAngles(fr) { updateAnglesPanel(fr.angles, fr.airborne ? "airborne" : "ground"); }
+  function updateAnglesPanel(a, contact) {
     setVal("aTrunk", a.trunkLean, "°", 0);
     setVal("aHip", a.hipFlexR, "°", 0);
     setVal("aKnee", a.kneeFlexR, "°", 0);
     setVal("aAnkle", a.ankleR, "°", 0);
     setVal("aElbow", a.elbowR, "°", 0);
     setVal("aSep", a.kneeSep * 100, "cm", 1);
-    $("aContact").textContent = fr.airborne ? "airborne" : "ground";
-    $("aContact").className = "chip " + (fr.airborne ? "air" : "grd");
+    var n = $("aContact");
+    if (contact === null) { n.textContent = "video"; n.className = "chip"; }
+    else { n.textContent = contact; n.className = "chip " + (contact === "airborne" ? "air" : "grd"); }
   }
   function setVal(id, v, unit, dp) { var n = $(id); if (n) n.textContent = (v >= 0 && unit === "°" ? "" : "") + v.toFixed(dp) + unit; }
 
   function buildMetrics() {
     var box = $("metrics"); box.innerHTML = "";
-    var list = state.take.precomputed || MKS.metrics(state.take);
+    var list = state.take.imported ? impMetrics() : (state.take.precomputed || MKS.metrics(state.take));
     list.forEach(function (m) {
       var d = document.createElement("div"); d.className = "metric";
       var v = m.val.toFixed(m.fmt) + (m.unit ? " " + m.unit : "");
@@ -262,18 +271,19 @@
   function buildKeyList() {
     var box = $("keyList"); box.innerHTML = "";
     state.keyframes.forEach(function (k, idx) {
-      var fr = state.take.frames[k.frame];
+      var ang = state.take.imported ? anglesImported(k.frame) : state.take.frames[k.frame].angles;
       var row = document.createElement("button"); row.className = "kf" + (idx === state.selected ? " sel" : "");
       row.innerHTML =
         '<span class="kf-dot" style="background:' + catColor(k.cat) + '"></span>' +
         '<span class="kf-name">' + k.name + '</span>' +
-        '<span class="kf-meta">f' + k.frame + ' · K' + Math.round(fr.angles.kneeFlexR) + '° · T' + Math.round(fr.angles.trunkLean) + '°</span>';
+        '<span class="kf-meta">f' + k.frame + ' · K' + Math.round(ang.kneeFlexR) + '° · T' + Math.round(ang.trunkLean) + '°</span>';
       row.addEventListener("click", function () { state.selected = idx; state.frame = k.frame; syncScrub(); refresh(); });
       box.appendChild(row);
     });
   }
 
   function exportJSON() {
+    if (state.take.imported) { return impExport(); }
     var out = {
       movement: state.id, name: state.take.name, view: state.take.view, fps: state.take.fps,
       frames: state.take.frames.length,
@@ -298,6 +308,14 @@
 
   // ---------- playback ----------
   function tick(ts) {
+    if (state.take && state.take.imported) {
+      if (state.playing && state.video) {
+        state.frame = Math.min(state.take.frames.length - 1, Math.max(0, Math.round(state.video.currentTime * state.take.fps)));
+        if (state.video.ended) setPlaying(false);
+        syncScrub();
+      }
+      refresh(); requestAnimationFrame(tick); return;
+    }
     if (state.playing) {
       if (!state.lastTs) state.lastTs = ts;
       var dt = (ts - state.lastTs) / 1000; state.lastTs = ts;
@@ -313,7 +331,11 @@
   }
   function refresh() { render(); drawTimeline(); buildKeyList(); }
   function setPlaying(p) {
-    state.playing = p; if (p && state.frame >= state.take.frames.length - 1) { state.frame = 0; }
+    state.playing = p;
+    if (state.take && state.take.imported && state.video) {
+      if (p) { if (state.video.ended) state.video.currentTime = 0; var pr = state.video.play(); if (pr && pr.catch) pr.catch(function () { }); }
+      else state.video.pause();
+    } else if (p && state.frame >= state.take.frames.length - 1) { state.frame = 0; }
     $("playBtn").textContent = p ? "❚❚" : "▶";
     $("playBtn").setAttribute("aria-label", p ? "Pause" : "Play");
     state.lastTs = 0;
@@ -332,6 +354,139 @@
     ctx.beginPath();
     ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
     ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  // ========== imported video (upload + digitize) ==========
+  var STAND_N = {
+    head: [.50, .12], neck: [.50, .21], pelvis: [.50, .52],
+    hipR: [.475, .52], hipL: [.525, .52], kneeR: [.47, .72], kneeL: [.53, .72],
+    ankleR: [.465, .92], ankleL: [.535, .92], toeR: [.50, .955], toeL: [.575, .955],
+    elbowR: [.55, .37], wristR: [.585, .50], elbowL: [.45, .37], wristL: [.415, .50]
+  };
+  var DRAG_JOINTS = Object.keys(STAND_N);
+  var IMP_BONES = [["pelvis", "neck"], ["neck", "head"], ["neck", "elbowR"], ["elbowR", "wristR"],
+    ["neck", "elbowL"], ["elbowL", "wristL"], ["pelvis", "hipR"], ["hipR", "kneeR"], ["kneeR", "ankleR"],
+    ["ankleR", "toeR"], ["pelvis", "hipL"], ["hipL", "kneeL"], ["kneeL", "ankleL"], ["ankleL", "toeL"]];
+
+  function cloneN(o) { var r = {}; DRAG_JOINTS.forEach(function (k) { r[k] = [o[k][0], o[k][1]]; }); return r; }
+  function interpImported(f) {
+    var dig = state.take.dig, keys = Object.keys(dig).map(Number).sort(function (a, b) { return a - b; });
+    if (!keys.length) return cloneN(STAND_N);
+    if (f <= keys[0]) return cloneN(dig[keys[0]]);
+    if (f >= keys[keys.length - 1]) return cloneN(dig[keys[keys.length - 1]]);
+    var i = 0; while (i < keys.length - 1 && f > keys[i + 1]) i++;
+    var a = dig[keys[i]], b = dig[keys[i + 1]], u = (f - keys[i]) / (keys[i + 1] - keys[i]), out = {};
+    DRAG_JOINTS.forEach(function (k) { out[k] = [a[k][0] + (b[k][0] - a[k][0]) * u, a[k][1] + (b[k][1] - a[k][1]) * u]; });
+    return out;
+  }
+  function toWorldN(jn) { // -> joints (y-up pixel-ish) for angle math
+    var vW = state.take.videoW, vH = state.take.videoH, J = {};
+    DRAG_JOINTS.forEach(function (k) { J[k] = [jn[k][0] * vW, (1 - jn[k][1]) * vH]; });
+    J.shoulderR = J.neck; J.shoulderL = J.neck; return J;
+  }
+  function anglesImported(f) { return MKS.jointAngles(toWorldN(interpImported(f))); }
+  function impLayout(W, H) { var vW = state.take.videoW, vH = state.take.videoH, sc = Math.min(W / vW, H / vH); return { ox: (W - vW * sc) / 2, oy: (H - vH * sc) / 2, dW: vW * sc, dH: vH * sc }; }
+
+  function renderImported() {
+    var c = el.view, ctx = c.getContext("2d"); cam_dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = c.clientWidth, H = c.clientHeight; if (c.width !== W * cam_dpr) { c.width = W * cam_dpr; c.height = H * cam_dpr; }
+    ctx.setTransform(cam_dpr, 0, 0, cam_dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    var L = impLayout(W, H); state._impL = L;
+    if (state.video && state.video.readyState >= 2) { try { ctx.drawImage(state.video, L.ox, L.oy, L.dW, L.dH); } catch (e) { } }
+    else { ctx.fillStyle = token("--panel-2"); ctx.fillRect(L.ox, L.oy, L.dW, L.dH); }
+    ctx.fillStyle = "rgba(0,0,0,0.14)"; ctx.fillRect(L.ox, L.oy, L.dW, L.dH);
+    var jn = interpImported(state.frame);
+    function S(n) { return [L.ox + jn[n][0] * L.dW, L.oy + jn[n][1] * L.dH]; }
+    ctx.strokeStyle = token("--accent"); ctx.lineWidth = 3; ctx.lineCap = "round";
+    IMP_BONES.forEach(function (b) { var a = S(b[0]), z = S(b[1]); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(z[0], z[1]); ctx.stroke(); });
+    DRAG_JOINTS.forEach(function (k) {
+      var p = S(k), on = k === state.impDrag;
+      ctx.fillStyle = on ? token("--accent") : token("--panel"); ctx.strokeStyle = token("--accent"); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(p[0], p[1], on ? 7 : 5, 0, 7); ctx.fill(); ctx.stroke();
+    });
+    var a2 = anglesImported(state.frame), kp = S("kneeR");
+    ctx.strokeStyle = token("--accent"); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(kp[0], kp[1], 16, -0.5, 1.8); ctx.stroke();
+    ctx.fillStyle = token("--accent"); ctx.font = "11px " + token("--mono"); ctx.fillText("K " + Math.round(a2.kneeFlexR) + "°", kp[0] + 18, kp[1] - 6);
+    ctx.font = "600 12px " + token("--mono"); ctx.fillStyle = token("--ink-faint"); ctx.textAlign = "right";
+    ctx.fillText("f " + state.frame + " / " + (state.take.frames.length - 1) + "  ·  " + (state.frame / state.take.fps * 1000).toFixed(0) + " ms", W - 12, 22); ctx.textAlign = "left";
+    if (!Object.keys(state.take.dig).length) {
+      ctx.fillStyle = token("--ink-dim"); ctx.font = "12px " + token("--sans");
+      ctx.fillText("Drag the joints onto the athlete, then “+ keyframe” to capture this pose.", L.ox + 12, L.oy + 24);
+    }
+    updateAnglesPanel(a2, null);
+  }
+  function impPickJoint(sx, sy) {
+    var L = state._impL; if (!L) return null; var jn = interpImported(state.frame), best = null, bd = 16;
+    DRAG_JOINTS.forEach(function (k) { var d = Math.hypot(L.ox + jn[k][0] * L.dW - sx, L.oy + jn[k][1] * L.dH - sy); if (d < bd) { bd = d; best = k; } });
+    return best;
+  }
+  function impEnsureKey(f) {
+    if (!state.take.dig[f]) {
+      state.take.dig[f] = cloneN(interpImported(f));
+      if (!state.keyframes.some(function (k) { return k.frame === f; })) {
+        state.keyframes.push({ frame: f, name: "Pose", cat: "loading" });
+        state.keyframes.sort(function (a, b) { return a.frame - b.frame; });
+      }
+    }
+  }
+  function impMetrics() {
+    var ks = state.keyframes.map(function (k) { return k.frame; });
+    if (!ks.length) return [{ label: "Add keyframes to read angles", val: 0, fmt: 0, unit: "" }];
+    var kf = ks.map(function (f) { return anglesImported(f); });
+    var kn = kf.map(function (a) { return a.kneeFlexR; }), tr = kf.map(function (a) { return a.trunkLean; });
+    return [
+      { label: "Keyframes", val: ks.length, fmt: 0, unit: "" },
+      { label: "Peak knee flex", val: Math.max.apply(null, kn), fmt: 0, unit: "°" },
+      { label: "Trunk lean range", val: Math.max.apply(null, tr) - Math.min.apply(null, tr), fmt: 0, unit: "°" }
+    ];
+  }
+  function impExport() {
+    var out = {
+      movement: "imported", name: state.take.name, view: "video", fps: state.take.fps,
+      layout: "video2d_norm", keypoints: DRAG_JOINTS, videoW: state.take.videoW, videoH: state.take.videoH,
+      keyframes: state.keyframes.map(function (k) {
+        var a = anglesImported(k.frame);
+        return {
+          frame: k.frame, name: k.name, timeMs: +(k.frame / state.take.fps * 1000).toFixed(1),
+          joints_norm: state.take.dig[k.frame] || interpImported(k.frame),
+          angles: Object.keys(a).reduce(function (o, key) { o[key] = +a[key].toFixed(2); return o; }, {})
+        };
+      })
+    };
+    var text = JSON.stringify(out, null, 2);
+    $("exportArea").value = text; $("exportArea").style.display = "block"; $("exportArea").select();
+    try { navigator.clipboard.writeText(text); flash("Digitized keyframes copied"); } catch (e) { flash("Keyframes ready — select & copy"); }
+  }
+  function impSeek(f) { if (state.take && state.take.imported && state.video) { try { state.video.currentTime = f / state.take.fps; } catch (e) { } } }
+  function ensureImportedMenu() {
+    if ($("mvImported")) return;
+    var b = document.createElement("button"); b.className = "mv-item captured"; b.id = "mvImported"; b.dataset.id = "imported";
+    b.innerHTML = '<span class="mv-name">▤ Imported video</span><span class="mv-sub">2D</span>';
+    b.addEventListener("click", function () { if (state.importedTake) { setPlaying(false); load("imported"); } else $("videoFile").click(); });
+    var list = $("mvList"); list.insertBefore(b, list.firstChild);
+  }
+  function importVideo(file) {
+    if (!file) return;
+    if (state._url) { try { URL.revokeObjectURL(state._url); } catch (e) { } }
+    var url = URL.createObjectURL(file); state._url = url;
+    var v = document.createElement("video"); v.muted = true; v.playsInline = true; v.preload = "auto"; v.style.display = "none";
+    document.body.appendChild(v);
+    v.addEventListener("loadedmetadata", function () {
+      if (state.video && state.video !== v) { try { document.body.removeChild(state.video); } catch (e) { } }
+      state.video = v;
+      var fps = 30, N = Math.max(2, Math.round((v.duration || 4) * fps));
+      var take = {
+        id: "imported", name: (file.name || "Imported video"), view: "video", fps: fps, imported: true,
+        videoW: v.videoWidth || 1280, videoH: v.videoHeight || 720, dig: {}, frames: [], phases: [], events: [],
+        metricKeys: [], precomputed: null,
+        blurb: "Uploaded clip · drag the skeleton onto the athlete, capture keyframes, read angles."
+      };
+      for (var i = 0; i < N; i++) take.frames.push({ f: i });
+      state.importedTake = take; ensureImportedMenu(); setPlaying(false); load("imported");
+      flash("Video imported — drag the skeleton to the athlete");
+    });
+    v.addEventListener("error", function () { flash("Could not load that video file"); });
+    v.src = url;
   }
 
   // ---------- wire up ----------
@@ -354,20 +509,51 @@
     });
     // controls
     $("playBtn").addEventListener("click", function () { setPlaying(!state.playing); });
-    $("restartBtn").addEventListener("click", function () { setPlaying(false); state.frame = 0; syncScrub(); refresh(); });
-    $("stepB").addEventListener("click", function () { setPlaying(false); state.frame = Math.max(0, state.frame - 1); syncScrub(); refresh(); });
-    $("stepF").addEventListener("click", function () { setPlaying(false); state.frame = Math.min(state.take.frames.length - 1, state.frame + 1); syncScrub(); refresh(); });
-    $("speed").addEventListener("input", function (e) { state.speed = parseFloat(e.target.value); $("speedVal").textContent = state.speed.toFixed(2) + "×"; });
-    el.scrub.addEventListener("input", function (e) { setPlaying(false); state.frame = parseInt(e.target.value, 10); refresh(); });
+    $("restartBtn").addEventListener("click", function () { setPlaying(false); state.frame = 0; impSeek(0); syncScrub(); refresh(); });
+    $("stepB").addEventListener("click", function () { setPlaying(false); state.frame = Math.max(0, state.frame - 1); impSeek(state.frame); syncScrub(); refresh(); });
+    $("stepF").addEventListener("click", function () { setPlaying(false); state.frame = Math.min(state.take.frames.length - 1, state.frame + 1); impSeek(state.frame); syncScrub(); refresh(); });
+    $("speed").addEventListener("input", function (e) { state.speed = parseFloat(e.target.value); $("speedVal").textContent = state.speed.toFixed(2) + "×"; if (state.video) state.video.playbackRate = state.speed; });
+    el.scrub.addEventListener("input", function (e) { setPlaying(false); state.frame = parseInt(e.target.value, 10); impSeek(state.frame); refresh(); });
     $("addKf").addEventListener("click", function () {
+      if (state.take.imported) {
+        impEnsureKey(state.frame);
+        state.selected = state.keyframes.findIndex(function (k) { return k.frame === state.frame; });
+        refresh(); flash("Pose captured at f" + state.frame); return;
+      }
       state.keyframes.push({ frame: state.frame, name: "Keyframe", cat: (currentPhase() || {}).cat || "approach" });
       state.keyframes.sort(function (a, b) { return a.frame - b.frame; });
       state.selected = state.keyframes.findIndex(function (k) { return k.frame === state.frame; });
       refresh(); flash("Keyframe added at f" + state.frame);
     });
     $("delKf").addEventListener("click", function () {
-      if (state.keyframes.length && state.selected >= 0) { state.keyframes.splice(state.selected, 1); state.selected = Math.max(0, state.selected - 1); refresh(); }
+      if (state.keyframes.length && state.selected >= 0) {
+        var k = state.keyframes[state.selected];
+        if (state.take.imported && k) delete state.take.dig[k.frame];
+        state.keyframes.splice(state.selected, 1); state.selected = Math.max(0, state.selected - 1); refresh();
+      }
     });
+    // video import
+    $("importVideoBtn").addEventListener("click", function () { $("videoFile").click(); });
+    $("videoFile").addEventListener("change", function (e) { if (e.target.files && e.target.files[0]) importVideo(e.target.files[0]); e.target.value = ""; });
+    el.view.addEventListener("dragover", function (e) { e.preventDefault(); });
+    el.view.addEventListener("drop", function (e) {
+      e.preventDefault(); var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f && f.type.indexOf("video") === 0) importVideo(f); else if (f) flash("Drop a video file");
+    });
+    // viewport skeleton drag (imported only)
+    el.view.addEventListener("pointerdown", function (e) {
+      if (!(state.take && state.take.imported)) return;
+      var r = el.view.getBoundingClientRect(), j = impPickJoint(e.clientX - r.left, e.clientY - r.top);
+      if (j) { setPlaying(false); impEnsureKey(state.frame); state.impDrag = j; el.view.setPointerCapture(e.pointerId); refresh(); }
+    });
+    el.view.addEventListener("pointermove", function (e) {
+      if (!state.impDrag) return; var r = el.view.getBoundingClientRect(), L = state._impL; if (!L) return;
+      var nx = (e.clientX - r.left - L.ox) / L.dW, ny = (e.clientY - r.top - L.oy) / L.dH;
+      nx = Math.max(0, Math.min(1, nx)); ny = Math.max(0, Math.min(1, ny));
+      if (state.take.dig[state.frame]) state.take.dig[state.frame][state.impDrag] = [nx, ny];
+      refresh();
+    });
+    el.view.addEventListener("pointerup", function () { state.impDrag = null; });
     $("renameKf").addEventListener("input", function (e) { if (state.keyframes[state.selected]) { state.keyframes[state.selected].name = e.target.value; refresh(); } });
     $("exportBtn").addEventListener("click", exportJSON);
 
@@ -383,12 +569,16 @@
       var frame = timelineFrameFromX(e.clientX);
       var near = pickNearest(frame);
       if (near >= 0) { state.selected = near; dragging = true; $("renameKf").value = state.keyframes[near].name; }
-      state.frame = frame; setPlaying(false); syncScrub(); refresh();
+      state.frame = frame; setPlaying(false); impSeek(frame); syncScrub(); refresh();
     });
     el.timeline.addEventListener("pointermove", function (e) {
       var frame = timelineFrameFromX(e.clientX);
-      if (dragging && state.keyframes[state.selected]) { state.keyframes[state.selected].frame = frame; }
-      state.frame = frame; syncScrub(); refresh();
+      if (dragging && state.keyframes[state.selected]) {
+        var old = state.keyframes[state.selected].frame;
+        state.keyframes[state.selected].frame = frame;
+        if (state.take.imported && state.take.dig[old]) { state.take.dig[frame] = state.take.dig[old]; if (frame !== old) delete state.take.dig[old]; }
+      }
+      state.frame = frame; impSeek(frame); syncScrub(); refresh();
     });
     el.timeline.addEventListener("pointerup", function () { dragging = false; state.keyframes.sort(function (a, b) { return a.frame - b.frame; }); refresh(); });
 
@@ -396,8 +586,8 @@
     document.addEventListener("keydown", function (e) {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
       if (e.code === "Space") { e.preventDefault(); setPlaying(!state.playing); }
-      else if (e.code === "ArrowLeft") { setPlaying(false); state.frame = Math.max(0, state.frame - 1); syncScrub(); refresh(); }
-      else if (e.code === "ArrowRight") { setPlaying(false); state.frame = Math.min(state.take.frames.length - 1, state.frame + 1); syncScrub(); refresh(); }
+      else if (e.code === "ArrowLeft") { setPlaying(false); state.frame = Math.max(0, state.frame - 1); impSeek(state.frame); syncScrub(); refresh(); }
+      else if (e.code === "ArrowRight") { setPlaying(false); state.frame = Math.min(state.take.frames.length - 1, state.frame + 1); impSeek(state.frame); syncScrub(); refresh(); }
     });
 
     load(state.id);

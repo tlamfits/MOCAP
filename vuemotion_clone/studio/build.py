@@ -74,6 +74,9 @@ STYLE = r"""
   .section-h{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
     color:var(--ink-faint);padding:14px 14px 7px}
   /* movement list */
+  .rail-actions{padding:12px 8px 4px}
+  .btn.wide{width:100%;justify-content:flex-start;height:36px;font-family:var(--sans);font-size:13px;font-weight:550}
+  .btn.wide:hover{border-color:var(--accent);color:var(--accent)}
   #mvList{display:flex;flex-direction:column;padding:0 8px 10px}
   .mv-item{display:flex;justify-content:space-between;align-items:center;gap:8px;
     text-align:left;width:100%;background:transparent;border:1px solid transparent;border-radius:8px;
@@ -169,6 +172,10 @@ MARKUP = r"""
 
   <div class="stage">
     <aside class="rail left">
+      <div class="rail-actions">
+        <button class="btn wide" id="importVideoBtn">▤ Import video…</button>
+        <input type="file" id="videoFile" accept="video/*" hidden>
+      </div>
       <div class="section-h">Movement library</div>
       <div id="mvList"></div>
       <div class="section-h">Capture</div>
