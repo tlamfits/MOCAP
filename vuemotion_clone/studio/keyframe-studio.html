@@ -1,0 +1,1047 @@
+
+<style>
+  :root{
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    /* light base */
+    --ground:#f4f6f9; --panel:#ffffff; --panel-2:#eef1f6; --line:#d9dee7;
+    --ink:#1b2430; --ink-dim:#54617340; --ink-dim:#546173; --ink-faint:#8a95a4;
+    --accent:#e8531f;
+    --c-approach:#7a8797; --c-loading:#4a63d8; --c-prop:#12a069;
+    --c-flight:#1f9ec9; --c-landing:#cf3d84; --c-plant:#c98a12; --c-release:#c0392b;
+    --good:#12a069; --warn:#c98a12; --risk:#d23b3b;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0d1014; --panel:#14181e; --panel-2:#1a2029; --line:#262e39;
+      --ink:#eef2f6; --ink-dim:#93a1b0; --ink-faint:#5f6c7b; --accent:#ff6a3d;
+      --c-approach:#9aa7b4; --c-loading:#6c8cff; --c-prop:#34c98a;
+      --c-flight:#46c3e6; --c-landing:#e85d9a; --c-plant:#f2b134; --c-release:#ff6b5a;
+      --good:#34c98a; --warn:#f2b134; --risk:#ff5470;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#f4f6f9; --panel:#ffffff; --panel-2:#eef1f6; --line:#d9dee7;
+    --ink:#1b2430; --ink-dim:#546173; --ink-faint:#8a95a4; --accent:#e8531f;
+    --c-approach:#7a8797; --c-loading:#4a63d8; --c-prop:#12a069;
+    --c-flight:#1f9ec9; --c-landing:#cf3d84; --c-plant:#c98a12; --c-release:#c0392b;
+    --good:#12a069; --warn:#c98a12; --risk:#d23b3b;
+  }
+  :root[data-theme="dark"]{
+    --ground:#0d1014; --panel:#14181e; --panel-2:#1a2029; --line:#262e39;
+    --ink:#eef2f6; --ink-dim:#93a1b0; --ink-faint:#5f6c7b; --accent:#ff6a3d;
+    --c-approach:#9aa7b4; --c-loading:#6c8cff; --c-prop:#34c98a;
+    --c-flight:#46c3e6; --c-landing:#e85d9a; --c-plant:#f2b134; --c-release:#ff6b5a;
+    --good:#34c98a; --warn:#f2b134; --risk:#ff5470;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--ground);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .app{display:grid;grid-template-rows:auto 1fr auto;height:100vh;min-height:0}
+  /* topbar */
+  .topbar{display:flex;align-items:center;gap:18px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .brand{display:flex;align-items:baseline;gap:9px;white-space:nowrap}
+  .brand b{font-weight:700;letter-spacing:-.01em}
+  .brand .kx{color:var(--accent);font-family:var(--mono);font-weight:700;font-size:12px;
+    border:1px solid var(--accent);padding:1px 6px;border-radius:5px;letter-spacing:.04em}
+  .tb-title{min-width:0}
+  .tb-title h1{margin:0;font-size:16px;font-weight:650;letter-spacing:-.01em;text-wrap:balance}
+  .tb-title p{margin:0;color:var(--ink-faint);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tb-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .viewtag{font-family:var(--mono);font-size:11px;color:var(--ink-dim);
+    background:var(--panel-2);border:1px solid var(--line);padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.05em}
+  .ref{font-size:11px;color:var(--ink-faint)}
+  .ref b{color:var(--ink-dim)}
+  /* stage */
+  .stage{display:grid;grid-template-columns:216px 1fr 302px;min-height:0;overflow:hidden}
+  .rail{background:var(--panel);overflow-y:auto;min-height:0}
+  .rail.left{border-right:1px solid var(--line)}
+  .rail.right{border-left:1px solid var(--line);display:flex;flex-direction:column}
+  .section-h{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-faint);padding:14px 14px 7px}
+  /* movement list */
+  #mvList{display:flex;flex-direction:column;padding:0 8px 10px}
+  .mv-item{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    text-align:left;width:100%;background:transparent;border:1px solid transparent;border-radius:8px;
+    padding:8px 10px;color:var(--ink);cursor:pointer;font-family:inherit;font-size:13px}
+  .mv-item:hover{background:var(--panel-2)}
+  .mv-item.active{background:var(--panel-2);border-color:var(--line)}
+  .mv-item.active .mv-name{color:var(--accent)}
+  .mv-name{font-weight:550}
+  .mv-sub{font-family:var(--mono);font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em}
+  .meta{padding:8px 14px 16px;color:var(--ink-faint);font-size:11.5px;line-height:1.6}
+  .meta code{font-family:var(--mono);color:var(--ink-dim)}
+  /* center viewport */
+  .center{position:relative;min-width:0;min-height:0;background:
+    radial-gradient(120% 90% at 50% 8%, color-mix(in srgb,var(--panel) 65%, transparent), transparent 70%),var(--ground);
+    display:flex}
+  #view{width:100%;height:100%;display:block;touch-action:none}
+  .legend{position:absolute;left:14px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px 12px;max-width:70%}
+  .legend span{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em}
+  .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+  /* right rail panels */
+  .angles{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .ang{background:var(--panel);padding:9px 12px}
+  .ang .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .ang .v{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+  .ang.full{grid-column:1/3;display:flex;align-items:center;justify-content:space-between}
+  .chip{font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:20px;font-weight:600}
+  .chip.grd{background:color-mix(in srgb,var(--c-plant) 22%,transparent);color:var(--c-plant)}
+  .chip.air{background:color-mix(in srgb,var(--c-flight) 22%,transparent);color:var(--c-flight)}
+  #metrics{padding:4px 0}
+  .metric{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:7px 14px;border-bottom:1px solid var(--line)}
+  .metric .mlab{color:var(--ink-dim);font-size:12.5px}
+  .metric .mval{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .warn-dot{color:var(--warn);cursor:help}
+  /* keyframes */
+  .kf-wrap{margin-top:auto;border-top:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  #keyList{overflow-y:auto;max-height:26vh;padding:6px 8px;display:flex;flex-direction:column;gap:3px}
+  .kf{display:flex;align-items:center;gap:8px;text-align:left;width:100%;background:transparent;border:1px solid transparent;
+    border-radius:7px;padding:6px 9px;cursor:pointer;font-family:inherit;color:var(--ink)}
+  .kf:hover{background:var(--panel-2)}
+  .kf.sel{background:var(--panel-2);border-color:var(--accent)}
+  .kf-dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .kf-name{font-size:12.5px;font-weight:550}
+  .kf-meta{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-faint);white-space:nowrap}
+  .kf-tools{display:flex;gap:6px;padding:8px 12px;flex-wrap:wrap;align-items:center}
+  .kf-tools input{flex:1;min-width:90px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    border-radius:6px;padding:5px 8px;font-family:var(--mono);font-size:11px}
+  #exportArea{display:none;width:calc(100% - 24px);margin:0 12px 12px;height:96px;background:var(--panel-2);
+    color:var(--ink-dim);border:1px solid var(--line);border-radius:6px;font-family:var(--mono);font-size:10px;padding:8px;resize:vertical}
+  /* transport */
+  .transport{border-top:1px solid var(--line);background:var(--panel);padding:10px 16px 12px}
+  .transport-row{display:flex;align-items:center;gap:14px}
+  .tbtns{display:flex;gap:6px}
+  .btn{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:7px;
+    height:32px;min-width:34px;padding:0 10px;cursor:pointer;font-family:var(--mono);font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn:hover{border-color:var(--ink-faint)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.play{width:44px;font-size:14px}
+  .slider{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:3px;background:var(--line);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--panel)}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--panel)}
+  #scrub{flex:1}
+  #speed{width:96px}
+  #timeline{width:100%;height:64px;display:block;margin-top:8px;cursor:pointer;touch-action:none}
+  .tl-meta{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+  .toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%) translateY(8px);opacity:0;pointer-events:none;
+    background:var(--ink);color:var(--ground);font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:8px;transition:.25s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:880px){
+    .stage{grid-template-columns:1fr;grid-auto-rows:min-content}
+    .rail{max-height:none;border:0;border-top:1px solid var(--line)}
+    .center{min-height:52vh}
+    #keyList{max-height:32vh}
+  }
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span class="kx">FITS·CV</span><b>Keyframe Studio</b></div>
+    <div class="tb-title"><h1 id="mvTitle">Approach Jump</h1><p id="mvBlurb">—</p></div>
+    <div class="tb-right">
+      <span class="viewtag" id="viewTag">sagittal · 60 fps</span>
+      <span class="ref">reference product · <b>VueMotion</b></span>
+    </div>
+  </header>
+
+  <div class="stage">
+    <aside class="rail left">
+      <div class="section-h">Movement library</div>
+      <div id="mvList"></div>
+      <div class="section-h">Capture</div>
+      <div class="meta">
+        Multi-cam 3D markerless → <code>OpenSim</code> IK.<br>
+        Demo takes are <b>synthetic</b> stand-ins; the studio reads the same
+        keypoint schema the P1 pipeline emits, so real triangulated takes drop
+        straight in.<br><br>
+        <code>space</code> play · <code>← →</code> step · drag markers to move keyframes.
+      </div>
+    </aside>
+
+    <section class="center">
+      <canvas id="view"></canvas>
+      <div class="legend">
+        <span><i style="background:var(--c-loading)"></i>loading</span>
+        <span><i style="background:var(--c-prop)"></i>propulsion</span>
+        <span><i style="background:var(--c-flight)"></i>flight</span>
+        <span><i style="background:var(--c-plant)"></i>contact</span>
+        <span><i style="background:var(--c-landing)"></i>landing</span>
+      </div>
+    </section>
+
+    <aside class="rail right">
+      <div class="section-h">Joint angles · live</div>
+      <div class="angles">
+        <div class="ang"><div class="l">Trunk lean</div><div class="v" id="aTrunk">0°</div></div>
+        <div class="ang"><div class="l">Hip flex R</div><div class="v" id="aHip">0°</div></div>
+        <div class="ang"><div class="l">Knee flex R</div><div class="v" id="aKnee">0°</div></div>
+        <div class="ang"><div class="l">Ankle R</div><div class="v" id="aAnkle">0°</div></div>
+        <div class="ang"><div class="l">Elbow R</div><div class="v" id="aElbow">0°</div></div>
+        <div class="ang"><div class="l">Knee sep</div><div class="v" id="aSep">0cm</div></div>
+        <div class="ang full"><div class="l">Foot contact</div><span class="chip grd" id="aContact">ground</span></div>
+      </div>
+      <div class="section-h">Take metrics</div>
+      <div id="metrics"></div>
+      <div class="kf-wrap">
+        <div class="section-h">Keyframes</div>
+        <div id="keyList"></div>
+        <div class="kf-tools">
+          <input id="renameKf" placeholder="rename selected keyframe" aria-label="Rename selected keyframe">
+          <button class="btn" id="delKf" title="Delete selected">✕</button>
+          <button class="btn primary" id="exportBtn">Export</button>
+        </div>
+        <textarea id="exportArea" spellcheck="false" aria-label="Exported keyframe JSON"></textarea>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="transport">
+    <div class="transport-row">
+      <div class="tbtns">
+        <button class="btn" id="restartBtn" title="Restart">⤒</button>
+        <button class="btn" id="stepB" title="Step back">◂</button>
+        <button class="btn play" id="playBtn" aria-label="Play">▶</button>
+        <button class="btn" id="stepF" title="Step forward">▸</button>
+        <button class="btn" id="addKf" title="Add keyframe at playhead">+ keyframe</button>
+      </div>
+      <input type="range" id="scrub" min="0" max="119" value="0" aria-label="Scrub frames">
+      <div class="slider">speed <input type="range" id="speed" min="0.1" max="1.5" step="0.05" value="1"><span id="speedVal">1.00×</span></div>
+    </div>
+    <canvas id="timeline"></canvas>
+    <div class="tl-meta"><span>phases + editable keyframes</span><span>drag a marker to retime · click to scrub</span></div>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* Movement Keyframe Studio — analysis engine (pure, browser + node).
+ *
+ * Kinematics only. A 2D sagittal/frontal stick athlete is driven by authored
+ * segment-angle keyposes per movement; joints come from forward kinematics, and
+ * every reported metric is computed FROM the joints (never the authoring angles)
+ * so what you see on screen equals what is measured — the same contract the real
+ * multi-camera pipeline uses. Procedural demo takes stand in until triangulated
+ * keypoints from the P1 pipeline are wired in.
+ */
+(function (global) {
+  "use strict";
+
+  // Segment lengths (metres) for a ~1.75 m athlete.
+  var SEG = { trunk: 0.52, head: 0.22, thigh: 0.44, shank: 0.42, foot: 0.21, uparm: 0.30, forearm: 0.28 };
+  var GROUND_TOE = 0.06; // toe below this height (m) = ground contact
+
+  var D2R = Math.PI / 180;
+
+  // Neutral standing pose. All angles in degrees.
+  // Leg/arm angles measured from the downward vertical, +ve = forward (+x).
+  // trunk/head measured from the upward vertical, +ve = forward lean.
+  function neutral() {
+    return {
+      px: 0, ph: 0.90, trunk: 4, head: 3,
+      thighR: 3, shankR: 3, footR: 90, thighL: -3, shankL: -3, footL: 90,
+      uaR: 8, faR: 12, uaL: -8, faL: -12
+    };
+  }
+
+  function lerp(a, b, u) { return a + (b - a) * u; }
+  function smooth(u) { return u * u * (3 - 2 * u); }
+
+  // Interpolate a pose from authored keyposes (each {t, ...fields}) over neutral.
+  function poseFromKeys(keys, t) {
+    var p = neutral();
+    if (!keys.length) return p;
+    if (t <= keys[0].t) return merge(p, keys[0]);
+    if (t >= keys[keys.length - 1].t) return merge(p, keys[keys.length - 1]);
+    var i = 0;
+    while (i < keys.length - 1 && t > keys[i + 1].t) i++;
+    var a = keys[i], b = keys[i + 1];
+    var u = smooth((t - a.t) / Math.max(1e-6, b.t - a.t));
+    var out = merge(p, a);
+    for (var k in b) {
+      if (k === "t") continue;
+      var av = a[k] != null ? a[k] : p[k];
+      out[k] = lerp(av, b[k], u);
+    }
+    return out;
+  }
+  function merge(base, k) {
+    var o = {}; for (var f in base) o[f] = base[f];
+    for (var g in k) { if (g !== "t") o[g] = k[g]; }
+    return o;
+  }
+
+  // Forward kinematics: pose -> world joints (metres, y-up).
+  function fk(p) {
+    var px = p.px, ph = p.ph;
+    var pelvis = [px, ph];
+    var tr = p.trunk * D2R, hd = p.head * D2R;
+    var neck = [px + SEG.trunk * Math.sin(tr), ph + SEG.trunk * Math.cos(tr)];
+    var head = [neck[0] + SEG.head * Math.sin(hd), neck[1] + SEG.head * Math.cos(hd)];
+    function leg(th, sh, ft) {
+      var thr = th * D2R, shr = sh * D2R, ftr = ft * D2R;
+      var knee = [px + SEG.thigh * Math.sin(thr), ph - SEG.thigh * Math.cos(thr)];
+      var ankle = [knee[0] + SEG.shank * Math.sin(shr), knee[1] - SEG.shank * Math.cos(shr)];
+      var toe = [ankle[0] + SEG.foot * Math.sin(ftr), ankle[1] - SEG.foot * Math.cos(ftr)];
+      return { knee: knee, ankle: ankle, toe: toe };
+    }
+    function arm(ua, fa) {
+      var uar = ua * D2R, far = fa * D2R;
+      var elbow = [neck[0] + SEG.uparm * Math.sin(uar), neck[1] - SEG.uparm * Math.cos(uar)];
+      var wrist = [elbow[0] + SEG.forearm * Math.sin(far), elbow[1] - SEG.forearm * Math.cos(far)];
+      return { elbow: elbow, wrist: wrist };
+    }
+    var R = leg(p.thighR, p.shankR, p.footR), L = leg(p.thighL, p.shankL, p.footL);
+    var aR = arm(p.uaR, p.faR), aL = arm(p.uaL, p.faL);
+    return {
+      pelvis: pelvis, neck: neck, head: head,
+      hipR: pelvis, kneeR: R.knee, ankleR: R.ankle, toeR: R.toe,
+      hipL: pelvis, kneeL: L.knee, ankleL: L.ankle, toeL: L.toe,
+      shoulderR: neck, elbowR: aR.elbow, wristR: aR.wrist,
+      shoulderL: neck, elbowL: aL.elbow, wristL: aL.wrist
+    };
+  }
+
+  function interior(A, B, C) { // interior angle at B, degrees
+    var b1x = A[0] - B[0], b1y = A[1] - B[1], b2x = C[0] - B[0], b2y = C[1] - B[1];
+    var d = (b1x * b2x + b1y * b2y) /
+      (Math.hypot(b1x, b1y) * Math.hypot(b2x, b2y) + 1e-9);
+    d = Math.max(-1, Math.min(1, d));
+    return Math.acos(d) / D2R;
+  }
+
+  function jointAngles(j) {
+    var lean = Math.atan2(j.neck[0] - j.pelvis[0], j.neck[1] - j.pelvis[1]) / D2R;
+    return {
+      trunkLean: lean,
+      hipFlexR: 180 - interior(j.neck, j.pelvis, j.kneeR),
+      kneeFlexR: 180 - interior(j.hipR, j.kneeR, j.ankleR),
+      ankleR: interior(j.kneeR, j.ankleR, j.toeR),
+      hipFlexL: 180 - interior(j.neck, j.pelvis, j.kneeL),
+      kneeFlexL: 180 - interior(j.hipL, j.kneeL, j.ankleL),
+      ankleL: interior(j.kneeL, j.ankleL, j.toeL),
+      elbowR: 180 - interior(j.shoulderR, j.elbowR, j.wristR),
+      kneeSep: (j.kneeR[0] - j.kneeL[0])
+    };
+  }
+
+  // ---- Movement library --------------------------------------------------
+  // cat colours: approach, loading, propulsion, flight, landing, plant, release
+  var MOVEMENTS = {
+    approach_jump: {
+      name: "Approach Jump", view: "sagittal", fps: 60, frames: 120,
+      blurb: "Run-up to a max vertical — penultimate to final plant to takeoff.",
+      phases: [
+        { id: "approach", name: "Approach", cat: "approach", t: 0.00 },
+        { id: "pen", name: "Penultimate", cat: "plant", t: 0.30 },
+        { id: "plant", name: "Final plant", cat: "loading", t: 0.48 },
+        { id: "takeoff", name: "Takeoff", cat: "propulsion", t: 0.60 },
+        { id: "flight", name: "Flight", cat: "flight", t: 0.66 },
+        { id: "landing", name: "Landing", cat: "landing", t: 0.92 }
+      ],
+      keys: [
+        { t: 0.00, px: -1.6, ph: 0.90, trunk: 12, thighR: 24, shankR: -6, thighL: -20, shankL: 34, uaR: -30, faR: -20, uaL: 30, faL: 20 },
+        { t: 0.30, px: -0.9, ph: 0.86, trunk: 16, thighR: -18, shankR: 40, footR: 78, thighL: 22, shankL: -8, uaR: 40, uaL: -30 },
+        { t: 0.48, px: -0.35, ph: 0.72, trunk: 22, thighR: 20, shankR: 34, footR: 74, thighL: 18, shankL: 30, footL: 74, uaR: -60, faR: -30, uaL: -60, faL: -30 },
+        { t: 0.60, px: -0.1, ph: 1.02, trunk: 8, thighR: 6, shankR: 4, footR: 118, thighL: 4, shankL: 4, footL: 118, uaR: 150, faR: 165, uaL: 150, faL: 165 },
+        { t: 0.66, px: 0.0, ph: 1.30, trunk: 4, thighR: 20, shankR: -30, thighL: 18, shankL: -28, footR: 120, footL: 120, uaR: 160, uaL: 160 },
+        { t: 0.80, px: 0.05, ph: 1.34, trunk: 2, thighR: 24, shankR: -26, thighL: 22, shankL: -24, uaR: 120, uaL: 120 },
+        { t: 0.92, px: 0.1, ph: 0.70, trunk: 26, thighR: 34, shankR: 40, footR: 78, thighL: 30, shankL: 38, footL: 78, uaR: -20, uaL: -20 },
+        { t: 1.00, px: 0.12, ph: 0.82, trunk: 14, thighR: 12, shankR: 12, thighL: -12, shankL: 12 }
+      ],
+      metrics: ["approach_speed", "flight_time", "jump_height", "takeoff_angle", "plant_knee"]
+    },
+
+    throwing: {
+      name: "Throwing", view: "sagittal", fps: 120, frames: 120,
+      blurb: "Stride, cock, accelerate, release — dominant-arm sequencing.",
+      phases: [
+        { id: "windup", name: "Wind-up", cat: "loading", t: 0.00 },
+        { id: "stride", name: "Stride", cat: "approach", t: 0.28 },
+        { id: "plant", name: "Front plant", cat: "plant", t: 0.46 },
+        { id: "cock", name: "Max cock", cat: "loading", t: 0.56 },
+        { id: "release", name: "Release", cat: "release", t: 0.72 },
+        { id: "follow", name: "Follow-through", cat: "landing", t: 0.9 }
+      ],
+      keys: [
+        { t: 0.00, px: -0.2, ph: 0.92, trunk: -8, thighR: -6, thighL: 8, uaR: -20, faR: -60, uaL: -40, faL: -80 },
+        { t: 0.28, px: -0.05, ph: 0.90, trunk: -6, thighR: -14, shankR: 20, thighL: 26, shankL: -10, footL: 100, uaR: -70, faR: -60, uaL: 20 },
+        { t: 0.46, px: 0.05, ph: 0.88, trunk: 2, thighR: -8, shankR: 8, thighL: 20, shankL: 6, footL: 96, uaR: -120, faR: -80, uaL: 60 },
+        { t: 0.56, px: 0.08, ph: 0.9, trunk: 10, thighL: 12, shankL: 2, uaR: -150, faR: -120, uaL: 90 },
+        { t: 0.72, px: 0.12, ph: 0.9, trunk: 24, thighR: 10, thighL: 8, uaR: 60, faR: 40, uaL: 120 },
+        { t: 0.86, px: 0.15, ph: 0.86, trunk: 40, thighR: 20, shankR: 30, thighL: 6, uaR: 120, faR: 100, uaL: 140 },
+        { t: 1.00, px: 0.18, ph: 0.84, trunk: 46, thighR: 30, shankR: 40, footR: 80, uaR: 140, faR: 120 }
+      ],
+      metrics: ["front_plant_knee", "trunk_at_release", "elbow_at_release", "release_height", "release_speed"]
+    },
+
+    acceleration: {
+      name: "Acceleration", view: "sagittal", fps: 120, frames: 132,
+      blurb: "First strides out of a stance — drive, recover, touchdown, repeat.",
+      phases: [
+        { id: "s1c", name: "Drive R", cat: "propulsion", t: 0.02 },
+        { id: "s1a", name: "Flight", cat: "flight", t: 0.18 },
+        { id: "s2c", name: "Touchdown L", cat: "plant", t: 0.30 },
+        { id: "s2a", name: "Flight", cat: "flight", t: 0.46 },
+        { id: "s3c", name: "Touchdown R", cat: "plant", t: 0.58 },
+        { id: "s3a", name: "Flight", cat: "flight", t: 0.74 },
+        { id: "s4c", name: "Touchdown L", cat: "plant", t: 0.86 }
+      ],
+      keys: runKeys(),
+      metrics: ["contact_time", "flight_time", "avg_speed", "trunk_lean", "touchdown_knee"]
+    },
+
+    broad_jump: {
+      name: "Broad Jump", view: "sagittal", fps: 60, frames: 120,
+      blurb: "Standing horizontal jump — countermovement, drive, reach, stick.",
+      phases: [
+        { id: "stance", name: "Stance", cat: "approach", t: 0.00 },
+        { id: "cm", name: "Countermovement", cat: "loading", t: 0.28 },
+        { id: "takeoff", name: "Takeoff", cat: "propulsion", t: 0.44 },
+        { id: "flight", name: "Flight", cat: "flight", t: 0.52 },
+        { id: "reach", name: "Reach", cat: "flight", t: 0.72 },
+        { id: "landing", name: "Landing", cat: "landing", t: 0.9 }
+      ],
+      keys: [
+        { t: 0.00, px: 0, ph: 0.90, trunk: 6, uaR: 8, uaL: -8 },
+        { t: 0.20, px: 0, ph: 0.86, trunk: 18, thighR: 16, shankR: 24, footR: 76, thighL: 16, shankL: 24, footL: 76, uaR: -50, faR: -20, uaL: -50, faL: -20 },
+        { t: 0.28, px: 0.02, ph: 0.66, trunk: 34, thighR: 34, shankR: 44, footR: 70, thighL: 34, shankL: 44, footL: 70, uaR: -80, faR: -30, uaL: -80, faL: -30 },
+        { t: 0.44, px: 0.2, ph: 1.00, trunk: 30, thighR: -20, shankR: 30, footR: 130, thighL: -20, shankL: 30, footL: 130, uaR: 120, faR: 150, uaL: 120, faL: 150 },
+        { t: 0.52, px: 0.5, ph: 1.16, trunk: 22, thighR: -40, shankR: 60, thighL: -40, shankL: 60, uaR: 150, uaL: 150 },
+        { t: 0.72, px: 1.3, ph: 1.12, trunk: 10, thighR: 60, shankR: 30, footR: 110, thighL: 60, shankL: 30, footL: 110, uaR: 40, faR: 20, uaL: 40, faL: 20 },
+        { t: 0.90, px: 2.0, ph: 0.64, trunk: 40, thighR: 56, shankR: 66, footR: 84, thighL: 56, shankL: 66, footL: 84, uaR: -30, uaL: -30 },
+        { t: 1.00, px: 2.05, ph: 0.82, trunk: 20, thighR: 20, shankR: 20, thighL: 20, shankL: 20 }
+      ],
+      metrics: ["cm_depth", "distance", "takeoff_angle", "flight_time", "landing_knee"]
+    },
+
+    lateral_jump: {
+      name: "Lateral Jump", view: "frontal", fps: 60, frames: 110,
+      blurb: "Skater bound — load the outside leg, drive across, stick single-leg.",
+      phases: [
+        { id: "load", name: "Load (R)", cat: "loading", t: 0.10 },
+        { id: "drive", name: "Drive", cat: "propulsion", t: 0.34 },
+        { id: "flight", name: "Flight", cat: "flight", t: 0.5 },
+        { id: "land", name: "Land (L)", cat: "landing", t: 0.82 }
+      ],
+      keys: [
+        { t: 0.00, px: 0.0, ph: 0.90, trunk: 0, thighR: 6, thighL: -6, uaR: 20, uaL: -20 },
+        { t: 0.10, px: 0.1, ph: 0.70, trunk: 8, thighR: 30, shankR: -34, footR: 70, thighL: 8, shankL: -12, uaR: 50, uaL: -30 },
+        { t: 0.34, px: 0.2, ph: 0.94, trunk: 6, thighR: -6, shankR: 8, thighL: -20, shankL: 20, uaR: -30, uaL: 40 },
+        { t: 0.50, px: 0.5, ph: 1.02, trunk: 2, thighR: -18, shankR: 26, thighL: -30, shankL: 34, uaR: -20, uaL: 30 },
+        { t: 0.82, px: 0.85, ph: 0.68, trunk: 6, thighL: 30, shankL: -34, footL: 70, thighR: 10, shankR: -10, uaL: 50, uaR: -30 },
+        { t: 1.00, px: 0.9, ph: 0.86, trunk: 2, thighL: 8, shankL: -6, thighR: -6 }
+      ],
+      metrics: ["load_depth", "lateral_distance", "flight_time", "land_knee", "knee_valgus"]
+    },
+
+    l_hop: {
+      name: "L-Hop", view: "sagittal", fps: 60, frames: 150,
+      blurb: "Single-leg L pattern — forward hops then a lateral redirect.",
+      phases: [
+        { id: "h1", name: "Hop 1", cat: "propulsion", t: 0.08 },
+        { id: "c1", name: "Contact 1", cat: "plant", t: 0.24 },
+        { id: "h2", name: "Hop 2", cat: "propulsion", t: 0.40 },
+        { id: "c2", name: "Contact 2", cat: "plant", t: 0.56 },
+        { id: "turn", name: "Redirect", cat: "loading", t: 0.70 },
+        { id: "c3", name: "Contact 3", cat: "landing", t: 0.88 }
+      ],
+      keys: hopKeys(3, 0.55),
+      metrics: ["contact_time", "flight_time", "hop_distance", "contact_knee", "reactive_index"]
+    },
+
+    pent_hop: {
+      name: "Pent Hop", view: "sagittal", fps: 60, frames: 170,
+      blurb: "Five reactive hops — track contact time and stiffness hop to hop.",
+      phases: [
+        { id: "c1", name: "Contact 1", cat: "plant", t: 0.12 },
+        { id: "c2", name: "Contact 2", cat: "plant", t: 0.30 },
+        { id: "c3", name: "Contact 3", cat: "plant", t: 0.48 },
+        { id: "c4", name: "Contact 4", cat: "plant", t: 0.66 },
+        { id: "c5", name: "Contact 5", cat: "landing", t: 0.84 }
+      ],
+      keys: hopKeys(5, 0.4),
+      metrics: ["contact_time", "flight_time", "hop_distance", "contact_knee", "reactive_index"]
+    },
+
+    cod: {
+      name: "Change of Direction", view: "frontal", fps: 120, frames: 130,
+      blurb: "Decelerate, plant, redirect — the injury-risk window on the cut.",
+      phases: [
+        { id: "approach", name: "Approach", cat: "approach", t: 0.00 },
+        { id: "pen", name: "Penultimate", cat: "plant", t: 0.30 },
+        { id: "plant", name: "Cut plant", cat: "loading", t: 0.50 },
+        { id: "push", name: "Redirect", cat: "propulsion", t: 0.64 },
+        { id: "exit", name: "Re-accelerate", cat: "flight", t: 0.82 }
+      ],
+      keys: [
+        { t: 0.00, px: -1.4, ph: 0.90, trunk: 10, thighR: 20, shankR: -6, thighL: -18, shankL: 30, uaR: -20, uaL: 20 },
+        { t: 0.30, px: -0.7, ph: 0.84, trunk: 6, thighR: -20, shankR: 34, footR: 80, thighL: 22, shankL: -6, uaR: 30, uaL: -20 },
+        { t: 0.50, px: -0.2, ph: 0.70, trunk: -14, thighR: 30, shankR: 30, footR: 76, thighL: 12, shankL: 24, footL: 78, uaR: -30, uaL: 40 },
+        { t: 0.64, px: 0.0, ph: 0.80, trunk: -18, thighR: 14, shankR: 16, thighL: -10, shankL: 20, uaR: -20, uaL: 50 },
+        { t: 0.82, px: 0.5, ph: 0.88, trunk: -20, thighR: -18, shankR: 30, thighL: 22, shankL: -6, uaR: 40, uaL: -30 },
+        { t: 1.00, px: 1.1, ph: 0.88, trunk: -16, thighR: 22, shankR: -6, thighL: -18, shankL: 28 }
+      ],
+      metrics: ["approach_speed", "plant_knee", "plant_trunk", "knee_valgus", "contact_time"]
+    }
+  };
+
+  // cyclic sprint keyposes (alternating legs, forward progression, bob).
+  function runKeys() {
+    var keys = [], n = 8, dist = 3.2;
+    for (var i = 0; i <= n; i++) {
+      var t = i / n, ph = t; // fraction
+      var stanceR = (i % 2 === 0);
+      var bob = 0.90 + 0.05 * Math.sin(t * n * Math.PI); // vertical oscillation
+      keys.push({
+        t: ph,
+        px: -1.6 + dist * (t * t * 0.6 + t * 0.4), // accelerating progression
+        ph: stanceR ? bob - 0.04 : bob + 0.02,
+        trunk: 34 - 16 * t, // rise from deep lean
+        thighR: stanceR ? -16 : 42, shankR: stanceR ? 18 : -30, footR: stanceR ? 84 : 118,
+        thighL: stanceR ? 42 : -16, shankL: stanceR ? -30 : 18, footL: stanceR ? 118 : 84,
+        uaR: stanceR ? 70 : -50, faR: stanceR ? 90 : 100,
+        uaL: stanceR ? -50 : 70, faL: stanceR ? 100 : 90
+      });
+    }
+    return keys;
+  }
+
+  // repeated hops: n contacts, stride length s (m). Single-leg (right) reactive.
+  function hopKeys(n, s) {
+    var keys = [], steps = n * 2 + 1;
+    for (var i = 0; i <= steps; i++) {
+      var t = i / steps;
+      var contact = (i % 2 === 1);
+      keys.push({
+        t: t,
+        px: s * (i * 0.5),
+        ph: contact ? 0.74 : 1.0,
+        trunk: contact ? 14 : 6,
+        thighR: contact ? 30 : -30, shankR: contact ? 34 : 46, footR: contact ? 74 : 130,
+        thighL: contact ? 18 : 24, shankL: contact ? 26 : -40, footL: contact ? 120 : 120,
+        uaR: contact ? 40 : 120, uaL: contact ? -30 : 120
+      });
+    }
+    return keys;
+  }
+
+  // ---- Take generation + metrics ----------------------------------------
+  function generateTake(id) {
+    var m = MOVEMENTS[id];
+    var N = m.frames, frames = [];
+    for (var f = 0; f < N; f++) {
+      var t = f / (N - 1);
+      var pose = poseFromKeys(m.keys, t);
+      var joints = fk(pose);
+      frames.push({ f: f, t: t, pose: pose, joints: joints, angles: jointAngles(joints), airborne: airborne(joints) });
+    }
+    var events = m.phases.map(function (p) {
+      return { id: p.id, name: p.name, cat: p.cat, frame: Math.round(p.t * (N - 1)) };
+    });
+    return { id: id, name: m.name, view: m.view, fps: m.fps, frames: frames, phases: m.phases, events: events, metricKeys: m.metrics };
+  }
+
+  function airborne(j) { return j.toeR[1] > GROUND_TOE && j.toeL[1] > GROUND_TOE; }
+
+  function metricValue(key, take) {
+    var fr = take.frames, fps = take.fps, N = fr.length;
+    function comV(i) { // COM (pelvis) velocity m/s
+      var a = fr[Math.max(0, i - 1)].joints.pelvis, b = fr[Math.min(N - 1, i + 1)].joints.pelvis;
+      var dt = (Math.min(N - 1, i + 1) - Math.max(0, i - 1)) / fps;
+      return [(b[0] - a[0]) / dt, (b[1] - a[1]) / dt];
+    }
+    function firstTakeoff() { for (var i = 1; i < N; i++) if (fr[i].airborne && !fr[i - 1].airborne) return i; return -1; }
+    function firstLandingAfter(k) { for (var i = k + 1; i < N; i++) if (!fr[i].airborne && fr[i - 1].airborne) return i; return -1; }
+    function peakCOM() { var m = -1, mi = 0; for (var i = 0; i < N; i++) if (fr[i].joints.pelvis[1] > m) { m = fr[i].joints.pelvis[1]; mi = i; } return { h: m, i: mi }; }
+    function contactFrames() { var c = 0; for (var i = 0; i < N; i++) if (!fr[i].airborne) c++; return c; }
+    function airFrames() { var c = 0; for (var i = 0; i < N; i++) if (fr[i].airborne) c++; return c; }
+    function minPelvis() { var m = 9, mi = 0; for (var i = 0; i < N; i++) if (fr[i].joints.pelvis[1] < m) { m = fr[i].joints.pelvis[1]; mi = i; } return { h: m, i: mi }; }
+
+    var to, la, pk;
+    switch (key) {
+      case "approach_speed": {
+        to = firstTakeoff(); var i = to > 8 ? to - 6 : Math.floor(N * 0.3);
+        return { label: "Approach speed", val: Math.abs(comV(i)[0]), unit: "m/s", fmt: 1 };
+      }
+      case "avg_speed": {
+        var d = fr[N - 1].joints.pelvis[0] - fr[0].joints.pelvis[0];
+        return { label: "Avg speed", val: d / (N / fps), unit: "m/s", fmt: 1 };
+      }
+      case "flight_time": {
+        to = firstTakeoff(); la = firstLandingAfter(to);
+        var t = (to >= 0 && la > to) ? (la - to) / fps : airFrames() / fps;
+        return { label: "Flight time", val: t * 1000, unit: "ms", fmt: 0 };
+      }
+      case "contact_time": {
+        return { label: "Contact time", val: (contactFrames() / Math.max(1, countContacts(fr))) / fps * 1000, unit: "ms", fmt: 0 };
+      }
+      case "jump_height": {
+        to = firstTakeoff(); pk = peakCOM();
+        var base = to >= 0 ? fr[to].joints.pelvis[1] : fr[0].joints.pelvis[1];
+        return { label: "Jump height", val: Math.max(0, pk.h - base) * 100, unit: "cm", fmt: 0 };
+      }
+      case "takeoff_angle": {
+        to = firstTakeoff(); if (to < 0) to = Math.floor(N * 0.5);
+        var v = comV(to); return { label: "Takeoff angle", val: Math.atan2(v[1], Math.abs(v[0]) + 1e-3) / D2R, unit: "°", fmt: 0 };
+      }
+      case "distance": {
+        to = firstTakeoff(); la = firstLandingAfter(to);
+        var a = to >= 0 ? fr[to].joints.pelvis[0] : fr[0].joints.pelvis[0];
+        var b = la > 0 ? fr[la].joints.pelvis[0] : fr[N - 1].joints.pelvis[0];
+        return { label: "Distance", val: (b - a), unit: "m", fmt: 2 };
+      }
+      case "lateral_distance": {
+        return { label: "Lateral distance", val: fr[N - 1].joints.pelvis[0] - fr[0].joints.pelvis[0], unit: "m", fmt: 2 };
+      }
+      case "hop_distance": {
+        return { label: "Mean hop", val: (fr[N - 1].joints.pelvis[0] - fr[0].joints.pelvis[0]) / Math.max(1, countContacts(fr)), unit: "m", fmt: 2 };
+      }
+      case "cm_depth": case "load_depth": {
+        pk = minPelvis(); return { label: "Countermovement depth", val: (fr[0].joints.pelvis[1] - pk.h) * 100, unit: "cm", fmt: 0 };
+      }
+      case "reactive_index": {
+        var ct = contactFrames() / Math.max(1, countContacts(fr)) / fps;
+        var ft = airFrames() / Math.max(1, countContacts(fr)) / fps;
+        return { label: "Reactive index", val: ft / Math.max(0.02, ct), unit: "", fmt: 2 };
+      }
+      case "plant_knee": case "landing_knee": case "land_knee": case "contact_knee": case "touchdown_knee": case "front_plant_knee": {
+        var mk = maxAt(fr, function (x) { return !x.airborne; }, function (x) { return x.angles.kneeFlexR; });
+        return { label: "Peak knee flex", val: mk, unit: "°", fmt: 0 };
+      }
+      case "plant_trunk": case "trunk_lean": {
+        var mt = extreme(fr, function (x) { return x.angles.trunkLean; });
+        return { label: "Peak trunk lean", val: mt, unit: "°", fmt: 0 };
+      }
+      case "trunk_at_release": {
+        var ri = releaseFrame(fr); return { label: "Trunk @ release", val: fr[ri].angles.trunkLean, unit: "°", fmt: 0 };
+      }
+      case "elbow_at_release": {
+        var ri2 = releaseFrame(fr); return { label: "Elbow @ release", val: fr[ri2].angles.elbowR, unit: "°", fmt: 0 };
+      }
+      case "release_height": {
+        var ri3 = releaseFrame(fr); return { label: "Release height", val: fr[ri3].joints.wristR[1] * 100, unit: "cm", fmt: 0 };
+      }
+      case "release_speed": {
+        var ri4 = releaseFrame(fr);
+        var a2 = fr[Math.max(0, ri4 - 1)].joints.wristR, b2 = fr[Math.min(N - 1, ri4 + 1)].joints.wristR;
+        var dt2 = 2 / fps; return { label: "Hand speed", val: Math.hypot(b2[0] - a2[0], b2[1] - a2[1]) / dt2, unit: "m/s", fmt: 1 };
+      }
+      case "knee_valgus": {
+        var mv = maxAt(fr, function (x) { return !x.airborne; }, function (x) { return -x.angles.kneeSep; });
+        return { label: "Knee sep (valgus proxy)", val: mv * 100, unit: "cm", fmt: 1, caveat: true };
+      }
+    }
+    return { label: key, val: 0, unit: "", fmt: 0 };
+  }
+
+  function countContacts(fr) { var c = 0; for (var i = 1; i < fr.length; i++) if (!fr[i].airborne && fr[i - 1].airborne) c++; return Math.max(1, c); }
+  function maxAt(fr, filter, val) { var m = -1e9; for (var i = 0; i < fr.length; i++) if (filter(fr[i])) m = Math.max(m, val(fr[i])); return m === -1e9 ? 0 : m; }
+  function extreme(fr, val) { var m = 0; for (var i = 0; i < fr.length; i++) if (Math.abs(val(fr[i])) > Math.abs(m)) m = val(fr[i]); return m; }
+  function releaseFrame(fr) { // fastest forward hand
+    var best = 0, bi = Math.floor(fr.length * 0.7);
+    for (var i = 1; i < fr.length - 1; i++) {
+      var v = fr[i + 1].joints.wristR[0] - fr[i - 1].joints.wristR[0];
+      if (v > best) { best = v; bi = i; }
+    }
+    return bi;
+  }
+
+  function metrics(take) { return take.metricKeys.map(function (k) { return metricValue(k, take); }); }
+
+  var API = { SEG: SEG, MOVEMENTS: MOVEMENTS, generateTake: generateTake, jointAngles: jointAngles, fk: fk, metrics: metrics, metricValue: metricValue, GROUND_TOE: GROUND_TOE };
+  if (typeof module !== "undefined" && module.exports) module.exports = API;
+  global.MKS = API;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* Movement Keyframe Studio — UI layer (browser only). Depends on window.MKS. */
+(function () {
+  "use strict";
+  var MKS = window.MKS;
+
+  var CAT = {
+    approach: "--c-approach", loading: "--c-loading", propulsion: "--c-prop",
+    flight: "--c-flight", landing: "--c-landing", plant: "--c-plant", release: "--c-release"
+  };
+  function catColor(cat) {
+    return getComputedStyle(document.documentElement).getPropertyValue(CAT[cat] || "--c-approach").trim() || "#9aa7b4";
+  }
+  function token(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  var state = {
+    id: "approach_jump", take: null, frame: 0, playing: false, speed: 1,
+    keyframes: [], selected: 0, lastTs: 0, acc: 0
+  };
+
+  var el = {};
+  function $(id) { return document.getElementById(id); }
+
+  function load(id) {
+    state.id = id;
+    state.take = MKS.generateTake(id);
+    state.frame = 0;
+    state.keyframes = state.take.events.map(function (e) { return { frame: e.frame, name: e.name, cat: e.cat }; });
+    state.selected = 0;
+    document.querySelectorAll(".mv-item").forEach(function (n) { n.classList.toggle("active", n.dataset.id === id); });
+    $("mvTitle").textContent = state.take.name;
+    $("mvBlurb").textContent = MKS.MOVEMENTS[id].blurb;
+    $("viewTag").textContent = state.take.view + " · " + state.take.fps + " fps";
+    buildMetrics();
+    buildKeyList();
+    resize();
+    render();
+  }
+
+  // ---------- viewport rendering ----------
+  function worldToScreen(w, cam, ctx) {
+    return [cam.cx + (w[0] - cam.px) * cam.s, cam.groundY - w[1] * cam.s];
+  }
+  function camera(ctx) {
+    var W = ctx.canvas.width / cam_dpr, H = ctx.canvas.height / cam_dpr;
+    var fr = state.take.frames[state.frame];
+    var s = H * 0.34; // px per metre (~2 m tall visible)
+    return { cx: W * 0.5, px: fr.joints.pelvis[0], s: s, groundY: H * 0.86, W: W, H: H };
+  }
+  var cam_dpr = 1;
+
+  function render() {
+    var c = el.view, ctx = c.getContext("2d");
+    cam_dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = c.clientWidth, H = c.clientHeight;
+    if (c.width !== W * cam_dpr) { c.width = W * cam_dpr; c.height = H * cam_dpr; }
+    ctx.setTransform(cam_dpr, 0, 0, cam_dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    var cam = camera(ctx);
+    var fr = state.take.frames[state.frame];
+
+    drawGround(ctx, cam);
+    drawTrace(ctx, cam);
+    drawSkeleton(ctx, cam, fr);
+    drawArcs(ctx, cam, fr);
+    drawHUD(ctx, cam, fr);
+    updateAngles(fr);
+  }
+
+  function drawGround(ctx, cam) {
+    ctx.strokeStyle = token("--line"); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, cam.groundY); ctx.lineTo(cam.W, cam.groundY); ctx.stroke();
+    // metre ticks
+    ctx.fillStyle = token("--ink-faint"); ctx.font = "10px " + token("--mono");
+    var startM = Math.floor(cam.px - cam.W / (2 * cam.s)) - 1;
+    var endM = startM + Math.ceil(cam.W / cam.s) + 2;
+    for (var m = startM; m <= endM; m += 0.5) {
+      var sx = cam.cx + (m - cam.px) * cam.s;
+      if (sx < -20 || sx > cam.W + 20) continue;
+      var major = Math.abs(m - Math.round(m)) < 0.01;
+      ctx.strokeStyle = token("--line");
+      ctx.beginPath(); ctx.moveTo(sx, cam.groundY); ctx.lineTo(sx, cam.groundY + (major ? 8 : 4)); ctx.stroke();
+      if (major) ctx.fillText(m.toFixed(0) + "m", sx + 3, cam.groundY + 16);
+    }
+  }
+
+  function drawTrace(ctx, cam) {
+    ctx.lineWidth = 1.5;
+    for (var i = 1; i <= state.frame; i++) {
+      var a = worldToScreen(state.take.frames[i - 1].joints.pelvis, cam);
+      var b = worldToScreen(state.take.frames[i].joints.pelvis, cam);
+      var al = Math.max(0.05, 1 - (state.frame - i) / 40);
+      ctx.strokeStyle = withAlpha(token("--accent"), al * 0.55);
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    }
+  }
+
+  var BONES_R = [["pelvis", "kneeR"], ["kneeR", "ankleR"], ["ankleR", "toeR"], ["neck", "elbowR"], ["elbowR", "wristR"]];
+  var BONES_L = [["pelvis", "kneeL"], ["kneeL", "ankleL"], ["ankleL", "toeL"], ["neck", "elbowL"], ["elbowL", "wristL"]];
+  var BONES_C = [["pelvis", "neck"], ["neck", "head"]];
+
+  function drawSkeleton(ctx, cam, fr) {
+    var j = fr.joints;
+    function bone(a, b, color, w) {
+      var pa = worldToScreen(j[a], cam), pb = worldToScreen(j[b], cam);
+      ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.lineTo(pb[0], pb[1]); ctx.stroke();
+    }
+    BONES_L.forEach(function (b) { bone(b[0], b[1], withAlpha(token("--ink-dim"), 0.5), 5); });
+    BONES_C.forEach(function (b) { bone(b[0], b[1], token("--ink"), 7); });
+    BONES_R.forEach(function (b) { bone(b[0], b[1], token("--ink"), 6); });
+    // head
+    var h = worldToScreen(j.head, cam);
+    ctx.fillStyle = token("--ink"); ctx.beginPath(); ctx.arc(h[0], h[1], 11, 0, 7); ctx.fill();
+    // joints
+    ["kneeR", "ankleR", "kneeL", "ankleL", "pelvis", "neck", "elbowR", "wristR"].forEach(function (k) {
+      var p = worldToScreen(j[k], cam);
+      ctx.fillStyle = token("--panel"); ctx.strokeStyle = token("--ink-dim"); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(p[0], p[1], 3.5, 0, 7); ctx.fill(); ctx.stroke();
+    });
+    // contact indicator
+    if (!fr.airborne) {
+      var t = worldToScreen([Math.min(j.toeR[0], j.toeL[0]), 0], cam);
+      ctx.fillStyle = withAlpha(catColor("plant"), 0.9);
+      ctx.beginPath(); ctx.arc(t[0], cam.groundY, 4, 0, 7); ctx.fill();
+    }
+  }
+
+  function drawArcs(ctx, cam, fr) {
+    var j = fr.joints, a = fr.angles;
+    arc(ctx, cam, j.kneeR, "K " + Math.round(a.kneeFlexR) + "°", token("--accent"));
+    arc(ctx, cam, j.hipR, "H " + Math.round(a.hipFlexR) + "°", token("--ink-dim"));
+  }
+  function arc(ctx, cam, jw, label, color) {
+    var p = worldToScreen(jw, cam);
+    ctx.strokeStyle = color; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(p[0], p[1], 14, -0.5, 1.8); ctx.stroke();
+    ctx.fillStyle = color; ctx.font = "11px " + token("--mono");
+    ctx.fillText(label, p[0] + 16, p[1] - 6);
+  }
+
+  function drawHUD(ctx, cam, fr) {
+    var ph = currentPhase();
+    ctx.font = "600 12px " + token("--mono");
+    var pad = 12;
+    // phase pill
+    var label = ph ? ph.name : "—";
+    ctx.fillStyle = withAlpha(catColor(ph ? ph.cat : "approach"), 0.16);
+    ctx.strokeStyle = catColor(ph ? ph.cat : "approach"); ctx.lineWidth = 1;
+    var tw = ctx.measureText(label).width + 20;
+    roundRect(ctx, pad, pad, tw, 22, 5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = catColor(ph ? ph.cat : "approach");
+    ctx.fillText(label, pad + 10, pad + 15);
+    // frame/time
+    ctx.fillStyle = token("--ink-faint"); ctx.textAlign = "right";
+    var ms = (state.frame / state.take.fps * 1000).toFixed(0);
+    ctx.fillText("f " + state.frame + " / " + (state.take.frames.length - 1) + "   ·   " + ms + " ms", cam.W - pad, pad + 15);
+    ctx.textAlign = "left";
+  }
+
+  function currentPhase() {
+    var ph = state.take.phases, N = state.take.frames.length;
+    var cur = null;
+    for (var i = 0; i < ph.length; i++) { if (state.frame >= Math.round(ph[i].t * (N - 1))) cur = ph[i]; }
+    return cur;
+  }
+
+  // ---------- timeline ----------
+  function drawTimeline() {
+    var c = el.timeline, ctx = c.getContext("2d");
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = c.clientWidth, H = c.clientHeight;
+    if (c.width !== W * dpr) { c.width = W * dpr; c.height = H * dpr; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    var N = state.take.frames.length, ph = state.take.phases;
+    var bandY = 8, bandH = 20;
+    // phase bands
+    for (var i = 0; i < ph.length; i++) {
+      var x0 = ph[i].t * (W - 1);
+      var x1 = (i < ph.length - 1 ? ph[i + 1].t : 1) * (W - 1);
+      ctx.fillStyle = withAlpha(catColor(ph[i].cat), 0.28);
+      ctx.fillRect(x0, bandY, Math.max(1, x1 - x0), bandH);
+      ctx.fillStyle = withAlpha(catColor(ph[i].cat), 0.9);
+      ctx.fillRect(x0, bandY, 2, bandH);
+    }
+    // baseline
+    var trackY = bandY + bandH + 14;
+    ctx.strokeStyle = token("--line"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, trackY); ctx.lineTo(W, trackY); ctx.stroke();
+    // keyframe markers
+    state.keyframes.forEach(function (k, idx) {
+      var x = (k.frame / (N - 1)) * (W - 1);
+      var sel = idx === state.selected;
+      ctx.strokeStyle = sel ? token("--accent") : catColor(k.cat);
+      ctx.lineWidth = sel ? 2 : 1.5;
+      ctx.beginPath(); ctx.moveTo(x, bandY); ctx.lineTo(x, trackY); ctx.stroke();
+      ctx.fillStyle = sel ? token("--accent") : catColor(k.cat);
+      ctx.beginPath(); ctx.moveTo(x, trackY - 6); ctx.lineTo(x - 5, trackY + 4); ctx.lineTo(x + 5, trackY + 4); ctx.closePath(); ctx.fill();
+    });
+    // playhead
+    var px = (state.frame / (N - 1)) * (W - 1);
+    ctx.strokeStyle = token("--ink"); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke();
+    ctx.fillStyle = token("--ink");
+    ctx.beginPath(); ctx.arc(px, 4, 3, 0, 7); ctx.fill();
+  }
+
+  function timelineFrameFromX(clientX) {
+    var r = el.timeline.getBoundingClientRect();
+    var u = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    return Math.round(u * (state.take.frames.length - 1));
+  }
+
+  // ---------- panels ----------
+  function updateAngles(fr) {
+    var a = fr.angles;
+    setVal("aTrunk", a.trunkLean, "°", 0);
+    setVal("aHip", a.hipFlexR, "°", 0);
+    setVal("aKnee", a.kneeFlexR, "°", 0);
+    setVal("aAnkle", a.ankleR, "°", 0);
+    setVal("aElbow", a.elbowR, "°", 0);
+    setVal("aSep", a.kneeSep * 100, "cm", 1);
+    $("aContact").textContent = fr.airborne ? "airborne" : "ground";
+    $("aContact").className = "chip " + (fr.airborne ? "air" : "grd");
+  }
+  function setVal(id, v, unit, dp) { var n = $(id); if (n) n.textContent = (v >= 0 && unit === "°" ? "" : "") + v.toFixed(dp) + unit; }
+
+  function buildMetrics() {
+    var box = $("metrics"); box.innerHTML = "";
+    MKS.metrics(state.take).forEach(function (m) {
+      var d = document.createElement("div"); d.className = "metric";
+      var v = m.val.toFixed(m.fmt) + (m.unit ? " " + m.unit : "");
+      d.innerHTML = '<span class="mlab">' + m.label + (m.caveat ? ' <span class="warn-dot" title="Transverse-plane / rotation metrics are the industry-wide accuracy ceiling — treat as a proxy.">⚠</span>' : '') + '</span><span class="mval">' + v + '</span>';
+      box.appendChild(d);
+    });
+  }
+
+  function buildKeyList() {
+    var box = $("keyList"); box.innerHTML = "";
+    state.keyframes.forEach(function (k, idx) {
+      var fr = state.take.frames[k.frame];
+      var row = document.createElement("button"); row.className = "kf" + (idx === state.selected ? " sel" : "");
+      row.innerHTML =
+        '<span class="kf-dot" style="background:' + catColor(k.cat) + '"></span>' +
+        '<span class="kf-name">' + k.name + '</span>' +
+        '<span class="kf-meta">f' + k.frame + ' · K' + Math.round(fr.angles.kneeFlexR) + '° · T' + Math.round(fr.angles.trunkLean) + '°</span>';
+      row.addEventListener("click", function () { state.selected = idx; state.frame = k.frame; syncScrub(); refresh(); });
+      box.appendChild(row);
+    });
+  }
+
+  function exportJSON() {
+    var out = {
+      movement: state.id, name: state.take.name, view: state.take.view, fps: state.take.fps,
+      frames: state.take.frames.length,
+      keyframes: state.keyframes.map(function (k) {
+        var fr = state.take.frames[k.frame];
+        return {
+          frame: k.frame, name: k.name, phase: k.cat, timeMs: +(k.frame / state.take.fps * 1000).toFixed(1),
+          angles: Object.keys(fr.angles).reduce(function (o, key) { o[key] = +fr.angles[key].toFixed(2); return o; }, {}),
+          airborne: fr.airborne
+        };
+      }),
+      metrics: MKS.metrics(state.take).map(function (m) { return { label: m.label, value: +m.val.toFixed(m.fmt), unit: m.unit }; })
+    };
+    var text = JSON.stringify(out, null, 2);
+    $("exportArea").value = text;
+    $("exportArea").style.display = "block";
+    $("exportArea").select();
+    try { navigator.clipboard.writeText(text); flash("Keyframes copied to clipboard"); }
+    catch (e) { flash("Keyframes ready — select & copy"); }
+  }
+  function flash(msg) { var f = $("toast"); f.textContent = msg; f.classList.add("show"); setTimeout(function () { f.classList.remove("show"); }, 1800); }
+
+  // ---------- playback ----------
+  function tick(ts) {
+    if (state.playing) {
+      if (!state.lastTs) state.lastTs = ts;
+      var dt = (ts - state.lastTs) / 1000; state.lastTs = ts;
+      state.acc += dt * state.take.fps * state.speed;
+      if (state.acc >= 1) {
+        state.frame += Math.floor(state.acc); state.acc %= 1;
+        if (state.frame >= state.take.frames.length - 1) { state.frame = state.take.frames.length - 1; setPlaying(false); }
+        syncScrub();
+      }
+    } else { state.lastTs = 0; }
+    refresh();
+    requestAnimationFrame(tick);
+  }
+  function refresh() { render(); drawTimeline(); buildKeyList(); }
+  function setPlaying(p) {
+    state.playing = p; if (p && state.frame >= state.take.frames.length - 1) { state.frame = 0; }
+    $("playBtn").textContent = p ? "❚❚" : "▶";
+    $("playBtn").setAttribute("aria-label", p ? "Pause" : "Play");
+    state.lastTs = 0;
+  }
+  function syncScrub() { el.scrub.value = state.frame; }
+
+  function resize() { render(); drawTimeline(); }
+
+  function withAlpha(hex, a) {
+    hex = hex.trim();
+    if (hex[0] !== "#") return hex;
+    var n = parseInt(hex.slice(1), 16), r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  // ---------- wire up ----------
+  function init() {
+    el.view = $("view"); el.timeline = $("timeline"); el.scrub = $("scrub");
+    // movement list
+    Object.keys(MKS.MOVEMENTS).forEach(function (id) {
+      var m = MKS.MOVEMENTS[id];
+      var b = document.createElement("button"); b.className = "mv-item"; b.dataset.id = id;
+      b.innerHTML = '<span class="mv-name">' + m.name + '</span><span class="mv-sub">' + m.view + '</span>';
+      b.addEventListener("click", function () { setPlaying(false); load(id); });
+      $("mvList").appendChild(b);
+    });
+    // controls
+    $("playBtn").addEventListener("click", function () { setPlaying(!state.playing); });
+    $("restartBtn").addEventListener("click", function () { setPlaying(false); state.frame = 0; syncScrub(); refresh(); });
+    $("stepB").addEventListener("click", function () { setPlaying(false); state.frame = Math.max(0, state.frame - 1); syncScrub(); refresh(); });
+    $("stepF").addEventListener("click", function () { setPlaying(false); state.frame = Math.min(state.take.frames.length - 1, state.frame + 1); syncScrub(); refresh(); });
+    $("speed").addEventListener("input", function (e) { state.speed = parseFloat(e.target.value); $("speedVal").textContent = state.speed.toFixed(2) + "×"; });
+    el.scrub.addEventListener("input", function (e) { setPlaying(false); state.frame = parseInt(e.target.value, 10); refresh(); });
+    $("addKf").addEventListener("click", function () {
+      state.keyframes.push({ frame: state.frame, name: "Keyframe", cat: (currentPhase() || {}).cat || "approach" });
+      state.keyframes.sort(function (a, b) { return a.frame - b.frame; });
+      state.selected = state.keyframes.findIndex(function (k) { return k.frame === state.frame; });
+      refresh(); flash("Keyframe added at f" + state.frame);
+    });
+    $("delKf").addEventListener("click", function () {
+      if (state.keyframes.length && state.selected >= 0) { state.keyframes.splice(state.selected, 1); state.selected = Math.max(0, state.selected - 1); refresh(); }
+    });
+    $("renameKf").addEventListener("input", function (e) { if (state.keyframes[state.selected]) { state.keyframes[state.selected].name = e.target.value; refresh(); } });
+    $("exportBtn").addEventListener("click", exportJSON);
+
+    // timeline drag
+    var dragging = false;
+    function pickNearest(frame) {
+      var best = -1, bd = 6;
+      state.keyframes.forEach(function (k, i) { var d = Math.abs(k.frame - frame); if (d < bd) { bd = d; best = i; } });
+      return best;
+    }
+    el.timeline.addEventListener("pointerdown", function (e) {
+      el.timeline.setPointerCapture(e.pointerId);
+      var frame = timelineFrameFromX(e.clientX);
+      var near = pickNearest(frame);
+      if (near >= 0) { state.selected = near; dragging = true; $("renameKf").value = state.keyframes[near].name; }
+      state.frame = frame; setPlaying(false); syncScrub(); refresh();
+    });
+    el.timeline.addEventListener("pointermove", function (e) {
+      var frame = timelineFrameFromX(e.clientX);
+      if (dragging && state.keyframes[state.selected]) { state.keyframes[state.selected].frame = frame; }
+      state.frame = frame; syncScrub(); refresh();
+    });
+    el.timeline.addEventListener("pointerup", function () { dragging = false; state.keyframes.sort(function (a, b) { return a.frame - b.frame; }); refresh(); });
+
+    window.addEventListener("resize", resize);
+    document.addEventListener("keydown", function (e) {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.code === "Space") { e.preventDefault(); setPlaying(!state.playing); }
+      else if (e.code === "ArrowLeft") { setPlaying(false); state.frame = Math.max(0, state.frame - 1); syncScrub(); refresh(); }
+      else if (e.code === "ArrowRight") { setPlaying(false); state.frame = Math.min(state.take.frames.length - 1, state.frame + 1); syncScrub(); refresh(); }
+    });
+
+    load(state.id);
+    el.scrub.max = state.take.frames.length - 1;
+    requestAnimationFrame(tick);
+  }
+
+  // scrub max needs update per movement
+  var _load = load;
+  load = function (id) { _load(id); el.scrub.max = state.take.frames.length - 1; el.scrub.value = 0; $("renameKf").value = ""; };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+
+</script>
