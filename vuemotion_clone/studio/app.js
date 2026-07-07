@@ -22,18 +22,41 @@
 
   function load(id) {
     state.id = id;
-    state.take = MKS.generateTake(id);
+    state.take = (id === "captured" && window.CAPTURED) ? capturedTake(window.CAPTURED) : MKS.generateTake(id);
     state.frame = 0;
     state.keyframes = state.take.events.map(function (e) { return { frame: e.frame, name: e.name, cat: e.cat }; });
     state.selected = 0;
     document.querySelectorAll(".mv-item").forEach(function (n) { n.classList.toggle("active", n.dataset.id === id); });
     $("mvTitle").textContent = state.take.name;
-    $("mvBlurb").textContent = MKS.MOVEMENTS[id].blurb;
-    $("viewTag").textContent = state.take.view + " · " + state.take.fps + " fps";
+    $("mvBlurb").textContent = state.take.blurb || (MKS.MOVEMENTS[id] && MKS.MOVEMENTS[id].blurb) || "";
+    $("viewTag").textContent = state.take.view + " · " + state.take.fps + " fps" + (state.take.captured ? " · captured" : "");
     buildMetrics();
     buildKeyList();
     resize();
     render();
+  }
+
+  // Build a studio take from a real captured Take JSON (3D -> sagittal projection).
+  function capturedTake(cap) {
+    var names = cap.keypoints, N = cap.frames.length;
+    var frames = cap.frames.map(function (fr) {
+      var j = {};
+      for (var i = 0; i < names.length; i++) j[names[i]] = [fr.joints3d[i][0], fr.joints3d[i][1]]; // drop Z -> sagittal
+      j.shoulderR = j.neck; j.shoulderL = j.neck; // studio arms hang from neck
+      return { f: fr.f, t: fr.t, joints: j, angles: fr.angles, airborne: fr.airborne };
+    });
+    return {
+      id: "captured", name: cap.movement.replace(/_/g, " ") + " · captured", view: "sagittal",
+      fps: cap.fps, captured: true,
+      blurb: "Real reconstruction: 4 cameras → triangulation → movement engine (source: " + cap.source + ").",
+      frames: frames,
+      phases: cap.phases.map(function (p) { return { id: p.name, name: p.name, cat: p.cat, t: p.frame / (N - 1) }; }),
+      events: cap.phases.map(function (p) { return { id: p.name, name: p.name, cat: p.cat, frame: p.frame }; }),
+      metricKeys: [],
+      precomputed: cap.metrics.map(function (m) {
+        return { label: m.label, val: m.value, unit: m.unit, caveat: m.caveat, fmt: (m.unit === "ms" || m.unit === "°") ? 0 : 2 };
+      })
+    };
   }
 
   // ---------- viewport rendering ----------
@@ -227,7 +250,8 @@
 
   function buildMetrics() {
     var box = $("metrics"); box.innerHTML = "";
-    MKS.metrics(state.take).forEach(function (m) {
+    var list = state.take.precomputed || MKS.metrics(state.take);
+    list.forEach(function (m) {
       var d = document.createElement("div"); d.className = "metric";
       var v = m.val.toFixed(m.fmt) + (m.unit ? " " + m.unit : "");
       d.innerHTML = '<span class="mlab">' + m.label + (m.caveat ? ' <span class="warn-dot" title="Transverse-plane / rotation metrics are the industry-wide accuracy ceiling — treat as a proxy.">⚠</span>' : '') + '</span><span class="mval">' + v + '</span>';
@@ -261,7 +285,7 @@
           airborne: fr.airborne
         };
       }),
-      metrics: MKS.metrics(state.take).map(function (m) { return { label: m.label, value: +m.val.toFixed(m.fmt), unit: m.unit }; })
+      metrics: (state.take.precomputed || MKS.metrics(state.take)).map(function (m) { return { label: m.label, value: +m.val.toFixed(m.fmt), unit: m.unit }; })
     };
     var text = JSON.stringify(out, null, 2);
     $("exportArea").value = text;
@@ -313,6 +337,13 @@
   // ---------- wire up ----------
   function init() {
     el.view = $("view"); el.timeline = $("timeline"); el.scrub = $("scrub");
+    // captured (real pipeline) take, if embedded
+    if (window.CAPTURED) {
+      var cb = document.createElement("button"); cb.className = "mv-item captured"; cb.dataset.id = "captured";
+      cb.innerHTML = '<span class="mv-name">◉ Captured take</span><span class="mv-sub">real 3D</span>';
+      cb.addEventListener("click", function () { setPlaying(false); load("captured"); });
+      $("mvList").appendChild(cb);
+    }
     // movement list
     Object.keys(MKS.MOVEMENTS).forEach(function (id) {
       var m = MKS.MOVEMENTS[id];

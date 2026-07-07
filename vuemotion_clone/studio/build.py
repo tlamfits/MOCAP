@@ -81,6 +81,9 @@ STYLE = r"""
   .mv-item:hover{background:var(--panel-2)}
   .mv-item.active{background:var(--panel-2);border-color:var(--line)}
   .mv-item.active .mv-name{color:var(--accent)}
+  .mv-item.captured{border-color:color-mix(in srgb,var(--accent) 40%,var(--line));margin-bottom:6px}
+  .mv-item.captured .mv-name{color:var(--accent)}
+  .mv-item.captured .mv-sub{color:var(--accent)}
   .mv-name{font-weight:550}
   .mv-sub{font-family:var(--mono);font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em}
   .meta{padding:8px 14px 16px;color:var(--ink-faint);font-size:11.5px;line-height:1.6}
@@ -234,6 +237,12 @@ MARKUP = r"""
 <div class="toast" id="toast"></div>
 """
 
-html = STYLE + MARKUP + "\n<script>\n" + engine + "\n</script>\n<script>\n" + app + "\n</script>\n"
+# inject a real captured take (from the pipeline) if present, so the studio can load it
+cap_path = HERE / "captured_take.json"
+cap_script = ""
+if cap_path.exists():
+    cap_script = "\n<script>window.CAPTURED=" + cap_path.read_text() + ";</script>\n"
+
+html = STYLE + MARKUP + cap_script + "\n<script>\n" + engine + "\n</script>\n<script>\n" + app + "\n</script>\n"
 (HERE / "keyframe-studio.html").write_text(html)
-print("wrote keyframe-studio.html", len(html), "bytes")
+print("wrote keyframe-studio.html", len(html), "bytes", "(captured take embedded)" if cap_script else "(no captured take)")
